@@ -34,8 +34,18 @@ module Sow
     private
 
     def build_record
-      @klass.new.tap do |new_record|
-        new_record.assign_attributes(attributes, :without_protection => true)
+      new_or_existing_record.tap do |record|
+        attributes.each do |key, value|
+          record.send(:"#{key.to_sym}=", value)
+        end
+      end
+    end
+
+    def new_or_existing_record
+      if @options['find_existing_by']
+        @klass.where(@options['find_existing_by'] => attributes[@options['find_existing_by']]).first_or_initialize
+      else
+        @klass.new
       end
     end
 
