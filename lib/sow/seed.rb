@@ -43,7 +43,10 @@ module Sow
 
     def new_or_existing_record
       if @options['find_existing_by']
-        @klass.where(@options['find_existing_by'] => attributes[@options['find_existing_by']]).first_or_initialize
+        attr_hash = Array(@options['find_existing_by']).inject({}) do |hash, attribute|
+          hash.merge!({attribute => attributes[attribute]})
+        end
+        @klass.where(attr_hash).first_or_initialize
       else
         @klass.new
       end
