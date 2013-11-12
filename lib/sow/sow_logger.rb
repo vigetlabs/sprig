@@ -1,7 +1,7 @@
 include ActionView::Helpers::TextHelper
 
 module Sow
-  class SeedLogger
+  class SowLogger
     def initialize
       @success_count = 0
       @error_count = 0
