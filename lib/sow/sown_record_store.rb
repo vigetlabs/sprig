@@ -1,3 +1,5 @@
+require 'singleton'
+
 module Sow
   class SownRecordStore
     include Singleton

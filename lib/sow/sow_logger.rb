@@ -1,4 +1,4 @@
-include ActionView::Helpers::TextHelper
+require 'active_support/inflector'
 
 module Sow
   class SowLogger
@@ -58,11 +58,11 @@ module Sow
     end
 
     def success_summary
-      "#{pluralize(@success_count, 'seed')} successfully planted."
+      "#{@success_count} #{'seed'.pluralize(@success_count)} successfully planted."
     end
 
     def error_summary
-      "#{pluralize(@error_count, 'seed')} couldn't be planted:"
+      "#{@error_count} #{'seed'.pluralize(@error_count)} couldn't be planted:"
     end
   end
 end
