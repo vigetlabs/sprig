@@ -30,4 +30,17 @@ describe "Seeding an application" do
       Post.pluck(:title).should =~ ['Csv title']
     end
   end
+
+  context "with a json file" do
+    around do |example|
+      load_seed('posts.json', &example)
+    end
+
+    it "seeds the db" do
+      sow [Post]
+
+      Post.count.should == 1
+      Post.pluck(:title).should =~ ['Json title']
+    end
+  end
 end
