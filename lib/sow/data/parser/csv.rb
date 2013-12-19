@@ -1,3 +1,5 @@
+require 'csv'
+
 module Sow
   module Data
     module Parser

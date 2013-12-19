@@ -35,7 +35,16 @@ Post.connection.execute "CREATE TABLE posts (id INTEGER PRIMARY KEY , title VARC
 #Comment.connection.execute "DROP TABLE IF EXISTS comments;"
 #Comment.connection.execute "CREATE TABLE comments (id INTEGER PRIMARY KEY , post_id INTEGER, body VARCHAR(255));"
 
+# Helpers
+#
 # Setup fake `Rails.root`
 def stub_rails_root
   Rails.stub(:root).and_return(Pathname.new('./spec/fixtures'))
+end
+
+# Copy and Remove Seed files around a spec
+def load_seed(file)
+  `cp ./spec/fixtures/seeds/#{file} ./spec/fixtures/db/seeds/development`
+  yield
+  `rm ./spec/fixtures/db/seeds/development/#{file}`
 end
