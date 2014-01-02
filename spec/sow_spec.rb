@@ -61,7 +61,7 @@ describe "Seeding an application" do
     end
   end
 
-  context "with cross file relationships" do
+  context "with multiple file relationships" do
     around do |example|
       load_seeds('posts.yml', 'comments.yml', &example)
     end
@@ -72,6 +72,22 @@ describe "Seeding an application" do
       Post.count.should    == 1
       Comment.count.should == 1
       Comment.first.post.should == Post.first
+    end
+  end
+
+  context "with multiple files for a class" do
+    around do |example|
+      load_seeds('posts.yml', 'legacy_posts.yml', &example)
+    end
+
+    it "seeds the db" do
+      sow [
+        Post,
+        [Post, :data => { :source => open('spec/fixtures/seeds/legacy_posts.yml') }]
+      ]
+
+      Post.count.should == 2
+      Post.pluck(:title).should=~ ['Yaml title', 'Legacy yaml title']
     end
   end
 end
