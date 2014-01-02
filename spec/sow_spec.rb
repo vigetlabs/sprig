@@ -8,7 +8,7 @@ describe "Seeding an application" do
 
   context "with a yaml file" do
     around do |example|
-      load_seed('posts.yml', &example)
+      load_seeds('posts.yml', &example)
     end
 
     it "seeds the db" do
@@ -21,7 +21,7 @@ describe "Seeding an application" do
 
   context "with a csv file" do
     around do |example|
-      load_seed('posts.csv', &example)
+      load_seeds('posts.csv', &example)
     end
 
     it "seeds the db" do
@@ -34,7 +34,7 @@ describe "Seeding an application" do
 
   context "with a json file" do
     around do |example|
-      load_seed('posts.json', &example)
+      load_seeds('posts.json', &example)
     end
 
     it "seeds the db" do
@@ -58,6 +58,20 @@ describe "Seeding an application" do
 
       Post.count.should == 1
       Post.pluck(:title).should =~ ['Google spreadsheet json title']
+    end
+  end
+
+  context "with cross file relationships" do
+    around do |example|
+      load_seeds('posts.yml', 'comments.yml', &example)
+    end
+
+    it "seeds the db" do
+      sow [Post, Comment]
+
+      Post.count.should    == 1
+      Comment.count.should == 1
+      Comment.first.post.should == Post.first
     end
   end
 end
