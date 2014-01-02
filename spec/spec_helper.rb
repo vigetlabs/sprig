@@ -1,6 +1,8 @@
 require "rails"
 require "active_record"
 require "database_cleaner"
+require "webmock"
+require "vcr"
 require "pry"
 
 require "sow"
@@ -23,6 +25,12 @@ RSpec.configure do |c|
   end
 end
 
+VCR.configure do |c|
+  c.configure_rspec_metadata!
+  c.cassette_library_dir = 'spec/fixtures/cassettes'
+  c.hook_into :webmock
+end
+
 # Database
 ActiveRecord::Base.establish_connection(:adapter => "sqlite3", :database => "spec/db/activerecord.db")
 
@@ -32,8 +40,8 @@ ActiveRecord::Base.establish_connection(:adapter => "sqlite3", :database => "spe
 Post.connection.execute "DROP TABLE IF EXISTS posts;"
 Post.connection.execute "CREATE TABLE posts (id INTEGER PRIMARY KEY , title VARCHAR(255), content VARCHAR(255));"
 
-#Comment.connection.execute "DROP TABLE IF EXISTS comments;"
-#Comment.connection.execute "CREATE TABLE comments (id INTEGER PRIMARY KEY , post_id INTEGER, body VARCHAR(255));"
+Comment.connection.execute "DROP TABLE IF EXISTS comments;"
+Comment.connection.execute "CREATE TABLE comments (id INTEGER PRIMARY KEY , post_id INTEGER, body VARCHAR(255));"
 
 # Helpers
 #
@@ -43,8 +51,14 @@ def stub_rails_root
 end
 
 # Copy and Remove Seed files around a spec
-def load_seed(file)
-  `cp ./spec/fixtures/seeds/#{file} ./spec/fixtures/db/seeds/development`
+def load_seeds(*files)
+  files.each do |file|
+    `cp ./spec/fixtures/seeds/#{file} ./spec/fixtures/db/seeds/development`
+  end
+
   yield
-  `rm ./spec/fixtures/db/seeds/development/#{file}`
+
+  files.each do |file|
+    `rm ./spec/fixtures/db/seeds/development/#{file}`
+  end
 end
