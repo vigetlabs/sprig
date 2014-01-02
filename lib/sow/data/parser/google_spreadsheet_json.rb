@@ -2,33 +2,34 @@ module Sow
   module Data
     module Parser
       class GoogleSpreadsheetJson < Base
+
         def parse
           { :records => records }
         end
 
         private
 
-        def json
-          @json ||= JSON.load(data_io)
+        def records
+          @records ||= raw_records.map { |record| Record.new(record).to_hash }
+        end
+
+        def build_record(record)
+          hash = {}
+
+          record.keys.each do |key|
+            attr_name = key.tr('-', '_').scan(/gsx\$([a-z_]+$)/).flatten.first
+            hash[attr_name] = record[key]['$t'] if attr_name
+          end
+
+          hash
         end
 
         def raw_records
           json['feed']['entry']
         end
 
-        def records
-          raw_records.map do |record|
-            {}.tap do |new_record|
-              record.keys.each do |key|
-
-                attribute_name = key.gsub('-', '_').scan(/gsx\$([a-z_]+$)/).flatten.first
-
-                if attribute_name
-                  new_record[attribute_name] = record[key]['$t']
-                end
-              end
-            end
-          end
+        def json
+          @json ||= JSON.load(data_io)
         end
       end
     end

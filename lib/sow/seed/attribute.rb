@@ -23,7 +23,7 @@ module Sow
       def determine_dependencies
         if computed_value?
           matches = raw_value.scan(/(sow_record\(([A-Z][^,]*), ([\d]*)\))+/)
-          matches.map {|match| Dependency::Dependency.for(match[1], match[2]) }
+          matches.map {|match| Dependency.for(match[1], match[2]) }
         else
           []
         end

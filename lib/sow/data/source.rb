@@ -1,9 +1,9 @@
 module Sow
   module Data
     class Source
-      def initialize(table_name, options)
+      def initialize(table_name, options = {})
         @table_name = table_name.to_s
-        options ||= {}
+
         self.source = options.fetch(:source) { default_source }
         self.parser = options.fetch(:parser) { default_parser }
       end

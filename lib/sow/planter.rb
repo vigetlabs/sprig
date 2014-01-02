@@ -17,7 +17,7 @@ module Sow
     attr_reader :seeds
 
     def dependency_sorted_seeds
-      Dependency::Sorter.new(seeds).sorted_items
+      DependencySorter.new(seeds).sorted_items
     end
 
     def logger

@@ -4,6 +4,7 @@ module Sow
   module Data
     module Parser
       class Csv < Base
+
         def parse
           { :records => records }
         end

@@ -16,7 +16,7 @@ module Sow
       end
 
       def dependency_id
-        @dependency_id ||= Dependency::Dependency.for(klass, sow_id).id
+        @dependency_id ||= Dependency.for(klass, sow_id).id
       end
 
       def before_save

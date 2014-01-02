@@ -12,7 +12,7 @@ module Sow
     end
 
     def datasource
-      @datasource ||= Sow::Data::Source.new(table_name, options[:data])
+      @datasource ||= Sow::Data::Source.new(table_name, options.fetch(:data, {}))
     end
 
     private
