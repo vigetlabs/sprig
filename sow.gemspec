@@ -13,12 +13,12 @@ Gem::Specification.new do |s|
   s.summary     = "Sow your seed data."
   s.description = "Sow is a library for managing environment specific seed data."
 
-  s.files = Dir["{app,config,db,lib}/**/*", "MIT-LICENSE", "Rakefile", "README.rdoc"]
+  s.files = Dir["lib/**/*", "MIT-LICENSE", "Rakefile", "README.md"]
+  s.test_files = Dir["spec/**/*"]
 
-  # TODO: this probably doesn't have to be 4
-  s.add_dependency "rails", "~> 4.0.0"
-
-  # TODO: created using step 1 of this post:
-  # http://viget.com/extend/rails-engine-testing-with-rspec-capybara-and-factorygirl
-  # may want to consult when adding tests
+  s.add_development_dependency "rails",            "~> 3.1"
+  s.add_development_dependency "sqlite3",          "~> 1.3.8"
+  s.add_development_dependency "rspec",            "~> 2.14.0"
+  s.add_development_dependency "database_cleaner", "~> 1.2.0"
+  s.add_development_dependency "pry"  
 end
