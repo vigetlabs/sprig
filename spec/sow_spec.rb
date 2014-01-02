@@ -1,4 +1,5 @@
 require 'spec_helper'
+require 'open-uri'
 
 describe "Seeding an application" do
   before do
@@ -41,6 +42,22 @@ describe "Seeding an application" do
 
       Post.count.should == 1
       Post.pluck(:title).should =~ ['Json title']
+    end
+  end
+
+  context "with a google spreadsheet" do
+    let(:gss_posts) do
+      {
+        :source => open('https://spreadsheets.google.com/feeds/list/0AjVLPMnHm86rdDVHQ2dCUS03RTN5ZUtVNzVOYVBwT0E/1/public/values?alt=json'),
+        :parser => Sow::Data::Parser::GoogleSpreadsheetJson
+      }
+    end
+
+    it "seeds the db", :vcr => { :cassette_name => 'google_spreadsheet_json_posts' } do
+      sow [[Post, :data => gss_posts]]
+
+      Post.count.should == 1
+      Post.pluck(:title).should =~ ['Google spreadsheet json title']
     end
   end
 end

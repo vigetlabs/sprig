@@ -20,5 +20,7 @@ Gem::Specification.new do |s|
   s.add_development_dependency "sqlite3",          "~> 1.3.8"
   s.add_development_dependency "rspec",            "~> 2.14.0"
   s.add_development_dependency "database_cleaner", "~> 1.2.0"
+  s.add_development_dependency "webmock",          "~> 1.16.1"
+  s.add_development_dependency "vcr",              "~> 2.8.0"
   s.add_development_dependency "pry"  
 end

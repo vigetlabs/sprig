@@ -10,7 +10,7 @@ module Sow
         private
 
         def records
-          @records ||= raw_records.map { |record| Record.new(record).to_hash }
+          @records ||= raw_records.map { |record| build_record(record) }
         end
 
         def build_record(record)
