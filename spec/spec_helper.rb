@@ -50,15 +50,22 @@ def stub_rails_root
   Rails.stub(:root).and_return(Pathname.new('./spec/fixtures'))
 end
 
+# Setup fake `Rails.env`
+def stub_rails_env(env)
+  Rails.stub(:env).and_return(env)
+end
+
 # Copy and Remove Seed files around a spec
 def load_seeds(*files)
+  env = Rails.env
+
   files.each do |file|
-    `cp ./spec/fixtures/seeds/#{file} ./spec/fixtures/db/seeds/development`
+    `cp ./spec/fixtures/seeds/#{env}/#{file} ./spec/fixtures/db/seeds/#{env}`
   end
 
   yield
 
   files.each do |file|
-    `rm ./spec/fixtures/db/seeds/development/#{file}`
+    `rm ./spec/fixtures/db/seeds/#{env}/#{file}`
   end
 end
