@@ -31,7 +31,7 @@ Todo: [Support for shared seed files]
 
 ##Seed files
 
-Hang your seed definitions on a `records` key for *csv* and *json* files.
+Hang your seed definitions on a `records` key for *yaml* and *json* files.
 
 Examples:
 
@@ -68,7 +68,7 @@ records:
 }
 ```
 
-Each seed record needs a `sow_id` defined that must be *unique across all seed files*.  It can be an integer, string, whatever you prefer; as long as it is unique, Sow can sort your seeds for insertion and detect any cyclic relationships.
+Each seed record needs a `sow_id` defined that must be *unique across all seed files per class*.  It can be an integer, string, whatever you prefer; as long as it is unique, Sow can sort your seeds for insertion and detect any cyclic relationships.
 
 Create relationships between seed records with the `sow_record` helper:
 
