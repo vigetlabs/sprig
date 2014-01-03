@@ -83,11 +83,25 @@ describe "Seeding an application" do
     it "seeds the db" do
       sow [
         Post,
-        [Post, :data => { :source => open('spec/fixtures/seeds/legacy_posts.yml') }]
+        [Post, :data => { :source => open('spec/fixtures/seeds/development/legacy_posts.yml') }]
       ]
 
       Post.count.should == 2
       Post.pluck(:title).should=~ ['Yaml title', 'Legacy yaml title']
+    end
+  end
+
+  context "from a specific environment" do
+    around do |example|
+      stub_rails_env 'staging'
+      load_seeds('posts.yml', &example)
+    end
+
+    it "seeds the db" do
+      sow [Post]
+
+      Post.count.should == 1
+      Post.pluck(:title).should =~ ['Staging yaml title']
     end
   end
 end
