@@ -40,7 +40,7 @@ module Sow
     def sorted_tags
       dependency_hash.tsort
     rescue TSort::Cyclic => e
-      raise CircularDependencyError.new("Your sow directives contain circular dependencies. #{e.message}", e)
+      raise CircularDependencyError.new("Your sow directives contain circular dependencies. #{e.message}")
     end
 
     class TsortableHash < Hash
@@ -51,7 +51,7 @@ module Sow
       def tsort_each_child(node, &block)
         fetch(node).each(&block)
       rescue KeyError => e
-        raise MissingDependencyError.new("Referenced 'sow_record' does not have a correlating record.", e)
+        raise MissingDependencyError.new("Referenced 'sow_record' does not have a correlating record. #{e.message}")
       end
     end
   end
