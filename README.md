@@ -81,6 +81,24 @@ records:
     body: "Yaml Comment body"
 ```
 
+### Special Options
+
+These are provided in a `options:` key for *yaml* and *json* files.
+
+#### `find_existing_by`
+
+Rather than starting from a blank database, you can optionally choose to find existing records and update them with seed data.
+
+The passed in attribute or array of attributes will be used for finding existing records during the sowing process.
+
+Example:
+
+```yaml
+# posts.yml
+
+options:
+  find_existing_by: ['title', 'user_id']
+```
 
 ##Custom Sources and Parsers
 
