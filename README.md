@@ -85,7 +85,7 @@ records:
 
 These are provided in a `options:` key for *yaml* and *json* files.
 
-#### `find_existing_by`
+#### find_existing_by:
 
 Rather than starting from a blank database, you can optionally choose to find existing records and update them with seed data.
 
