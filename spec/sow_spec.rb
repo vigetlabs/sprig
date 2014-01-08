@@ -126,4 +126,50 @@ describe "Seeding an application" do
       Post.pluck(:title).should =~ ['Staging yaml title']
     end
   end
+
+  context "with custom seed options" do
+
+    context "using find_existing_by" do
+
+      context "with a single attribute" do
+        around do |example|
+          load_seeds('find_existing_by_singulars.yml', &example)
+        end
+
+        context "with an existing record" do
+          let!(:existing) { FindExistingBySingular.create(:title => "Existing title", :content => "Existing content") }
+
+          it "updates the existing record" do
+            sow [FindExistingBySingular]
+
+            FindExistingBySingular.count.should == 1
+            existing.reload.content.should == "Updated content"
+          end
+        end
+      end
+
+      context "with multiple attributes" do
+        around do |example|
+          load_seeds('find_existing_by_multiples.yml', &example)
+        end
+
+        context "with an existing record" do
+          let!(:existing) do
+            FindExistingByMultiple.create(
+              :title    => "Existing title",
+              :content  => "Existing content",
+              :extra    => "Existing extra"
+            )
+          end
+
+          it "updates the existing record" do
+            sow [FindExistingByMultiple]
+
+            FindExistingByMultiple.count.should == 1
+            existing.reload.extra.should == 'Updated extra'
+          end
+        end
+      end
+    end
+  end
 end

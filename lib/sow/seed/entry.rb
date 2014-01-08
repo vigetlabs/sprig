@@ -69,7 +69,9 @@ module Sow
       end
 
       def find_existing_params
-        { options[:find_existing_by] => attributes.find_by_name(options[:find_existing_by]).value }
+        Array(options[:find_existing_by]).inject({}) do |hash, attribute|
+          hash.merge!({ attribute => attributes.find_by_name(attribute).value })
+        end
       end
     end
   end
