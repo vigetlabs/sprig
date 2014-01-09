@@ -55,7 +55,7 @@ describe Sow::Directive do
       Sow::Data::Source.stub(:new).with('posts', { :source => 'source' }).and_return(datasource)
     end
 
-    it "returns a data from datasource" do
+    it "returns data from the datasource" do
       subject.data.should == data_hash
     end
 
