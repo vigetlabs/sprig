@@ -106,12 +106,13 @@ If all your data is in `.wat` files, fear not. You can tell Sow where to look fo
 
 ```ruby
 fanciness = {
-  :source  => open('https://spreadsheets.google.com/feeds/list/somerandomtoken/1/public/values?alt=json'),
+  :class  => User,
+  :source => open('https://spreadsheets.google.com/feeds/list/somerandomtoken/1/public/values?alt=json'),
   :parser => Sow::Data::Parser::GoogleSpreadsheetJson
 }
 
 sow [
-  [User, { data: fanciness }],
+  fanciness,
   Post,
   Comment
 ]
