@@ -1,3 +1,4 @@
 .bundle/
 .rspec
 spec/db/*
+spec/db/!.
