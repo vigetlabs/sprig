@@ -1,10 +1,17 @@
 module Sow
   class Directive
-    attr_reader :klass, :options
+    attr_reader :attributes
 
-    def initialize(instructions)
-      self.klass   = instructions.fetch(0)
-      self.options = instructions.fetch(1) { Hash.new }
+    def initialize(args)
+      @attributes = args.is_a?(Hash) ? args : { :class => args }
+    end
+
+    def klass
+      @klass ||= attributes.fetch(:class) { raise ArgumentError, 'Sow::Directive must provide a class' }
+    end
+
+    def options
+      @options ||= attributes.except(:class)
     end
 
     def data
@@ -12,20 +19,10 @@ module Sow
     end
 
     def datasource
-      @datasource ||= Sow::Data::Source.new(table_name, options.fetch(:data, {}))
+      @datasource ||= Sow::Data::Source.new(table_name, options)
     end
 
     private
-
-    def klass=(klass)
-      raise ArgumentError, 'Must provide a Class' unless klass.is_a?(Class)
-
-      @klass = klass
-    end
-
-    def options=(options)
-      @options = options.to_hash
-    end
 
     def table_name
       @table_name ||= klass.to_s.tableize

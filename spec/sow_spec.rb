@@ -46,15 +46,14 @@ describe "Seeding an application" do
   end
 
   context "with a google spreadsheet" do
-    let(:gss_posts) do
-      {
-        :source => open('https://spreadsheets.google.com/feeds/list/0AjVLPMnHm86rdDVHQ2dCUS03RTN5ZUtVNzVOYVBwT0E/1/public/values?alt=json'),
-        :parser => Sow::Data::Parser::GoogleSpreadsheetJson
-      }
-    end
-
     it "seeds the db", :vcr => { :cassette_name => 'google_spreadsheet_json_posts' } do
-      sow [[Post, :data => gss_posts]]
+      sow [
+        {
+          :class => Post,
+          :parser => Sow::Data::Parser::GoogleSpreadsheetJson,
+          :source => open('https://spreadsheets.google.com/feeds/list/0AjVLPMnHm86rdDVHQ2dCUS03RTN5ZUtVNzVOYVBwT0E/1/public/values?alt=json'),
+        }
+      ]
 
       Post.count.should == 1
       Post.pluck(:title).should =~ ['Google spreadsheet json title']
@@ -83,7 +82,10 @@ describe "Seeding an application" do
     it "seeds the db" do
       sow [
         Post,
-        [Post, :data => { :source => open('spec/fixtures/seeds/development/legacy_posts.yml') }]
+        {
+          :class  => Post,
+          :source => open('spec/fixtures/seeds/development/legacy_posts.yml')
+        }
       ]
 
       Post.count.should == 2

@@ -1,7 +1,8 @@
 module Sow
   class DirectiveList
-    def initialize(directive_definitions)
-      @directive_definitions = Array(directive_definitions)
+
+    def initialize(definitions)
+      @definitions = Array(definitions)
     end
 
     def add_seeds_to_hopper(hopper)
@@ -12,11 +13,11 @@ module Sow
 
     private
 
-    attr_reader :directive_definitions
+    attr_reader :definitions
 
     def directives
-      @directives ||= directive_definitions.map do |definition|
-        Directive.new(Array(definition))
+      @directives ||= definitions.map do |definition|
+        Directive.new(definition)
       end
     end
 
