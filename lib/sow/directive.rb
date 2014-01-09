@@ -3,11 +3,20 @@ module Sow
     attr_reader :attributes
 
     def initialize(args)
-      @attributes = args.is_a?(Hash) ? args : { :class => args }
+      @attributes = begin
+        case
+        when args.is_a?(Hash)
+          args
+        when args < ActiveRecord::Base
+          { :class => args }
+        else
+          raise ArgumentError, argument_error_message
+        end
+      end
     end
 
     def klass
-      @klass ||= attributes.fetch(:class) { raise ArgumentError, 'Sow::Directive must provide a class' }
+      @klass ||= attributes.fetch(:class) { raise ArgumentError, argument_error_message }
     end
 
     def options
@@ -26,6 +35,11 @@ module Sow
 
     def table_name
       @table_name ||= klass.to_s.tableize
+    end
+
+    def argument_error_message
+      'Sow::Direct must be instantiated with an '\
+      'ActiveRecord subclass or a Hash with :class defined'
     end
   end
 end
