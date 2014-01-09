@@ -1,7 +1,6 @@
 module Sow
   class DependencySorter
     class CircularDependencyError < StandardError; end
-    class MissingDependencyError < StandardError; end
 
     attr_reader :items
 
@@ -41,6 +40,18 @@ module Sow
       dependency_hash.tsort
     rescue TSort::Cyclic => e
       raise CircularDependencyError.new("Your sow directives contain circular dependencies. #{e.message}")
+    rescue KeyError => key_error
+      raise missing_dependency_error_from_key_error(key_error)
+    end
+
+    def dependencies
+      items.map(&:dependencies).flatten
+    end
+
+    def missing_dependency_error_from_key_error(key_error)
+      key = key_error.message.match(/\Akey not found: "(.*)"\Z/)[1]
+      missing_dependency = dependencies.detect { |item| item.id == key }
+      MissingDependencyError.new(missing_dependency)
     end
 
     class TsortableHash < Hash
@@ -50,8 +61,22 @@ module Sow
 
       def tsort_each_child(node, &block)
         fetch(node).each(&block)
-      rescue KeyError => e
-        raise MissingDependencyError.new("Referenced 'sow_record' does not have a correlating record. #{e.message}")
+      end
+    end
+
+    class MissingDependencyError < StandardError
+      def initialize(missing_dependency = nil)
+        super message_for(missing_dependency)
+      end
+
+      private
+
+      def message_for(missing_dependency)
+        if missing_dependency.is_a? Dependency
+          "Undefined reference to '#{missing_dependency.sow_record_reference}'"
+        else
+          "Referenced 'sow_record' does not have a correlating record."
+        end
       end
     end
   end
