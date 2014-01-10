@@ -118,4 +118,14 @@ sow [
 ]
 ```
 
+##Configuration
+
+When Sow conventions don't suit, just add a configuration block to your seed file.
+
+```ruby
+Sow.configure do |c|
+  c.directory = 'seed_files'
+end
+```
+
 This project rocks and uses MIT-LICENSE.
