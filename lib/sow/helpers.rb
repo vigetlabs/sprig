@@ -1,7 +1,7 @@
 module Sow
   module Helpers
     def seed_directory
-      Rails.root.join('db', 'seeds', sow_environment) #TODO: make customizable
+      Sow.configuration.directory
     end
 
     def sow_environment

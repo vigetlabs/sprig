@@ -22,6 +22,8 @@ RSpec.configure do |c|
 
   c.after(:each) do
     DatabaseCleaner.clean
+
+    Sow.reset_configuration
   end
 end
 
@@ -46,12 +48,12 @@ Comment.connection.execute "CREATE TABLE comments (id INTEGER PRIMARY KEY , post
 # Helpers
 #
 # Setup fake `Rails.root`
-def stub_rails_root
-  Rails.stub(:root).and_return(Pathname.new('./spec/fixtures'))
+def stub_rails_root(path='./spec/fixtures')
+  Rails.stub(:root).and_return(Pathname.new(path))
 end
 
 # Setup fake `Rails.env`
-def stub_rails_env(env)
+def stub_rails_env(env='development')
   Rails.stub(:env).and_return(env)
 end
 
