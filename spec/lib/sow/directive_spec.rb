@@ -23,7 +23,7 @@ describe Sow::Directive do
           subject.klass
         }.to raise_error(
           ArgumentError,
-          'Sow::Direct must be instantiated with an '\
+          'Sow::Directive must be instantiated with an '\
           'ActiveRecord subclass or a Hash with :class defined'
         )
       end

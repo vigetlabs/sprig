@@ -38,7 +38,7 @@ module Sow
     end
 
     def argument_error_message
-      'Sow::Direct must be instantiated with an '\
+      'Sow::Directive must be instantiated with an '\
       'ActiveRecord subclass or a Hash with :class defined'
     end
   end
