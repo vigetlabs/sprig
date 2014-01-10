@@ -9,8 +9,6 @@ module Sow
       collection.get(klass, sow_id) || new(klass, sow_id)
     end
 
-    private
-
     def initialize(klass, sow_id)
       @klass = klass
       @sow_id = sow_id
@@ -18,6 +16,14 @@ module Sow
 
       self.class.collection.set(klass, sow_id, self)
     end
+
+    def sow_record_reference
+      "sow_record(#{klass}, #{sow_id})"
+    end
+
+    private
+
+    attr_reader :klass, :sow_id
 
     def self.to_klass(klass)
       if klass.is_a?(String)

@@ -74,6 +74,23 @@ describe "Seeding an application" do
     end
   end
 
+  context "with a relationship to an undefined record" do
+    around do |example|
+      load_seeds('posts.yml', 'posts_missing_dependency.yml', &example)
+    end
+
+    it "raises a helpful error message" do
+      expect {
+        sow [
+          [Post, :data => { :source => open('spec/fixtures/seeds/development/posts_missing_dependency.yml') }]
+        ]
+      }.to raise_error(
+        Sow::DependencySorter::MissingDependencyError,
+        "Undefined reference to 'sow_record(Comment, 42)'"
+      )
+    end
+  end
+
   context "with multiple files for a class" do
     around do |example|
       load_seeds('posts.yml', 'legacy_posts.yml', &example)
