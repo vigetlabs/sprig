@@ -128,21 +128,28 @@ describe "Seeding an application" do
   end
 
   context "with custom seed options" do
-
     context "using find_existing_by" do
-
       context "with a single attribute" do
         around do |example|
-          load_seeds('find_existing_by_singulars.yml', &example)
+          load_seeds('posts.yml', 'posts_find_existing_by_single.yml', &example)
         end
 
         context "with an existing record" do
-          let!(:existing) { FindExistingBySingular.create(:title => "Existing title", :content => "Existing content") }
+          let!(:existing) do
+            Post.create(
+              :title    => "Existing title",
+              :content  => "Existing content")
+          end
 
           it "updates the existing record" do
-            sow [FindExistingBySingular]
+            sow [
+              {
+                :class  => Post,
+                :source => open("spec/fixtures/seeds/development/posts_find_existing_by_single.yml")
+              }
+            ]
 
-            FindExistingBySingular.count.should == 1
+            Post.count.should == 1
             existing.reload.content.should == "Updated content"
           end
         end
@@ -150,23 +157,28 @@ describe "Seeding an application" do
 
       context "with multiple attributes" do
         around do |example|
-          load_seeds('find_existing_by_multiples.yml', &example)
+          load_seeds('posts.yml', 'posts_find_existing_by_multiple.yml', &example)
         end
 
         context "with an existing record" do
           let!(:existing) do
-            FindExistingByMultiple.create(
-              :title    => "Existing title",
-              :content  => "Existing content",
-              :extra    => "Existing extra"
+            Post.create(
+              :title      => "Existing title",
+              :content    => "Existing content",
+              :published  => false
             )
           end
 
           it "updates the existing record" do
-            sow [FindExistingByMultiple]
+            sow [
+              {
+                :class  => Post,
+                :source => open("spec/fixtures/seeds/development/posts_find_existing_by_multiple.yml")
+              }
+            ]
 
-            FindExistingByMultiple.count.should == 1
-            existing.reload.extra.should == 'Updated extra'
+            Post.count.should == 1
+            existing.reload.published.should == true
           end
         end
       end
