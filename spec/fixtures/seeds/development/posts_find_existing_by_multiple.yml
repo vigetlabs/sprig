@@ -1,0 +1,9 @@
+# posts_find_existing_by_multiples.yml
+options:
+  find_existing_by: ['title', 'content']
+
+records:
+  - sow_id: 1
+    title: 'Existing title'
+    content: 'Existing content'
+    published: true

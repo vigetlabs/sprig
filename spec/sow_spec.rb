@@ -126,4 +126,62 @@ describe "Seeding an application" do
       Post.pluck(:title).should =~ ['Staging yaml title']
     end
   end
+
+  context "with custom seed options" do
+    context "using find_existing_by" do
+      context "with a single attribute" do
+        around do |example|
+          load_seeds('posts.yml', 'posts_find_existing_by_single.yml', &example)
+        end
+
+        context "with an existing record" do
+          let!(:existing) do
+            Post.create(
+              :title    => "Existing title",
+              :content  => "Existing content")
+          end
+
+          it "updates the existing record" do
+            sow [
+              {
+                :class  => Post,
+                :source => open("spec/fixtures/seeds/development/posts_find_existing_by_single.yml")
+              }
+            ]
+
+            Post.count.should == 1
+            existing.reload.content.should == "Updated content"
+          end
+        end
+      end
+
+      context "with multiple attributes" do
+        around do |example|
+          load_seeds('posts.yml', 'posts_find_existing_by_multiple.yml', &example)
+        end
+
+        context "with an existing record" do
+          let!(:existing) do
+            Post.create(
+              :title      => "Existing title",
+              :content    => "Existing content",
+              :published  => false
+            )
+          end
+
+          it "updates the existing record" do
+            sow [
+              {
+                :class  => Post,
+                :source => open("spec/fixtures/seeds/development/posts_find_existing_by_multiple.yml")
+              }
+            ]
+
+            Post.count.should == 1
+            existing.reload.published.should == true
+          end
+        end
+      end
+    end
+  end
 end

@@ -40,7 +40,7 @@ ActiveRecord::Base.establish_connection(:adapter => "sqlite3", :database => "spe
 #User.connection.execute "CREATE TABLE users (id INTEGER PRIMARY KEY , first_name VARCHAR(255), last_name VARCHAR(255));"
 
 Post.connection.execute "DROP TABLE IF EXISTS posts;"
-Post.connection.execute "CREATE TABLE posts (id INTEGER PRIMARY KEY , title VARCHAR(255), content VARCHAR(255));"
+Post.connection.execute "CREATE TABLE posts (id INTEGER PRIMARY KEY , title VARCHAR(255), content VARCHAR(255), published BOOLEAN);"
 
 Comment.connection.execute "DROP TABLE IF EXISTS comments;"
 Comment.connection.execute "CREATE TABLE comments (id INTEGER PRIMARY KEY , post_id INTEGER, body VARCHAR(255));"
