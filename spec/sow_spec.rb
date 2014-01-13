@@ -60,6 +60,24 @@ describe "Seeding an application" do
     end
   end
 
+  context "with a custom source" do
+    around do |example|
+      load_seeds('legacy_posts.yml', &example)
+    end
+
+    it "seeds" do
+      sow [
+        {
+          :class  => Post,
+          :source => open('spec/fixtures/seeds/development/legacy_posts.yml')
+        }
+      ]
+
+      Post.count.should == 1
+      Post.pluck(:title).should =~ ['Legacy yaml title']
+    end
+  end
+
   context "with multiple file relationships" do
     around do |example|
       load_seeds('posts.yml', 'comments.yml', &example)
