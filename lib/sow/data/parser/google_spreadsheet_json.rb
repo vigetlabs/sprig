@@ -1,5 +1,3 @@
-require 'sow/data/parser/base'
-
 module Sow
   module Data
     module Parser
