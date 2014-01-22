@@ -1,6 +1,17 @@
 module Sow
-  gem_path = Gem.loaded_specs['sow'].full_gem_path
-  Dir[File.join(gem_path, "lib/sow/**/*.rb")].each {|f| require f}
+  autoload :Configuration, 'sow/configuration'
+  autoload :Planter, 'sow/planter'
+  autoload :Dependency, 'sow/dependency'
+  autoload :DependencyCollection, 'sow/dependency_collection'
+  autoload :DependencySorter, 'sow/dependency_sorter'
+  autoload :Directive, 'sow/directive'
+  autoload :DirectiveList, 'sow/directive_list'
+  autoload :Helpers, 'sow/helpers'
+  autoload :Planter, 'sow/planter'
+  autoload :SowLogger, 'sow/sow_logger'
+  autoload :SownRecordStore, 'sow/sown_record_store'
+  autoload :Data, 'sow/data'
+  autoload :Seed, 'sow/seed'
 
   def self.configuration
     @@configuration ||= Sow::Configuration.new
