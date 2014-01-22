@@ -1,3 +1,5 @@
+ENV["RAILS_ENV"] ||= 'test'
+
 require "rails"
 require "active_record"
 require "database_cleaner"

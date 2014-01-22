@@ -84,7 +84,7 @@ describe "Seeding an application" do
         sow [
           {
             :class  => Post,
-            :source => open('spec/fixtures/seeds/development/posts_missing_dependency.yml')
+            :source => open('spec/fixtures/seeds/test/posts_missing_dependency.yml')
           }
         ]
       }.to raise_error(
@@ -104,7 +104,7 @@ describe "Seeding an application" do
         Post,
         {
           :class  => Post,
-          :source => open('spec/fixtures/seeds/development/legacy_posts.yml')
+          :source => open('spec/fixtures/seeds/test/legacy_posts.yml')
         }
       ]
 
@@ -145,7 +145,7 @@ describe "Seeding an application" do
             sow [
               {
                 :class  => Post,
-                :source => open("spec/fixtures/seeds/development/posts_find_existing_by_single.yml")
+                :source => open("spec/fixtures/seeds/test/posts_find_existing_by_single.yml")
               }
             ]
 
@@ -173,7 +173,7 @@ describe "Seeding an application" do
             sow [
               {
                 :class  => Post,
-                :source => open("spec/fixtures/seeds/development/posts_find_existing_by_multiple.yml")
+                :source => open("spec/fixtures/seeds/test/posts_find_existing_by_multiple.yml")
               }
             ]
 
