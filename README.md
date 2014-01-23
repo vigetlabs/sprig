@@ -1,6 +1,6 @@
 #Sow
 
-[![Code Climate](https://codeclimate.com/github/vigetlabs/sow.png)](https://codeclimate.com/github/vigetlabs/sow)
+[![Code Climate](https://codeclimate.com/github/vigetlabs/sow.png)](https://codeclimate.com/github/vigetlabs/sow) [![Build Status](https://travis-ci.org/vigetlabs/sow.png?branch=master)](https://travis-ci.org/vigetlabs/sow)
 
 Seed Rails application by convention, not configuration.
 
