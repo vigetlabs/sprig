@@ -1,11 +1,9 @@
 module Sow
   module Data
     class Source
-      def initialize(table_name, options = {})
-        @table_name = table_name.to_s
-
-        self.source = options.fetch(:source) { default_source }
-        self.parser = options.fetch(:parser) { default_parser }
+      def initialize(table_name, args = {})
+        @table_name = table_name
+        @args       = args
       end
 
       def records
@@ -18,45 +16,51 @@ module Sow
 
       private
 
-      attr_reader :parser, :source, :table_name
+      attr_reader :table_name, :args
 
-      def source=(source)
-        raise ArgumentError, 'Data sources must act like an IO.' unless source.respond_to?(:read) && source.respond_to?(:close)
-
-        @source = source
+      def data_hash
+        @data_hash ||= begin
+          parser.new(source).parse.to_hash.with_indifferent_access
+        ensure
+          source.close
+        end
       end
 
-      def parser=(parser)
-        raise ArgumentError, 'Parsers must define #parse.' unless parser.method_defined?(:parse)
+      def source
+        @source ||= begin
+          source = args.fetch(:source) { default_source }
 
-        @parser = parser
+          unless source.respond_to?(:read) && source.respond_to?(:close)
+            raise ArgumentError, 'Data sources must act like an IO.'
+          end
+
+          source
+        end
       end
 
-      def default_source
-        File.open(default_source_file)
-      end
+      def parser
+        @parser ||= begin
+          parser = args.fetch(:parser) { default_parser }
 
-      def default_parser
-        ParserDeterminer.new(default_source_file).parser
+          unless parser.method_defined?(:parse)
+            raise ArgumentError, 'Parsers must define #parse.'
+          end
+
+          parser
+        end
       end
 
       def default_source_file
-        @default_source_file ||= SourceDeterminer.new(table_name).file
       end
 
-      def data_hash
-        @data_hash ||= convert_to_hash
+      def default_source
+        File.open(SourceDeterminer.new(table_name).file)
       end
 
-      def convert_to_hash
-        parser.new(source).parse.to_hash.with_indifferent_access
-      ensure
-        cleanup
+      def default_parser
+        ParserDeterminer.new(source).parser
       end
 
-      def cleanup
-        source.close
-      end
 
       class SourceDeterminer
         attr_reader :table_name
@@ -82,11 +86,16 @@ module Sow
         end
 
         def file_not_found
-          raise FileNotFoundError, "No datasource file could be found for '#{table_name}'. Try creating #{table_name}.yml, #{table_name}.json, or #{table_name}.csv within #{seed_directory}, or define a custom datasource."
+          raise FileNotFoundError,
+            "No datasource file could be found for '#{table_name}'. Try creating "\
+            "#{table_name}.yml, #{table_name}.json, or #{table_name}.csv within "\
+            "#{seed_directory}, or define a custom datasource."
         end
       end
 
+
       class ParserDeterminer
+
         def initialize(file)
           @file = file
         end
@@ -128,7 +137,9 @@ module Sow
         end
 
         def unparsable_file
-          raise UnparsableFileError, "No parser was found for the file '#{file}'. Provide a custom parser, or use a supported data format (#{parsable_formats})."
+          raise UnparsableFileError,
+            "No parser was found for the file '#{file}'. Provide a custom parser, or "\
+            "use a supported data format (#{parsable_formats})."
         end
       end
     end
