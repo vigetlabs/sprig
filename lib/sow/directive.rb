@@ -23,19 +23,11 @@ module Sow
       @options ||= attributes.except(:class)
     end
 
-    def data
-      @data ||= datasource.to_hash.with_indifferent_access
-    end
-
     def datasource
-      @datasource ||= Sow::Data::Source.new(table_name, options)
+      @datasource ||= Source.new(klass.to_s.tableize, options)
     end
 
     private
-
-    def table_name
-      @table_name ||= klass.to_s.tableize
-    end
 
     def argument_error_message
       'Sow::Directive must be instantiated with an '\
