@@ -50,7 +50,7 @@ describe "Seeding an application" do
       sow [
         {
           :class  => Post,
-          :parser => Sow::Data::Parser::GoogleSpreadsheetJson,
+          :parser => Sow::Parser::GoogleSpreadsheetJson,
           :source => open('https://spreadsheets.google.com/feeds/list/0AjVLPMnHm86rdDVHQ2dCUS03RTN5ZUtVNzVOYVBwT0E/1/public/values?alt=json'),
         }
       ]

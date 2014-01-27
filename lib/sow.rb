@@ -6,6 +6,8 @@ module Sow
   autoload :DependencySorter,     'sow/dependency_sorter'
   autoload :Directive,            'sow/directive'
   autoload :DirectiveList,        'sow/directive_list'
+  autoload :Source,               'sow/source'
+  autoload :Parser,               'sow/parser'
   autoload :Helpers,              'sow/helpers'
   autoload :Planter,              'sow/planter'
   autoload :SowLogger,            'sow/sow_logger'
