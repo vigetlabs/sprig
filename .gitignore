@@ -2,3 +2,4 @@
 .rspec
 spec/db/*
 spec/db/!.
+pkg/

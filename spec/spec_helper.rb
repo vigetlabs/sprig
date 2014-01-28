@@ -7,8 +7,8 @@ require "webmock"
 require "vcr"
 require "pry"
 
-require "sow"
-include Sow::Helpers
+require "sprig"
+include Sprig::Helpers
 
 Dir[File.dirname(__FILE__) + '/fixtures/models/*.rb'].each {|file| require file }
 
@@ -25,7 +25,7 @@ RSpec.configure do |c|
   c.after(:each) do
     DatabaseCleaner.clean
 
-    Sow.reset_configuration
+    Sprig.reset_configuration
   end
 end
 

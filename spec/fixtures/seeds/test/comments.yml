@@ -1,6 +1,6 @@
 # comments.yml
 
 records:
-  - sow_id: 1
-    post_id: "<%= sow_record(Post, 1).id %>"
+  - sprig_id: 1
+    post_id: "<%= sprig_record(Post, 1).id %>"
     body: "Yaml Comment body"

@@ -3,6 +3,6 @@ options:
   find_existing_by: 'title'
 
 records:
-  - sow_id: 1
+  - sprig_id: 1
     title: 'Existing title'
     content: 'Updated content'

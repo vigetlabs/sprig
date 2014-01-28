@@ -1,7 +1,7 @@
 # posts_missing_dependency.yml
 
 records:
-  - sow_id: 1
+  - sprig_id: 1
     title: 'Yaml title'
     content: 'Yaml content'
-    comment_id: "<%= sow_record(Comment, 42).id %>" # This sow record does not exist.
+    comment_id: "<%= sprig_record(Comment, 42).id %>" # This sprig record does not exist.
