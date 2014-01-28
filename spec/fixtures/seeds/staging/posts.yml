@@ -1,6 +1,6 @@
 # posts.yml
 
 records:
-  - sow_id: 1
+  - sprig_id: 1
     title: 'Staging yaml title'
     content: 'Staging yaml content'
