@@ -12,6 +12,7 @@ Gem::Specification.new do |s|
   s.homepage    = "http://www.github.com/vigetlabs/sprig"
   s.summary     = "Relational, environment-specific seeding for Rails apps."
   s.description = "Sprig is a library for managing interconnected, environment-specific seed data."
+  s.license     = "MIT"
 
   s.files = Dir["lib/**/*", "MIT-LICENSE", "Rakefile", "README.md"]
   s.test_files = Dir["spec/**/*"]
