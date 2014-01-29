@@ -2,11 +2,22 @@ require 'spec_helper'
 
 describe Sprig::Directive do
 
+  module Users
+    class Admin < User
+    end
+  end
+
   describe "#klass" do
     context "given a class" do
       subject { described_class.new(Post) }
 
       its(:klass) { should == Post }
+    end
+
+    context "given a class within a module" do
+      subject { described_class.new(Users::Admin) }
+
+      its(:klass) { should == Users::Admin }
     end
 
     context "given options with a class" do
@@ -47,14 +58,26 @@ describe Sprig::Directive do
   describe "#datasource" do
     let(:datasource) { double('datasource') }
 
-    subject { described_class.new(:class => Post, :source => 'source') }
+    context "with a class" do
+      subject { described_class.new(:class => Post, :source => 'source') }
 
-    before do
-      Sprig::Source.stub(:new).with('posts', { :source => 'source' }).and_return(datasource)
+      before do
+        Sprig::Source.stub(:new).with('posts', { :source => 'source' }).and_return(datasource)
+      end
+
+      it "returns a sprig data source" do
+        subject.datasource.should == datasource
+      end
     end
 
-    it "returns a sprig data source" do
-      subject.datasource.should == datasource
+    context "with a class within a module" do
+      subject { described_class.new(Users::Admin) }
+
+      it "passes the correct path to Source" do
+        Sprig::Source.should_receive(:new).with("users_admins", {})
+
+        subject.datasource
+      end
     end
   end
 end

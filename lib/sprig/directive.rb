@@ -24,7 +24,7 @@ module Sprig
     end
 
     def datasource
-      @datasource ||= Source.new(klass.to_s.tableize, options)
+      @datasource ||= Source.new(klass.to_s.tableize.gsub("/", "_"), options)
     end
 
     private
