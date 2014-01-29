@@ -21,7 +21,6 @@ sprig [User, Post, Comment]
 
 This directive tells Sprig to go find your datafiles for the `User`, `Post`, and `Comment` seed resources, build records from the data entries, and insert them into the database. Sprig will automatically detect known datafile types like `.yml`, `.json`, or `.csv` within your environment-specific seed directory.
 
-
 ##Environment
 
 Seed files are unique to the environment in which your Rails application is running. Within `db/seeds` create an environment-specific directory (i.e. `/development` for your 'development' environment).
@@ -80,6 +79,8 @@ records:
     post_id: "<%= sprig_record(Post, 1).id %>"
     body: "Yaml Comment body"
 ```
+
+**Note: For namespaced or STI classes, you'll need to include the namespace with the class name in the seed file name. For example `Users::HeadManager` would need to be `users_head_managers.yml`**
 
 ### Special Options
 
