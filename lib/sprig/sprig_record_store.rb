@@ -11,7 +11,7 @@ module Sprig
     end
 
     def get(klass, sprig_id)
-      records_of_klass(klass)[sprig_id.to_s] || record_not_found
+      records_of_klass(klass)[sprig_id.to_s] || record_not_found(klass, sprig_id)
     end
 
     private
@@ -24,7 +24,7 @@ module Sprig
       @records ||= {}
     end
 
-    def record_not_found
+    def record_not_found(klass, sprig_id)
       raise(RecordNotFoundError, "Record for class #{klass} and sprig_id #{sprig_id} could not be found.")
     end
   end
