@@ -1,0 +1,7 @@
+# posts_missing_dependency.yml
+
+records:
+  - sprig_id: 1
+    title: 'Yaml title'
+    content: 'Yaml content'
+    user_id: "<%= sprig_record(User, 1).id %>" # This sprig record does not exist.

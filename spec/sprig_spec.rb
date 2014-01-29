@@ -112,6 +112,30 @@ describe "Seeding an application" do
     end
   end
 
+  context "with a relationship to a missing record" do
+    around do |example|
+      load_seeds('invalid_users.yml', 'posts_missing_record.yml', &example)
+    end
+
+    it "raises a helpful error message" do
+      expect {
+        sprig [
+          {
+            :class  => Post,
+            :source => open('spec/fixtures/seeds/test/posts_missing_record.yml')
+          },
+          {
+            :class  => User,
+            :source => open('spec/fixtures/seeds/test/invalid_users.yml')
+          }
+        ]
+      }.to raise_error(
+        Sprig::SprigRecordStore::RecordNotFoundError,
+        "Record for class User and sprig_id 1 could not be found."
+      )
+    end
+  end
+
   context "with multiple files for a class" do
     around do |example|
       load_seeds('posts.yml', 'legacy_posts.yml', &example)
