@@ -101,6 +101,19 @@ options:
   find_existing_by: ['title', 'user_id']
 ```
 
+### Computed Values
+
+It's common to want seed values that are dynamic.  Sprig supports an ERB style syntax for computing seed attributes.
+
+```yaml
+# posts.yml
+
+records:
+  - sprig_id: 1
+    body: "Yaml Post body"
+    published_at: "<%= 1.week.ago %>"
+```
+
 ##Custom Sources and Parsers
 
 If all your data is in `.wat` files, fear not. You can tell Sprig where to look for your data, and point it toward a custom parser class for turning your data into records. The example below tells Sprig to read `User` seed data from a Google Spreadsheet, and parse it accordingly.
