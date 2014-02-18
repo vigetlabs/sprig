@@ -1,0 +1,12 @@
+name: Sprig
+markdown: redcarpet
+pygments: true
+navigation:
+- text: About
+  url: /about.html
+- text: Docs
+  url: /documentation.html
+- text: Examples
+  url: /examples.html
+- text: Updates
+  url: /updates.html

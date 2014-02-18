@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7"> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8"> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9"> <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js"> <!--<![endif]-->
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <title>{{ page.title }}</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width">
+
+        <link href='http://fonts.googleapis.com/css?family=Varela+Round' rel='stylesheet' type='text/css'>
+        <link rel="stylesheet" href="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
+        <style>
+            body {
+                padding-top: 50px;
+                padding-bottom: 20px;
+            }
+        </style>
+        <link rel="stylesheet" href="/assets/css/cover.css">
+    </head>
+    <body>
+        <!--[if lt IE 7]>
+            <p class="chromeframe">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> or <a href="http://www.google.com/chromeframe/?redirect=true">activate Google Chrome Frame</a> to improve your experience.</p>
+        <![endif]-->
+    <div class="site-wrapper">
+
+      <div class="site-wrapper-inner">
+
+        <div class="cover-container">
+
+          <div class="masthead clearfix">
+            <div class="inner masthead-inner">
+              <h3 class="masthead-brand"><a href="/">sprig</a></h3>
+              <ul class="nav masthead-nav">
+                {% for link in site.navigation %}
+                  {% assign current = nil %}
+                  {% if page.url == link.url %}
+                    {% assign current = 'active' %}
+                  {% endif %}
+
+                  <li class="{{ current }}">
+                    <a href="{{ link.url }}">{{ link.text }}</a>
+                  </li>
+                {% endfor %}
+              </ul>
+            </div>
+          </div>
+
+          {{ content }}
+
+          <div class="mastfoot">
+            <div class="inner">
+              <p><a href="http://badge.fury.io/rb/sprig"><img src="https://badge.fury.io/rb/sprig.png"></a> <a href="https://codeclimate.com/github/vigetlabs/sprig"><img src="https://codeclimate.com/github/vigetlabs/sprig.png" /></a></p>
+              <p>By <a href="http://viget.com"><img src="/assets/img/viget-logo-bw.png"></a></p>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+    </body>
+</html>
