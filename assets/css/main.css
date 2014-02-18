@@ -1,8 +1,39 @@
+/* Brand Reference    */
+/* ################## */
+/* Primary: #63ae45   */
+/* Secondary: #999988 */
+
 body {
+  font-family: 'Varela Round', sans-serif;
+  padding-bottom: 20px;
   padding-top: 50px;
 }
 
-.starter-template {
-  padding: 40px 15px;
-  text-align: center;
+.navbar-default a.navbar-brand,
+.navbar-default a.navbar-brand:hover {
+  color: #63ae45;
+  font-size: 20px;
+  line-height: 18px;
+}
+
+h1 {
+  color: #63ae45;
+}
+
+h2,
+h3,
+h4,
+h5 {
+  color: #999988;
+}
+
+footer {
+  border-top: 1px solid #eee;
+  margin-top: 40px;
+  padding-bottom: 40px;
+  padding-top: 40px;
+}
+
+.sprig {
+  color: #63ae45;
 }

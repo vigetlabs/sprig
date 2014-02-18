@@ -12,28 +12,26 @@
 
         <link href='http://fonts.googleapis.com/css?family=Varela+Round' rel='stylesheet' type='text/css'>
         <link rel="stylesheet" href="http://netdna.bootstrapcdn.com/bootstrap/3.1.1/css/bootstrap.min.css">
-        <style>
-            body {
-                padding-top: 50px;
-                padding-bottom: 20px;
-            }
-        </style>
-        <link rel="stylesheet" href="/assets/css/cover.css">
+        <link rel="stylesheet" href="/assets/css/main.css">
     </head>
     <body>
         <!--[if lt IE 7]>
             <p class="chromeframe">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> or <a href="http://www.google.com/chromeframe/?redirect=true">activate Google Chrome Frame</a> to improve your experience.</p>
         <![endif]-->
-    <div class="site-wrapper">
-
-      <div class="site-wrapper-inner">
-
-        <div class="cover-container">
-
-          <div class="masthead clearfix">
-            <div class="inner masthead-inner">
-              <h3 class="masthead-brand"><a href="/">sprig</a></h3>
-              <ul class="nav masthead-nav">
+      <div class="container">
+        <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              <a class="navbar-brand" href="/">sprig</a>
+            </div>
+            <div class="navbar-collapse collapse">
+              <ul class="nav navbar-nav">
                 {% for link in site.navigation %}
                   {% assign current = nil %}
                   {% if page.url == link.url %}
@@ -45,23 +43,16 @@
                   </li>
                 {% endfor %}
               </ul>
-            </div>
+            </div><!--/.nav-collapse -->
           </div>
-
-          {{ content }}
-
-          <div class="mastfoot">
-            <div class="inner">
-              <p><a href="http://badge.fury.io/rb/sprig"><img src="https://badge.fury.io/rb/sprig.png"></a> <a href="https://codeclimate.com/github/vigetlabs/sprig"><img src="https://codeclimate.com/github/vigetlabs/sprig.png" /></a></p>
-              <p>By <a href="http://viget.com"><img src="/assets/img/viget-logo-bw.png"></a></p>
-            </div>
-          </div>
-
         </div>
 
+        {{ content }}
+
+        <footer class="footer">
+          <p><a href="http://badge.fury.io/rb/sprig"><img src="https://badge.fury.io/rb/sprig.png"></a> <a href="https://codeclimate.com/github/vigetlabs/sprig"><img src="https://codeclimate.com/github/vigetlabs/sprig.png" /></a></p>
+          <p>By <a href="http://viget.com"><img src="/assets/img/viget-logo-bw.png"></a></p>
+        </footer>
       </div>
-
-    </div>
-
     </body>
 </html>
