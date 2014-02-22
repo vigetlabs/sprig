@@ -5,22 +5,35 @@ title: Sprig
 
 <div class="page-header">
   <h1>About Sprig</h1>
-  <p class="lead">Seed Rails application by convention, not configuration.</p>
+  <p class="lead">Seed Rails applications by convention, not configuration.</p>
 </div>
 
 <div class="row">
   <div class="col-md-2">
-    <ol class="list-unstyled">
+    <div class="affix" data-spy="affix" data-offset-top="150" data-offset-bottom="75">
+    <ol class="list-unstyled subnav">
+      <li><a href="#what-is-sprig">What is <span class="sprig">sprig</span>?</a></li>
       <li><a href="#seed-by-convention">Seed by Convention</a></li>
       <li><a href="#relational-seeding">Relational Seeding</a></li>
       <li><a href="#environment-specificity">Environment Specificity</a></li>
-      <li><a href="#flexible">Flexible</a></li>
-      <li><a href="#customizable">Customizable</a></li>
+      <li><a href="#flexible-and-customizable">Flexible + Customizable</a></li>
+      <li><a href="#license">License</a></li>
     </ol>
+    </div>
   </div>
 
   <div class="col-md-10">
-    <h2 name="seed-by-convention">Seed by Convention</h2>
+    <a class="in-page-link" name="what-is-sprig"></a>
+    <h2 name="what-is-sprig">What is <span class="sprig">sprig</span>?</h2>
+
+    <p>It's a ruby gem for adding seed/sample data to your Rails applications.</p>
+    <p><span class="sprig">Sprig</span> was created by <a href="https://github.com/ltk">ltk</a> & <a href="https://github.com/fosome">fosome</a> at <a href="http://viget.com">Viget</a> when other seeding tools failed to handle the sample data needs of an in-development social network. Because of its origins, <span class="sprig">sprig</span> excels where other tools fall short: handling large amounts of related data in real-world Rails apps.</p>
+
+    <a class="in-page-link" name="seed-by-convention"></a>
+
+    <hr>
+
+    <h2>Seed by Convention</h2>
     <p>Treat your data like data, not code. <span class="sprig">Sprig</span>'s seeding engine builds seed records from data stored in common formats.</p>
 
     <div class="panel panel-success">
@@ -85,10 +98,11 @@ User.create(first_name: 'John', last_name: 'Smith', age: 34, favorite_color: 'gr
       </div>
     </div>
 
+    <a class="in-page-link" name="relational-seeding"></a>
 
     <hr>
 
-    <h2 name="relational-seeding">Relational Seeding</h2>
+    <h2>Relational Seeding</h2>
     <p>Easy seed data relationships? You better believe it.</p>
 
     <div class="panel panel-danger">
@@ -157,9 +171,11 @@ records:
       </div>
     </div>
 
+    <a class="in-page-link" name="environment-specificity"></a>
+
     <hr>
 
-    <h2 name="environment-specificity">Environment Specificity</h2>
+    <h2>Environment Specificity</h2>
     <p>Add everything you could want in <code>:development</code>, and only what you need in <code>:production</code>.</p>
 
     <div class="panel panel-default">
@@ -206,9 +222,11 @@ sprig[User, Widget, ZipCode]
       </div>
     </div>
 
+    <a class="in-page-link" name="flexible-and-customizable"></a>
+
     <hr>
 
-    <h2 name="flexible">Flexible</h2>
+    <h2>Flexible + Customizable</h2>
     <p>All the power you want, with the flexibility you need.</p>
 
     <h3>Customize Datasources</h3>
@@ -267,210 +285,11 @@ sprig[User, Widget, ZipCode]
       </div>
     </div>
 
-    <hr>
-
-    <h2 name="customizable">Customizable</h2>
+    <a class="in-page-link" name="license"></a>
 
     <hr>
 
-    <div class="panel panel-default">
-      <div class="panel-body">
-        <h4>Example</h4>
-        <p>Panel content</p>
-      </div>
-    </div>
-
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <h3 class="panel-title">Panel title</h3>
-      </div>
-      <div class="panel-body">
-        <h4>Example</h4>
-        <p>Panel content</p>
-      </div>
-    </div>
-
-    <div class="panel panel-primary">
-      <div class="panel-heading">
-        <h3 class="panel-title">Panel title</h3>
-      </div>
-      <div class="panel-body">
-        Panel content
-      </div>
-    </div>
-
-    <div class="panel panel-success">
-      <div class="panel-heading">
-        <h3 class="panel-title">Panel title</h3>
-      </div>
-      <div class="panel-body">
-        Panel content
-      </div>
-    </div>
-
-    <div class="panel panel-info">
-      <div class="panel-heading">
-        <h3 class="panel-title">Panel title</h3>
-      </div>
-      <div class="panel-body">
-        Panel content
-      </div>
-    </div>
-
-    <div class="panel panel-warning">
-      <div class="panel-heading">
-        <h3 class="panel-title">Panel title</h3>
-      </div>
-      <div class="panel-body">
-        Panel content
-      </div>
-    </div>
-
-    <div class="panel panel-danger">
-      <div class="panel-heading">
-        <h3 class="panel-title">Panel title</h3>
-      </div>
-      <div class="panel-body">
-        Panel content
-      </div>
-    </div>
-
-    <div class="well">
-      Some Text in a well.
-    </div>
-
-
-    <p><a href="https://codeclimate.com/github/vigetlabs/sprig"><img src="https://codeclimate.com/github/vigetlabs/sprig.png" alt="Code Climate" title="" /></a> <a href="https://travis-ci.org/vigetlabs/sprig"><img src="https://travis-ci.org/vigetlabs/sprig.png?branch=master" alt="Build Status" title="" /></a> <a href="http://badge.fury.io/rb/sprig"><img src="https://badge.fury.io/rb/sprig.png" alt="Gem Version" title="" /></a></p>
-
-
-    <p>Provides support for common files types: <em>csv</em>, <em>yaml</em>, and <em>json</em>.  Extensible for the rest!</p>
-
-    <h2 id="thesprigdirective">The Sprig Directive</h2>
-
-    <p>Within your seed file, you can use the <code>sprig</code> directive to initiate Sprig's dark magicks. A simple directive might look like this.</p>
-
-    <pre><code class="ruby"># seeds.rb
-
-    include Sprig::Helpers
-
-    sprig [User, Post, Comment]
-    </code></pre>
-
-    <p>This directive tells Sprig to go find your datafiles for the <code>User</code>, <code>Post</code>, and <code>Comment</code> seed resources, build records from the data entries, and insert them into the database. Sprig will automatically detect known datafile types like <code>.yml</code>, <code>.json</code>, or <code>.csv</code> within your environment-specific seed directory.</p>
-
-    <h2 id="environment">Environment</h2>
-
-    <p>Seed files are unique to the environment in which your Rails application is running. Within <code>db/seeds</code> create an environment-specific directory (i.e. <code>/development</code> for your 'development' environment).</p>
-
-    <p>Todo: [Support for shared seed files]</p>
-
-    <h2 id="seedfiles">Seed files</h2>
-
-    <p>Hang your seed definitions on a <code>records</code> key for <em>yaml</em> and <em>json</em> files.</p>
-
-    <p>Examples:</p>
-
-    <pre><code class="yaml"># users.yml
-
-    records:
-      - sprig_id: 1
-        first_name: 'Lawson'
-        last_name: 'Kurtz'
-        username: 'lawdawg'
-      - sprig_id: 2
-        first_name: 'Ryan'
-        last_name: 'Foster'
-        username: 'mc_rubs'
-    </code></pre>
-
-    <pre><code class="json">// posts.json
-
-    {
-      "records":[
-        {
-          "sprig_id":1,
-          "title":"Json title",
-          "content":"Json content"
-        },
-        {
-          "sprig_id":2,
-          "title":"Headline",
-          "content":"Words about things"
-        }
-      ]
-    }
-    </code></pre>
-
-    <p>Each seed record needs a <code>sprig_id</code> defined that must be <em>unique across all seed files per class</em>.  It can be an integer, string, whatever you prefer; as long as it is unique, Sprig can sort your seeds for insertion and detect any cyclic relationships.</p>
-
-    <p>Create relationships between seed records with the <code>sprig_record</code> helper:</p>
-
-    <pre><code class="yaml"># comments.yml
-
-    records:
-      - sprig_id: 1
-        post_id: "&lt;%= sprig_record(Post, 1).id %&gt;"
-        body: "Yaml Comment body"
-    </code></pre>
-
-    <p><strong>Note: For namespaced or STI classes, you'll need to include the namespace with the class name in the seed file name. For example <code>Users::HeadManager</code> would need to be <code>users_head_managers.yml</code></strong></p>
-
-    <h3 id="specialoptions">Special Options</h3>
-
-    <p>These are provided in a <code>options:</code> key for <em>yaml</em> and <em>json</em> files.</p>
-
-    <h4 id="find_existing_by">find<em>existing</em>by:</h4>
-
-    <p>Rather than starting from a blank database, you can optionally choose to find existing records and update them with seed data.</p>
-
-    <p>The passed in attribute or array of attributes will be used for finding existing records during the sprigging process.</p>
-
-    <p>Example:</p>
-
-    <pre><code class="yaml"># posts.yml
-
-    options:
-      find_existing_by: ['title', 'user_id']
-    </code></pre>
-
-    <h3 id="computedvalues">Computed Values</h3>
-
-    <p>It's common to want seed values that are dynamic.  Sprig supports an ERB style syntax for computing seed attributes.</p>
-
-    <pre><code class="yaml"># posts.yml
-
-    records:
-      - sprig_id: 1
-        body: "Yaml Post body"
-        published_at: "&lt;%= 1.week.ago %&gt;"
-    </code></pre>
-
-    <h2 id="customsourcesandparsers">Custom Sources and Parsers</h2>
-
-    <p>If all your data is in <code>.wat</code> files, fear not. You can tell Sprig where to look for your data, and point it toward a custom parser class for turning your data into records. The example below tells Sprig to read <code>User</code> seed data from a Google Spreadsheet, and parse it accordingly.</p>
-
-    <pre><code class="ruby">fanciness = {
-      :class  =&gt; User,
-      :source =&gt; open('https://spreadsheets.google.com/feeds/list/somerandomtoken/1/public/values?alt=json'),
-      :parser =&gt; Sprig::Data::Parser::GoogleSpreadsheetJson
-    }
-
-    sprig [
-      fanciness,
-      Post,
-      Comment
-    ]
-    </code></pre>
-
-    <h2 id="configuration">Configuration</h2>
-
-    <p>When Sprig conventions don't suit, just add a configuration block to your seed file.</p>
-
-    <pre><code class="ruby">Sprig.configure do |c|
-      c.directory = 'seed_files'
-    end
-    </code></pre>
-
-    <p>This project rocks and uses MIT-LICENSE.</p>
+    <h2>License</h2>
+    <p><a href="http://opensource.org/licenses/MIT">MIT license</a> for great justice.</p>
   </div>
 </div>

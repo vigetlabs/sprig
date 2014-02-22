@@ -14,6 +14,7 @@ body {
   color: #63ae45;
   font-size: 20px;
   line-height: 18px;
+  padding: 6px 15px;
 }
 
 h1 {
@@ -36,4 +37,30 @@ footer {
 
 .sprig {
   color: #63ae45;
+}
+
+.cover {
+  text-align: center;
+  padding: 40px 0;
+}
+
+.cover h1 {
+  color: #999988;
+}
+
+.float-left {
+  float: left;
+}
+
+.float-right {
+  float: right;
+}
+
+.in-page-link {
+  margin-bottom: 50px;
+  display: block;
+}
+
+.subnav {
+  margin-top: 52px;
 }

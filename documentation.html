@@ -3,12 +3,336 @@ layout: default
 title: Sprig Documentation
 ---
 
-<h1>Documentation</h1>
-<p>Coming soon...</p>
+<div class="page-header">
+  <h1>Documentation</h1>
+  <p class="lead">Everything you need to know to <span class="sprig">sprig</span>.</p>
+</div>
 
-<h2>Quick Start</h2>
-<p>Do a thing...</p>
+<div class="row">
+  <div class="col-md-3">
+    <div class="affix" data-spy="affix" data-offset-top="150" data-offset-bottom="75">
+    <ul class="nav nav-pills nav-stacked">
+      <li><a href="#installation">Installation</a></li>
+      <li><a href="#seed-directory-setup">Seed Directory Setup</a></li>
+      <li><a href="#the-sprig-directive">The <span class="sprig">Sprig</span> Directive</a></li>
+      <li><a href="#seed-data-files">Seed Data Files</a></li>
+      <li><a href="#dynamic-seed-data-values">Dynamic Seed Data Values</a></li>
+      <li><a href="#seed-data-relationships">Seed Data Relationships</a></li>
+      <li><a href="#sprig-ids"><span class="sprig">Sprig</span> IDs</a></li>
+    </ul>
+    </div>
+  </div>
 
-{% highlight ruby %}
+  <div class="col-md-9">
+    <a class="in-page-link" name="installation"></a>
+    <h2>Installation</h2>
+
+    <p>Add <span class="sprig">sprig</span> to your <code>Gemfile</code>:</p>
+<pre>
+<code>
+gem 'sprig', '~> 0.1'
+</code>
+</pre>
+
+    <p>While <span class="sprig">sprig</span> is designed to be used with Rails, it only depends on ActiveRecord, and could theoretically be used without Rails.</p>
+
+    <a class="in-page-link" name="seed-directory-setup"></a>
+
+    <hr>
+
+    <h2>Seed Directory Setup</h2>
+
+    <p>To maintain maximum flexibility, <span class="sprig">sprig</span> plugs into (instead of overriding) the standard Rails seeding system. When you run <code>rake db:seed</code>, Rails simply executes the contents of <code>/db/seeds.rb</code>. Environment specificity can easily be added to this system via the following recommended configuration:</p>
+
+<pre>
+db/
+  seeds.rb
+  seeds/
+    development.rb
+    development/
+      users.yml
+      your_other_models.yml
+    production.rb
+    production/
+      posts.json
+      your_other_models.yml
+</pre>
+
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title"><code>db/seeds.rb</code></h3>
+      </div>
+      <div class="panel-body">
+<pre>
+<code>
+path = Rails.root.join('db', 'seeds', "#{Rails.env}.rb")
+load path if File.exist?(path)
+</code>
+</pre>
+      </div>
+    </div>
+
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title"><code>db/seeds/development.rb</code></h3>
+      </div>
+      <div class="panel-body">
+<pre>
+<code>
+# This will be run during `rake db:seed` in the :development environment.
+
+include Sprig::Helpers
+
 sprig[User]
-{% endhighlight %}
+</code>
+</pre>
+      </div>
+    </div>
+
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title"><code>db/seeds/production.rb</code></h3>
+      </div>
+      <div class="panel-body">
+<pre>
+<code>
+# This will be run during `rake db:seed` in the :production environment.
+
+include Sprig::Helpers
+
+sprig[Post]
+</code>
+</pre>
+      </div>
+    </div>
+
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title"><code>db/seeds/development/</code></h3>
+      </div>
+      <div class="panel-body">
+        <p>Put your <code>:development</code> environment seed data files in this directory. See the <code>users.yml</code> example seed data file below.</p>
+      </div>
+    </div>
+
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title"><code>db/seeds/development/users.yml</code></h3>
+      </div>
+      <div class="panel-body">
+<pre>
+<code>
+records:
+  - first_name: Lawson
+    last_name:  Kurtz
+    username:   lawdawg
+  - first_name: Ryan
+    last_name:  Foster
+    username:   mc_rubs
+</code>
+</pre>
+      </div>
+    </div>
+
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title"><code>db/seeds/production/</code></h3>
+      </div>
+      <div class="panel-body">
+        <p>Put your <code>:production</code> environment seed data files in this directory. See the <code>posts.json</code> example seed data file below.</p>
+      </div>
+    </div>
+
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title"><code>db/seeds/production/posts.json</code></h3>
+      </div>
+      <div class="panel-body">
+<pre>
+<code>
+{
+  "records": [
+    {
+      "title": "Intro to Sprig",
+      "content": "We created sprig in response to..."
+    },
+    {
+      "title": "Diving into Sprig",
+      "content": "Getting started with sprig is easy..."
+    }
+  ]
+}
+</code>
+</pre>
+      </div>
+    </div>
+
+    <a class="in-page-link" name="the-sprig-directive"></a>
+
+    <hr>
+
+    <h2>The <span class="sprig">Sprig</span> Directive</h2>
+
+    <p>Within your seed file, you can use the <code>sprig</code> directive to initiate Sprig's dark magicks. A simple directive might look like this.</p>
+
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title"><code>db/seeds/development.rb</code></h3>
+      </div>
+      <div class="panel-body">
+<pre>
+<code>
+include Sprig::Helpers
+
+sprig [User, Post, Comment]
+</code>
+</pre>
+      </div>
+    </div>
+
+    <p>This directive tells Sprig to go find your seed data files for the <code>User</code>, <code>Post</code>, and <code>Comment</code> seed resources, build records from the data entries, and insert them into the database. Sprig will automatically detect known datafile types like <code>.yml</code>, <code>.json</code>, or <code>.csv</code> within your environment-specific seed directory (in this case, within <code>db/seeds/development/</code>).</p>
+
+    <a class="in-page-link" name="seed-data-files"></a>
+
+    <hr>
+
+    <h2>Seed Data Files</h2>
+
+    <p>Hang your seed definitions on a <code>records</code> key for <em>yaml</em> and <em>json</em> files.</p>
+
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title"><code>db/seeds/development/users.yml</code></h3>
+      </div>
+      <div class="panel-body">
+<pre>
+<code>
+records:
+  - sprig_id: 1
+    first_name: 'Lawson'
+    last_name: 'Kurtz'
+    username: 'lawdawg'
+  - sprig_id: 2
+    first_name: 'Ryan'
+    last_name: 'Foster'
+    username: 'mc_rubs'
+</code>
+</pre>
+      </div>
+    </div>
+
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title"><code>db/seeds/development/posts.json</code></h3>
+      </div>
+      <div class="panel-body">
+<pre>
+<code>
+{
+  "records":[
+    {
+      "sprig_id":1,
+      "title":"Json title",
+      "content":"Json content"
+    },
+    {
+      "sprig_id":2,
+      "title":"Headline",
+      "content":"Words about things"
+    }
+  ]
+}
+</code>
+</pre>
+      </div>
+    </div>
+
+    <p>Or use a <em>CSV</em> with a header row defining your attribute names.</p>
+
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title"><code>db/seeds/development/users.csv</code></h3>
+      </div>
+      <div class="panel-body">
+<pre>
+<code>
+first_name,last_name,age,favorite_color
+Jane,Doe,25,blue
+John,Smith,34,green
+</code>
+</pre>
+      </div>
+    </div>
+
+    <a class="in-page-link" name="dynamic-seed-data-values"></a>
+
+    <hr>
+
+    <h2>Dynamic Seed Data Values</h2>
+
+    <p>Use ERB syntax within your seed data files to seed records with dynamic values.</p>
+
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title"><code>db/seeds/development/timesheet_entries.yml</code></h3>
+      </div>
+      <div class="panel-body">
+<pre>
+<code>
+records:
+  - sprig_id: 1
+    start_time: <%= 12.hours.ago %>
+    end_time: <%= 11.hours.ago %>
+  - sprig_id: 2
+    start_time: <%= 30.minutes.ago %>
+    end_time: <%= 1.minute.ago %>
+</code>
+</pre>
+      </div>
+    </div>
+
+    <a class="in-page-link" name="Seed Data Relationshps"></a>
+
+    <hr>
+
+    <h2>Seed Data Relationships</h2>
+
+    <h3>The <code>sprig_record</code> Helper Method</h3>
+
+    <p>The <code>sprig_record</code> helper method gives you access to your other seed data records after they are persisted, allowing you to easily create relationships between your records. The return is the seed record's real-life ActiveRecord object with all corresponding attributes and methods.</p>
+
+    <p><code>sprig_record</code> takes two arguments:</p>
+    <p>1) The class of the desired record.</p>
+    <p>2) The <span class="sprig">sprig</span> ID of the desired record. Read more about <span class="sprig">sprig</span> IDs in the <a href="#sprig-ids">following section</a>.</p>
+
+    <div class="panel panel-default">
+      <div class="panel-heading">
+        <h3 class="panel-title"><code>db/seeds/development/comments.yml</code></h3>
+      </div>
+      <div class="panel-body">
+<pre>
+<code>
+records:
+  - sprig_id: 1
+    post_id: "&lt;%= sprig_record(Post, 1).id %&gt;"
+    body: "Yaml Comment body"
+</code>
+</pre>
+      </div>
+    </div>
+
+    <p><em>Note: For namespaced or STI classes, you'll need to include the namespace with the class name in the seed file name. For example <code>Users::HeadManager</code> would need to be <code>users_head_managers.yml</code></em></p>
+
+
+    <a class="in-page-link" name="sprig-ids"></a>
+
+    <hr>
+
+    <h2><span class="sprig">Sprig</span> IDs</h2>
+
+    <p>Each seed record needs a <code>sprig_id</code> defined that must be <em>unique across all seed files per class</em>.  It can be an integer, string, whatever you prefer; as long as it is unique, Sprig can sort your seeds for insertion and detect any cyclic relationships.</p>
+
+
+
+  </div>
+</div>
