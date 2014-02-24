@@ -3,8 +3,8 @@ markdown: redcarpet
 pygments: true
 navigation:
 - text: About
-  url: /about.html
+  url: /sprig/about.html
 - text: Docs
-  url: /documentation.html
+  url: /sprig/documentation.html
 - text: Repo
   url: https://github.com/vigetlabs/sprig
