@@ -6,6 +6,7 @@ Seed Rails application by convention, not configuration.
 
 Provides support for common files types: *csv*, *yaml*, and *json*.  Extensible for the rest!
 
+Learn more about Sprig and view documentation at [http://vigetlabs.github.io/sprig/](http://vigetlabs.github.io/sprig/).
 
 ##The Sprig Directive
 
