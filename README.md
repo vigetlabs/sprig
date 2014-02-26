@@ -2,6 +2,8 @@
 
 [![Code Climate](https://codeclimate.com/github/vigetlabs/sprig.png)](https://codeclimate.com/github/vigetlabs/sprig) [![Build Status](https://travis-ci.org/vigetlabs/sprig.png?branch=master)](https://travis-ci.org/vigetlabs/sprig) [![Gem Version](https://badge.fury.io/rb/sprig.png)](http://badge.fury.io/rb/sprig)
 
+![Sprig](http://i.imgur.com/XCu3iVO.png)
+
 Seed Rails application by convention, not configuration.
 
 Provides support for common files types: *csv*, *yaml*, and *json*.  Extensible for the rest!
