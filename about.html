@@ -46,11 +46,13 @@ title: Sprig
         <h4>Yaml</h4>
 <pre>
 records:
-  - first_name:     Jane
+  - sprig_id:       1
+    first_name:     Jane
     last_name:      Doe
     age:            25
     favorite_color: blue
-  - first_name:     John
+  - sprig_id:       2
+    first_name:     John
     last_name:      Smith
     age:            34
     favorite_color: green
@@ -60,12 +62,14 @@ records:
 {
   "records": [
     {
+      "sprig_id": 1,
       "first_name": "Jane",
       "last_name": "Doe",
       "age": 25,
       "favorite_color": "blue"
     },
     {
+      "sprig_id": 2,
       "first_name": "John",
       "last_name": "Smith",
       "age": 34,
@@ -77,9 +81,9 @@ records:
 
         <h4>CSV</h4>
 <pre>
-first_name,last_name,age,favorite_color
-Jane,Doe,25,blue
-John,Smith,34,green
+sprig_id,first_name,last_name,age,favorite_color
+1,Jane,Doe,25,blue
+2,John,Smith,34,green
 </pre>
 
       </div>

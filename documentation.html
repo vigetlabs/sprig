@@ -34,7 +34,7 @@ gem 'sprig', '~> 0.1'
 </code>
 </pre>
 
-    <p>While <span class="sprig">sprig</span> is designed to be used with Rails, it only depends on ActiveRecord, and could theoretically be used without Rails.</p>
+    <p>Currently <span class="sprig">sprig</span> can only be used with Rails and ActiveRecord.</p>
 
     <a class="in-page-link" name="seed-directory-setup"></a>
 
@@ -123,10 +123,12 @@ sprig[Post]
 <pre>
 <code>
 records:
-  - first_name: Lawson
+  - sprig_id:   1
+    first_name: Lawson
     last_name:  Kurtz
     username:   lawdawg
-  - first_name: Ryan
+  - sprig_id:   2
+    first_name: Ryan
     last_name:  Foster
     username:   mc_rubs
 </code>
@@ -153,10 +155,12 @@ records:
 {
   "records": [
     {
+      "sprig_id": 1,
       "title": "Intro to Sprig",
       "content": "We created sprig in response to..."
     },
     {
+      "sprig_id": 2,
       "title": "Diving into Sprig",
       "content": "Getting started with sprig is easy..."
     }
