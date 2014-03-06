@@ -47,7 +47,7 @@
               <ul class="nav navbar-nav">
                 {% for link in site.navigation %}
                   {% assign current = nil %}
-                  {% if page.url == link.url %}
+                  {% if page.url == link.path %}
                     {% assign current = 'active' %}
                   {% endif %}
 
