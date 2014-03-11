@@ -18,6 +18,7 @@ module Sprig
       message = seed.error_log_text
       @errors << seed.record
       puts red(message)
+      puts red("#{seed.record}\n#{seed.record.errors.messages}\n")
       @error_count += 1
     end
 
