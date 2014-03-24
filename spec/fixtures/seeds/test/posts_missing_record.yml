@@ -4,4 +4,4 @@ records:
   - sprig_id: 1
     title: 'Yaml title'
     content: 'Yaml content'
-    user_id: "<%= sprig_record(User, 1).id %>" # This sprig record does not exist.
+    user_id: "<%= sprig_record(User, 1).id %>" # This sprig record did not save.
