@@ -9,7 +9,7 @@ describe Sprig::ProcessNotifier do
     let(:seed) { double('Seed', success_log_text: 'I am a teapot.') }
 
     it "logs the seed's success message" do
-      Sprig.logger.should_receive(:info).with(green_text('I am a teapot.'))
+      log_should_receive(:info, with: 'I am a teapot.')
 
       subject.success(seed)
     end
@@ -21,9 +21,9 @@ describe Sprig::ProcessNotifier do
     let(:seed) { double('Seed', error_log_text: 'I am a teapot.', record: seed_record) }
 
     it "logs the seed's error message and error details" do
-      Sprig.logger.should_receive(:error).with(red_text('I am a teapot.')).ordered
-      Sprig.logger.should_receive(:error).with(red_text('Seed Record')).ordered
-      Sprig.logger.should_receive(:error).with(red_text('error messages')).ordered
+      log_should_receive(:error, with: 'I am a teapot.').ordered
+      log_should_receive(:error, with: 'Seed Record').ordered
+      log_should_receive(:error, with: 'error messages').ordered
 
       subject.error(seed)
     end
@@ -31,7 +31,7 @@ describe Sprig::ProcessNotifier do
 
   describe "#finished" do
     it "logs a complete message" do
-      Sprig.logger.should_receive(:debug).with(blue_text('Seeding complete.'))
+      log_should_receive(:debug, with: 'Seeding complete.')
 
       subject.finished
     end
@@ -44,7 +44,7 @@ describe Sprig::ProcessNotifier do
       end
 
       it "logs a summery of successful saves" do
-        Sprig.logger.should_receive(:info).with(green_text('1 seed successfully planted.'))
+        log_should_receive(:info, with: '1 seed successfully planted.')
 
         subject.finished
       end
@@ -52,7 +52,7 @@ describe Sprig::ProcessNotifier do
 
     context "when no records are saved successfully" do
       it "logs a summery of successful saves" do
-        Sprig.logger.should_receive(:error).with(red_text('0 seeds successfully planted.'))
+        log_should_receive(:error, with: '0 seeds successfully planted.')
 
         subject.finished
       end
@@ -68,10 +68,10 @@ describe Sprig::ProcessNotifier do
       end
 
       it "logs a summary of errors" do
-        Sprig.logger.should_receive(:error).with(red_text('0 seeds successfully planted.')).ordered
-        Sprig.logger.should_receive(:error).with(red_text("1 seed couldn't be planted:")).ordered
-        Sprig.logger.should_receive(:error).with(red_text('Seed Record')).ordered
-        Sprig.logger.should_receive(:error).with(red_text("error messages\n")).ordered
+        log_should_receive(:error, with: '0 seeds successfully planted.').ordered
+        log_should_receive(:error, with: "1 seed couldn't be planted:").ordered
+        log_should_receive(:error, with: 'Seed Record').ordered
+        log_should_receive(:error, with: "error messages\n").ordered
 
         subject.finished
       end
@@ -80,7 +80,7 @@ describe Sprig::ProcessNotifier do
 
   describe "#in_progress" do
     it "logs an in-progress message" do
-      Sprig.logger.should_receive(:debug).with(blue_text("Planting those seeds...\r"))
+      log_should_receive(:debug, with: "Planting those seeds...\r")
 
       subject.in_progress
     end

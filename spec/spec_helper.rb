@@ -15,6 +15,7 @@ Dir[File.dirname(__FILE__) + '/support/**/*.rb'].each {|file| require file}
 
 RSpec.configure do |c|
   c.include ColoredText
+  c.include LoggerMock
 
   c.before(:suite) do
     DatabaseCleaner.strategy = :transaction

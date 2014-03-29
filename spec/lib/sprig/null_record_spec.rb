@@ -6,7 +6,7 @@ describe Sprig::NullRecord do
 
   describe "#new" do
     it "logs an error upon initialization" do
-      Sprig.logger.should_receive(:error).with("\e[31m#{error_msg} (Substituted with NullRecord)\e[0m")
+      log_should_receive(:error, with: "#{error_msg} (Substituted with NullRecord)")
 
       subject
     end
