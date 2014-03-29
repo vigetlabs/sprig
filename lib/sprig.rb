@@ -10,20 +10,28 @@ module Sprig
   autoload :Parser,               'sprig/parser'
   autoload :Helpers,              'sprig/helpers'
   autoload :Planter,              'sprig/planter'
-  autoload :SprigLogger,            'sprig/sprig_logger'
-  autoload :SprigRecordStore,      'sprig/sprig_record_store'
+  autoload :ProcessNotifier,      'sprig/process_notifier'
+  autoload :Logging,              'sprig/logging'
+  autoload :NullRecord,           'sprig/null_record'
+  autoload :SprigRecordStore,     'sprig/sprig_record_store'
   autoload :Data,                 'sprig/data'
   autoload :Seed,                 'sprig/seed'
 
-  def self.configuration
-    @@configuration ||= Sprig::Configuration.new
-  end
+  class << self
+    def configuration
+      @@configuration ||= Sprig::Configuration.new
+    end
 
-  def self.configure
-    yield configuration
-  end
+    def configure
+      yield configuration
+    end
 
-  def self.reset_configuration
-    @@configuration = nil
+    def reset_configuration
+      @@configuration = nil
+    end
+
+    def logger
+      configuration.logger
+    end
   end
 end
