@@ -11,8 +11,11 @@ require "sprig"
 include Sprig::Helpers
 
 Dir[File.dirname(__FILE__) + '/fixtures/models/*.rb'].each {|file| require file }
+Dir[File.dirname(__FILE__) + '/support/**/*.rb'].each {|file| require file}
 
 RSpec.configure do |c|
+  c.include ColoredText
+
   c.before(:suite) do
     DatabaseCleaner.strategy = :transaction
     DatabaseCleaner.clean_with(:truncation)

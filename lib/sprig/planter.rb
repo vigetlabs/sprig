@@ -9,7 +9,7 @@ module Sprig
         plant(seed)
       end
 
-      logger.log_summary
+      notifier.finished
     end
 
     private
@@ -20,19 +20,19 @@ module Sprig
       DependencySorter.new(seeds).sorted_items
     end
 
-    def logger
-      @logger ||= SprigLogger.new
+    def notifier
+      @notifier ||= ProcessNotifier.new
     end
 
     def plant(seed)
-      logger.processing
+      notifier.in_progress
       seed.before_save
 
       if seed.save_record
         seed.save_to_store
-        logger.log_success(seed)
+        notifier.success(seed)
       else
-        logger.log_error(seed)
+        notifier.error(seed)
       end
     end
   end
