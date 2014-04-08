@@ -8,6 +8,10 @@ Provides support for common files types: *csv*, *yaml*, and *json*.  Extensible 
 
 Learn more about Sprig and view documentation at [http://vigetlabs.github.io/sprig/](http://vigetlabs.github.io/sprig/).
 
+## Installation
+
+You can use `rails generate sprig:install` to create environment-specific directories for your seed configs.
+
 ##The Sprig Directive
 
 Within your seed file, you can use the `sprig` directive to initiate Sprig's dark magicks. A simple directive might look like this.
