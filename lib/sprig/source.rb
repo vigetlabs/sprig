@@ -79,9 +79,7 @@ module Sprig
       end
 
       def available_files
-        Dir.chdir(seed_directory) do
-          Dir["**/*"]
-        end
+        Dir.entries(seed_directory)
       end
 
       def file_not_found
