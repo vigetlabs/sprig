@@ -6,6 +6,7 @@ require "database_cleaner"
 require "webmock"
 require "vcr"
 require "pry"
+require "generator_spec"
 
 require "sprig"
 include Sprig::Helpers

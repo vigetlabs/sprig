@@ -1,5 +1,6 @@
 .bundle/
 .rspec
+.ruby-version
 spec/db/*
 spec/db/!.
 pkg/
