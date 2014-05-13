@@ -10,7 +10,7 @@ Learn more about Sprig and view documentation at [http://vigetlabs.github.io/spr
 
 ## Installation
 
-Use `rails generate sprig::install` to create environment-specific seed directories.
+Use `rails generate sprig:install` to create environment-specific seed directories.
 
 ##The Sprig Directive
 
