@@ -4,17 +4,17 @@ module Sprig
       def self.new_from_directive(directive)
         raise ArgumentError, 'Must provide a Directive' unless directive.is_a? Directive
 
-        klass      = directive.klass
-        datasource = directive.datasource
-        options    = directive.options
-
-        new(klass, datasource, options)
+        new(
+          directive.klass,
+          directive.datasource,
+          directive.options
+        )
       end
 
       def initialize(klass, datasource, options)
-        self.klass             = klass
-        self.datasource        = datasource
-        self.initial_options   = options
+        self.klass           = klass
+        self.datasource      = datasource
+        self.initial_options = options
       end
 
       def add_seeds_to_hopper(hopper)
@@ -30,6 +30,7 @@ module Sprig
       def klass=(klass)
         raise ArgumentError, 'Must provide a Class as first argument' unless klass.is_a? Class
 
+        klass.reset_column_information
         @klass = klass
       end
 
