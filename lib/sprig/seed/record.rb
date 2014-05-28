@@ -11,9 +11,10 @@ module Sprig
       end
 
       def initialize(klass, attributes, orm_record = nil)
-        @klass = klass
+        @klass      = klass
         @attributes = attributes
         @orm_record = orm_record || klass.new
+        @existing   = @orm_record.persisted?
       end
 
       def save
@@ -21,8 +22,8 @@ module Sprig
         orm_record.save
       end
 
-      def persisted?
-        orm_record.persisted?
+      def existing?
+        @existing
       end
 
       private

@@ -27,8 +27,6 @@ module Sprig
       end
 
       def save_record
-        @persisted = record.persisted?
-
         record.save
       end
 
@@ -41,7 +39,7 @@ module Sprig
       end
 
       def success_log_status_text
-        @persisted ? "updated" : "saved"
+        record.existing? ? "updated" : "saved"
       end
 
       def error_log_text
