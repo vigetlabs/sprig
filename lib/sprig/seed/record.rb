@@ -21,6 +21,10 @@ module Sprig
         orm_record.save
       end
 
+      def persisted?
+        orm_record.persisted?
+      end
+
       private
 
       attr_reader :attributes, :klass
