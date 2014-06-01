@@ -1,0 +1,7 @@
+records:
+  - sprig_id: 10
+    post_id: <%= sprig_record(Post, 2).id %>
+    body: pork chop sandwiches
+  - sprig_id: 20
+    post_id: <%= sprig_record(Post, 1).id %>
+    body: do you play baseball?

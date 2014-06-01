@@ -1,0 +1,6 @@
+- sprig_id: 1
+  post_id: <%= sprig_record(Post, 1).id %>
+  body: 
+- sprig_id: 2
+  post_id: <%= sprig_record(Post, 2).id %>
+  body: 
