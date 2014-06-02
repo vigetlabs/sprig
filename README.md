@@ -147,4 +147,49 @@ Sprig.configure do |c|
 end
 ```
 
+## Populate Seed Files from Database
+
+Don't want to write Sprig seed files from scratch?  Well, Sprig can create them for you!
+
+Via a rake task:
+```
+rake db:seed:reap
+```
+Or from the Rails console:
+```
+Sprig::Harvest.reap
+```
+
+By default, Sprig will create seed files (currently in `.yaml` only) for every model in your Rails
+application.  The seed files will be placed in a folder in `db/seeds` named after the current
+`Rails.env`.
+
+### Additional Configuration
+
+Don't like the defaults when reaping Sprig records? You may specify the environment (`db/seeds`
+target folder) or classes you want seed files for.
+
+Example (rake task):
+```
+rake db:seed:reap ENV=integration CLASSES=User, Post
+```
+
+Example (Rails console):
+```
+Sprig::Harvest.reap(env: 'integration', classes: [User, Post])
+```
+
+### Adding to Existing Seed Files (`.yaml` only)
+
+Already have some seed files set up?  No worries!  Sprig will detect existing seed files and append
+to them with the records from your database with no extra work needed.  Sprig will automatically
+assign unique `sprig_ids` so you won't have to deal with pesky duplicates.
+
+NOTE: Sprig does not account for your application or database validations.  If you reap seed files
+from your database multiple times in a row without deleting the previous seed files or sprig
+records, you'll end up with duplicate sprig records (but they'll all have unique `sprig_ids`).  This
+may cause validation issues when you seed your database.
+
+## License
+
 This project rocks and uses MIT-LICENSE.
