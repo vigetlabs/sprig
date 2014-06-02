@@ -54,16 +54,6 @@ module Sprig
       MissingDependencyError.new(missing_dependency)
     end
 
-    class TsortableHash < Hash
-      include TSort
-
-      alias tsort_each_node each_key
-
-      def tsort_each_child(node, &block)
-        fetch(node).each(&block)
-      end
-    end
-
     class MissingDependencyError < StandardError
       def initialize(missing_dependency = nil)
         super message_for(missing_dependency)

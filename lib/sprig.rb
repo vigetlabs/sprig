@@ -1,6 +1,7 @@
 module Sprig
   autoload :Configuration,        'sprig/configuration'
   autoload :Planter,              'sprig/planter'
+  autoload :TsortableHash,        'sprig/tsortable_hash'
   autoload :Dependency,           'sprig/dependency'
   autoload :DependencyCollection, 'sprig/dependency_collection'
   autoload :DependencySorter,     'sprig/dependency_sorter'
