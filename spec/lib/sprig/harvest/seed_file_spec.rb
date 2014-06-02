@@ -7,7 +7,7 @@ describe Sprig::Harvest::SeedFile do
 
   before do
     stub_rails_root
-    stub_rails_env('dreamland')
+    Sprig::Harvest.stub(:env).and_return('dreamland')
   end
 
   describe "#initialize" do

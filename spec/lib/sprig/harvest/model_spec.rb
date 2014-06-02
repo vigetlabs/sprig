@@ -4,14 +4,14 @@ describe Sprig::Harvest::Model do
   describe ".all" do
     let(:all_models) do
       [
-        described_class.new(User),
         described_class.new(Post),
-        described_class.new(Comment)
+        described_class.new(Comment),
+        described_class.new(User)
       ]
     end
 
     before do
-      ActiveRecord::Base.stub(:descendants).and_return([User, Post, Comment])
+      Sprig::Harvest.stub(:classes).and_return([Comment, Post, User])
     end
 
     it "returns an dependency-sorted array of Sprig::Harvest::Models" do

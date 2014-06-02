@@ -3,7 +3,7 @@ module Sprig
     class Model
       def self.all
         @@all ||= begin
-          models = ActiveRecord::Base.descendants.map { |klass| new(klass) }
+          models = Sprig::Harvest.classes.map { |klass| new(klass) }
           
           models.reduce(TsortableHash.new) do |hash, model|
             hash.merge(model.klass => model.dependencies)
