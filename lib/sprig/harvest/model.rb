@@ -52,7 +52,8 @@ module Sprig
         klass.to_s
       end
 
-      def to_yaml(namespace: nil)
+      def to_yaml(options = {})
+        namespace         = options[:namespace]
         formatted_records = records.map(&:to_hash)
 
         yaml = if namespace

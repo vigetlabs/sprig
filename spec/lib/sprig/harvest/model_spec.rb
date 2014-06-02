@@ -21,11 +21,11 @@ describe Sprig::Harvest::Model do
   end
 
   describe ".find" do
-    let!(:user)      { User.create(first_name: 'Bo', last_name: 'Janglez') }
+    let!(:user)      { User.create(:first_name => 'Bo', :last_name => 'Janglez') }
     let!(:post1)     { Post.create }
     let!(:post2)     { Post.create }
-    let!(:comment1)  { Comment.create(post: post1) }
-    let!(:comment2)  { Comment.create(post: post2) }
+    let!(:comment1)  { Comment.create(:post => post1) }
+    let!(:comment2)  { Comment.create(:post => post2) }
 
     subject { described_class }
 
@@ -82,17 +82,17 @@ describe Sprig::Harvest::Model do
   end
 
   describe "#to_yaml" do
-    let!(:user)      { User.create(first_name: 'Bo', last_name: 'Janglez') }
+    let!(:user)      { User.create(:first_name => 'Bo', :last_name => 'Janglez') }
     let!(:post1)     { Post.create }
     let!(:post2)     { Post.create }
-    let!(:comment1)  { Comment.create(post: post1) }
-    let!(:comment2)  { Comment.create(post: post2) }
+    let!(:comment1)  { Comment.create(:post => post1) }
+    let!(:comment2)  { Comment.create(:post => post2) }
 
     subject { described_class.new(Comment) }
 
     context "when passed a value for the namespace" do
       it "returns the correct yaml" do
-        subject.to_yaml(namespace: 'records').should == yaml_from_file('records_with_namespace.yml')
+        subject.to_yaml(:namespace => 'records').should == yaml_from_file('records_with_namespace.yml')
       end
     end
 

@@ -49,11 +49,11 @@ describe Sprig::Harvest::SeedFile do
   end
 
   describe "#write" do
-    let!(:user)      { User.create(first_name: 'Bo', last_name: 'Janglez') }
+    let!(:user)      { User.create(:first_name => 'Bo', :last_name => 'Janglez') }
     let!(:post1)     { Post.create }
     let!(:post2)     { Post.create }
-    let!(:comment1)  { Comment.create(post: post1) }
-    let!(:comment2)  { Comment.create(post: post2) }
+    let!(:comment1)  { Comment.create(:post => post1) }
+    let!(:comment2)  { Comment.create(:post => post2) }
 
     around do |example|
       setup_seed_folder('./spec/fixtures/db/seeds/dreamland', &example)
@@ -72,7 +72,7 @@ describe Sprig::Harvest::SeedFile do
       end
 
       it "grabs the yaml for the given model without a namespace" do
-        model.should_receive(:to_yaml).with(namespace: nil)
+        model.should_receive(:to_yaml).with(:namespace => nil)
 
         subject.write
       end
@@ -94,7 +94,7 @@ describe Sprig::Harvest::SeedFile do
       end
 
       it "grabs the yaml for the given model with the 'records' namespace" do
-        model.should_receive(:to_yaml).with(namespace: 'records')
+        model.should_receive(:to_yaml).with(:namespace => 'records')
 
         subject.write
       end

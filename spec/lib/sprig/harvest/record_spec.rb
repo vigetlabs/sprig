@@ -5,7 +5,7 @@ class Very; end
 describe Sprig::Harvest::Record do
   let(:record)         { double('ActiveRecord::Base Instance') }
   let(:model)          { double('Sprig::Harvest::Model') }
-  let(:harvest_record) { double('Sprig::Harvest::Record for class Very', sprig_id: 5) }
+  let(:harvest_record) { double('Sprig::Harvest::Record for class Very', :sprig_id => 5) }
   let(:sprig_record)   { "<%= sprig_record(Very, 5).id %>" }
 
   subject { described_class.new(record, model) }

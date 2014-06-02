@@ -21,7 +21,7 @@ module Sprig
 
       def write
         initialize_file do |file, namespace|
-          file.write model.to_yaml(namespace: namespace)
+          file.write model.to_yaml(:namespace => namespace)
         end
       end
 
