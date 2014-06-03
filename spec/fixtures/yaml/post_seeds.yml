@@ -3,9 +3,7 @@ records:
     title: such post
     content: Once upon a time BOOM POSTED
     published: true
-    user_id: <%= sprig_record(User, 5).id %>
   - sprig_id: 2
     title: very words
     content:  Word cannon has been loaded up real good.
     published: true
-    user_id: <%= sprig_record(User, 9).id %>
