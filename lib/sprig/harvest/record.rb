@@ -10,7 +10,7 @@ module Sprig
 
         model.attributes.each do |attr|
           if dependency_finder.match(attr)
-            eigenclass.instance_eval do
+            singleton_class.instance_eval do
               define_method attr do
                 klass    = klass_for(attr)
                 id       = record.send(attr)
@@ -20,7 +20,7 @@ module Sprig
               end
             end
           else
-            eigenclass.instance_eval do
+            singleton_class.instance_eval do
               define_method attr do
                 record.send(attr)
               end
@@ -44,10 +44,6 @@ module Sprig
       end
 
       private
-
-      def eigenclass
-        (class << self; self; end)
-      end
 
       def dependency_finder
         /_id/
