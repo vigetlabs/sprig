@@ -12,7 +12,7 @@ module Sprig
       end
 
       def path
-        Rails.root.join('db', 'seeds', Sprig::Harvest.env, "#{model.to_s.tableize}.yml")
+        Rails.root.join('db', 'seeds', Sprig::Harvest.env, "#{model.to_s.tableize.gsub('/', '_')}.yml")
       end
 
       def exists?

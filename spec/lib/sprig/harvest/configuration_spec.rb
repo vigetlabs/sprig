@@ -47,7 +47,7 @@ describe Sprig::Harvest::Configuration do
 
   describe "#classes" do
     context "from a fresh configuration" do
-      its(:classes) { should == ActiveRecord::Base.descendants }
+      its(:classes) { should == ActiveRecord::Base.subclasses }
     end
   end
 
@@ -65,7 +65,7 @@ describe Sprig::Harvest::Configuration do
         it "raises an error" do
           expect {
             subject.classes = [Comment, Sprig::Harvest::Model]
-          }.to raise_error ArgumentError, 'Cannot create a seed file for Sprig::Harvest::Model because it is not an ActiveRecord::Base-descendant.'
+          }.to raise_error ArgumentError, 'Cannot create a seed file for Sprig::Harvest::Model because it is not a subclass of ActiveRecord::Base.'
         end
       end
 
@@ -83,7 +83,7 @@ describe Sprig::Harvest::Configuration do
         it "raises an error" do
           expect {
             subject.classes = 'Sprig::Harvest::Model'
-          }.to raise_error ArgumentError, 'Cannot create a seed file for Sprig::Harvest::Model because it is not an ActiveRecord::Base-descendant.'
+          }.to raise_error ArgumentError, 'Cannot create a seed file for Sprig::Harvest::Model because it is not a subclass of ActiveRecord::Base.'
         end
       end
 

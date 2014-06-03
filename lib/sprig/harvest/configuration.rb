@@ -1,7 +1,7 @@
 module Sprig
   module Harvest
     class Configuration
-      VALID_CLASSES = ActiveRecord::Base.descendants
+      VALID_CLASSES = ActiveRecord::Base.subclasses
 
       def env
         @env ||= Rails.env
@@ -54,7 +54,7 @@ module Sprig
       def validate_classes(classes)
         classes.each do |klass|
           unless VALID_CLASSES.include? klass
-            raise ArgumentError, "Cannot create a seed file for #{klass} because it is not an ActiveRecord::Base-descendant."
+            raise ArgumentError, "Cannot create a seed file for #{klass} because it is not a subclass of ActiveRecord::Base."
           end
         end
       end

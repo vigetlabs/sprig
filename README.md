@@ -164,10 +164,13 @@ By default, Sprig will create seed files (currently in `.yaml` only) for every m
 application.  The seed files will be placed in a folder in `db/seeds` named after the current
 `Rails.env`.
 
+If any of the models in your application are using STI, Sprig will create a single seed file named
+after the STI base model.  STI sub-type records will all be written to that file.
+
 ### Additional Configuration
 
 Don't like the defaults when reaping Sprig records? You may specify the environment (`db/seeds`
-target folder) or classes you want seed files for.
+target folder) or classes (`ActiveRecord::Base.subclasses`-only) you want seed files for.
 
 Example (rake task):
 ```
