@@ -65,13 +65,24 @@ describe Sprig::Harvest::Model do
 
   describe "#generate_sprig_id" do
     subject { described_class.new(Comment) }
-    
-    before do
-      subject.existing_sprig_ids = [5, 20, 8]
+
+    context "when the existing sprig_ids are all integers" do
+      before do
+        subject.existing_sprig_ids = [5, 20, 8]
+      end
+
+      it "returns an integer-type sprig_id that is not taken" do
+        subject.generate_sprig_id.should == 21
+      end
     end
 
-    it "returns a sprig_id that is not taken" do
-      subject.generate_sprig_id.should == 21
+    context "when the existing sprig ids contain non-integer values" do
+      before do
+        subject.existing_sprig_ids = [1, 5, 'l_2', 'l_10', 'such_sprigs', 10.9]
+      end
+      it "returns an integer-type sprig_id that is not taken" do
+        subject.generate_sprig_id.should == 6
+      end
     end
   end
 

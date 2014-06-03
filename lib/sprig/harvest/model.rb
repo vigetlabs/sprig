@@ -39,9 +39,7 @@ module Sprig
       end
 
       def generate_sprig_id
-        existing_sprig_ids.sort.last + 1
-        
-        # TODO Handle non-integer sprig_ids
+        existing_sprig_ids.select { |i| i.is_a? Integer }.sort.last + 1
       end
 
       def find(id)
