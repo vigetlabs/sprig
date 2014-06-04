@@ -5,9 +5,7 @@ module Sprig
         @@all ||= begin
           models = Sprig::Harvest.classes.map { |klass| new(klass) }
           
-          models.reduce(TsortableHash.new) do |hash, model|
-            hash.merge(model.klass => model.dependencies)
-          end.tsort.map do |klass| 
+          tsorted_classes(models).map do |klass|
             models.find { |model| model.klass == klass }
           end
         end
@@ -65,6 +63,14 @@ module Sprig
 
       def records
         @records ||= klass.all.map { |record| Record.new(record, self) }
+      end
+
+      private
+
+      def self.tsorted_classes(models)
+        models.reduce(TsortableHash.new) do |hash, model|
+          hash.merge(model.klass => model.dependencies)
+        end.tsort
       end
     end
   end
