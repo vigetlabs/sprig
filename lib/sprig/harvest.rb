@@ -8,8 +8,8 @@ module Sprig
     class << self
       def reap(options = {})
         configure do |config|
-          config.env     = options[:env]     || options['ENV']
-          config.classes = options[:classes] || options['CLASSES']
+          config.env     = options[:env]    || options['ENV']
+          config.classes = options[:models] || options['MODELS']
         end
 
         Model.all.each { |model| SeedFile.new(model).write }

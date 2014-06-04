@@ -170,16 +170,16 @@ after the STI base model.  STI sub-type records will all be written to that file
 ### Additional Configuration
 
 Don't like the defaults when reaping Sprig records? You may specify the environment (`db/seeds`
-target folder) or classes (`ActiveRecord::Base.subclasses`-only) you want seed files for.
+target folder) or models (`ActiveRecord::Base.subclasses`-only) you want seed files for.
 
 Example (rake task):
 ```
-rake db:seed:reap ENV=integration CLASSES=User, Post
+rake db:seed:reap ENV=integration MODELS=User, Post
 ```
 
 Example (Rails console):
 ```
-Sprig::Harvest.reap(env: 'integration', classes: [User, Post])
+Sprig::Harvest.reap(env: 'integration', models: [User, Post])
 ```
 
 ### Adding to Existing Seed Files (`.yaml` only)

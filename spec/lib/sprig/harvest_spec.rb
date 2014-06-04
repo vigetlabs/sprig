@@ -39,14 +39,14 @@ describe Sprig::Harvest do
     context "when passed a set of classes in the options hash" do
       context "in :classes" do
         it "sets the classes" do
-          subject.reap(:classes => [User, Post])
+          subject.reap(:models => [User, Post])
           subject.classes.should == [User, Post]
         end
       end
 
       context "sets the classes" do
         it "passes the value to its configuration" do
-          subject.reap('CLASSES' => 'User, Post')
+          subject.reap('MODELS' => 'User, Post')
           subject.classes.should == [User, Post]
         end
       end
