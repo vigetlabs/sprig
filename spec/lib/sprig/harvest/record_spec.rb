@@ -28,14 +28,10 @@ describe Sprig::Harvest::Record do
     Sprig::Harvest::Model.stub(:find).and_return(harvest_record)
   end
 
-  describe ".initialize" do
-    it "adds a reader-type instance method for each attribute on the given model" do
-      subject.id.should       == 0
-      subject.such.should     == 1
-      subject.wow.should      == 2
-      subject.very_id.should  == sprig_record
-    end
-  end
+  its(:id)      { should == 0 }
+  its(:such)    { should == 1 }
+  its(:wow)     { should == 2 }
+  its(:very_id) { should == sprig_record }
 
   describe "#attributes" do
     it "returns an array of attributes from the given model with sprig_id swapped out for id" do

@@ -7,26 +7,6 @@ module Sprig
       def initialize(record, model)
         @record = record
         @model  = model
-
-        model.attributes.each do |attr|
-          if dependency_finder.match(attr)
-            singleton_class.instance_eval do
-              define_method attr do
-                klass    = klass_for(attr)
-                id       = record.send(attr)
-                sprig_id = Model.find(klass, id).sprig_id
-
-                "<%= sprig_record(#{klass}, #{sprig_id}).id %>"
-              end
-            end
-          else
-            singleton_class.instance_eval do
-              define_method attr do
-                record.send(attr)
-              end
-            end
-          end
-        end
       end
 
       def attributes
@@ -45,12 +25,36 @@ module Sprig
 
       private
 
+      def method_missing(method, *args, &block)
+        attr = model.attributes.find { |attr| attr == method.to_s }
+
+        if attr.nil?
+          super
+        elsif dependency_finder.match(attr)
+          klass    = klass_for(attr)
+          id       = record.send(attr)
+          sprig_id = Model.find(klass, id).sprig_id
+
+          sprig_record(klass, sprig_id)
+        else
+          record.send(attr)
+        end
+      end
+
+      def respond_to_missing?(method, include_private = false)
+        model.attributes.include?(method.to_s) || super
+      end
+
       def dependency_finder
         /_id/
       end
 
       def klass_for(attr)
         attr.gsub(dependency_finder, '').classify.constantize
+      end
+
+      def sprig_record(klass, sprig_id)
+        "<%= sprig_record(#{klass}, #{sprig_id}).id %>"
       end
     end
   end
