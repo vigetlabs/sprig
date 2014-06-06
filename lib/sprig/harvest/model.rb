@@ -3,7 +3,7 @@ module Sprig
     class Model
       def self.all
         @@all ||= begin
-          models = Sprig::Harvest.classes.map { |klass| new(klass) }
+          models = Sprig::Harvest.model_configurations.map { |config| new(config) }
           
           tsorted_classes(models).map do |klass|
             models.find { |model| model.klass == klass }
@@ -15,21 +15,24 @@ module Sprig
         all.find { |model| model.klass == klass }.find(id)
       end
 
-      attr_reader :klass
+      attr_reader :config
       attr_writer :existing_sprig_ids
 
-      def initialize(klass)
-        @klass = klass
-      end
+      delegate :klass,
+               :attributes,
+               :dependencies,
+               :collection,
+               :limit,
+               :ignored_attrs,
+               :to => :config
 
-      def attributes
-        klass.column_names
-      end
 
-      def dependencies
-        @dependencies ||= klass.reflect_on_all_associations(:belongs_to).map do |association|
-          association.name.to_s.classify.constantize
+      def initialize(config)
+        unless config.is_a? ModelConfig
+          raise ArgumentError, "Must be instantiated with a Sprig::Harvest::ModelConfig (received #{config.class} instead)"
         end
+
+        @config = config
       end
 
       def existing_sprig_ids
@@ -62,7 +65,11 @@ module Sprig
       end
 
       def records
-        @records ||= klass.all.map { |record| Record.new(record, self) }
+        @records ||= begin
+          record_set = limit ? collection.slice(0...limit) : collection
+
+          record_set.map { |record| Record.new(record, self) }
+        end
       end
 
       private
