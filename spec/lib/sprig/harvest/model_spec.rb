@@ -4,19 +4,15 @@ describe Sprig::Harvest::Model do
   describe ".all" do
     let(:all_models) do
       [
-        described_class.new(Post),
-        described_class.new(Comment),
-        described_class.new(User)
+        described_class.new(config_for(Post)),
+        described_class.new(config_for(Comment)),
+        described_class.new(config_for(User))
       ]
-    end
-
-    before do
-      Sprig::Harvest.stub(:classes).and_return([Comment, Post, User])
     end
 
     it "returns an dependency-sorted array of Sprig::Harvest::Models" do
       described_class.all.all? { |model| model.is_a? Sprig::Harvest::Model }.should == true
-      described_class.all.map(&:klass).should == all_models.map(&:klass)
+      described_class.all.map(&:klass).should =~ all_models.map(&:klass)
     end
   end
 
@@ -38,23 +34,11 @@ describe Sprig::Harvest::Model do
     end
   end
 
-  describe "#attributes" do
-    subject { described_class.new(User) }
-
-    its(:attributes) { should == User.column_names }
-  end
-
-  describe "#dependencies" do
-    subject { described_class.new(Comment) }
-
-    its(:dependencies) { should == [Post] }
-  end
-
   describe "#find" do
     let!(:post1) { Post.create }
     let!(:post2) { Post.create }
 
-    subject { described_class.new(Post) }
+    subject { described_class.new(config_for(Post)) }
 
     it "returns the Sprig::Harvest::Record with the given id" do
       harvest_record = subject.find(2)
@@ -64,7 +48,7 @@ describe Sprig::Harvest::Model do
   end
 
   describe "#generate_sprig_id" do
-    subject { described_class.new(Comment) }
+    subject { described_class.new(config_for(Comment)) }
 
     context "when the existing sprig_ids are all integers" do
       before do
@@ -87,7 +71,7 @@ describe Sprig::Harvest::Model do
   end
 
   describe "#to_s" do
-    subject { described_class.new(Comment) }
+    subject { described_class.new(config_for(Comment)) }
 
     its(:to_s) { should == "Comment" }
   end
@@ -99,7 +83,7 @@ describe Sprig::Harvest::Model do
     let!(:comment1)  { Comment.create(:post => post1) }
     let!(:comment2)  { Comment.create(:post => post2) }
 
-    subject { described_class.new(Comment) }
+    subject { described_class.new(config_for(Comment)) }
 
     context "when passed a value for the namespace" do
       it "returns the correct yaml" do
@@ -114,7 +98,37 @@ describe Sprig::Harvest::Model do
     end
   end
 
+  describe "#records" do
+    subject { described_class.new(config_for(Comment)) }
+
+    before do
+      subject.config.stub(:collection).and_return([*1..10])
+    end
+
+    context "when limit is configured" do
+      it "returns the appropriate number of records" do
+        subject.config.stub(:limit).and_return(5)
+
+        Sprig::Harvest::Record.should_receive(:new).exactly(5).times
+
+        subject.records
+      end
+    end
+
+    context "when there is no limit configured" do
+      it "returns all the records" do
+        Sprig::Harvest::Record.should_receive(:new).exactly(10).times
+
+        subject.records
+      end
+    end
+  end
+
   def yaml_from_file(basename)
     File.read('spec/fixtures/yaml/' + basename)
+  end
+
+  def config_for(klass)
+    Sprig::Harvest::ModelConfig.new(klass)
   end
 end

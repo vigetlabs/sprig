@@ -3,6 +3,8 @@ module Sprig
     class Configuration
       VALID_CLASSES = ActiveRecord::Base.subclasses
 
+      attr_reader :limit, :ignored_attrs
+
       def env
         @env ||= Rails.env
       end
@@ -23,7 +25,33 @@ module Sprig
         end
       end
 
+      def limit=(given_limit)
+        parse_limit_from given_limit do |limit|
+          @limit = limit
+        end
+      end
+
+      def ignored_attrs=(given_attrs)
+        parse_ignored_attrs_from given_attrs do |attrs|
+          @ignored_attrs = attrs
+        end
+      end
+
+      def ignored_attrs
+        @ignored_attrs ||= []
+      end
+
+      def models=(inputs)
+        self.model_configurations = inputs.map { |input| create_model_config_from(input) }
+      end
+
+      def model_configurations
+        @model_configurations ||= classes.map { |klass| ModelConfig.new(klass) }
+      end
+
       private
+
+      attr_writer :model_configurations
 
       def parse_valid_env_from(input)
         return if input.nil?
@@ -46,16 +74,42 @@ module Sprig
           input
         end
 
-        validate_classes(classes)
-
         yield classes
       end
 
-      def validate_classes(classes)
-        classes.each do |klass|
-          unless VALID_CLASSES.include? klass
-            raise ArgumentError, "Cannot create a seed file for #{klass} because it is not a subclass of ActiveRecord::Base."
-          end
+      def parse_limit_from(input)
+        return if input.nil?
+
+        int = input.to_i
+
+        unless int > 0
+          raise ArgumentError, "Limit can only be set to an integer above 0 (received #{int})"
+        end
+
+        yield int
+      end
+
+      def parse_ignored_attrs_from(input)
+        return if input.nil?
+
+        attrs = if input.is_a? String
+          input.split(',').map(&:strip)
+        else
+          input.map(&:to_s).map(&:strip)
+        end
+
+        yield attrs
+      end
+
+      def create_model_config_from(input)
+        if input.is_a? Hash
+          klass = input.delete(:class)
+          ModelConfig.new(klass, input)
+        elsif input.is_a? Class
+          ModelConfig.new(input)
+        else
+          raise ArgumentError,
+            "Sprig::Harvest.configure expects `models=` to be given an array containing classes and/or hashes (received #{input.class})"
         end
       end
     end

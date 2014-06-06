@@ -167,19 +167,81 @@ application.  The seed files will be placed in a folder in `db/seeds` named afte
 If any of the models in your application are using STI, Sprig will create a single seed file named
 after the STI base model.  STI sub-type records will all be written to that file.
 
-### Additional Configuration
+### Additional Configuration via Arguments
 
 Don't like the defaults when reaping Sprig records? You may specify the environment (`db/seeds`
-target folder) or models (`ActiveRecord::Base.subclasses`-only) you want seed files for.
+target folder), models (`ActiveRecord::Base.subclasses`-only), maximum number of records per model
+(limit), and any ignored attributes.
 
-Example (rake task):
+Rake Task:
 ```
-rake db:seed:reap ENV=integration MODELS=User, Post
+rake db:seed:reap ENV=integration MODELS=User, Post LIMIT=10 IGNORED_ATTRS=created_at, updated_at
 ```
 
-Example (Rails console):
+Rails Console:
 ```
-Sprig::Harvest.reap(env: 'integration', models: [User, Post])
+Sprig::Harvest.reap(
+  :env           => 'integration',
+  :models        => [User, Post],
+  :limit         => 10,
+  :ignored_attrs => [:created_at, :updated_at]
+)
+```
+
+### Additional Configuration via Reap Config File
+
+Wish you could make reap configurations model-by-model?  Great Scott!  You can!
+
+`Sprig::Harvest.configure` yields a configuration object where you can set global config options
+(`:env`, `:limit`, and `:ignored_attrs`) as well as the `models` and their model-specific configurations:
+
+```
+Sprig::Harvest.configure do |config|
+  config.env           = 'dreamland'
+  config.limit         = 30
+  config.ignored_attrs = [:created_at, :updated_at]
+
+  config.models = [
+    {
+      :class         => User,
+      :collection    => User.active.where(:admin => false),
+      :limit         => 10,
+      :ignored_attrs => :password
+    },
+
+    {
+      :class      => Post,
+      :collection => Post.published,
+      :limit      => 20
+    },
+
+    Comment
+  ]
+end
+```
+
+#### Collection
+When you specify the `:collection` option on a model configuration, it will use that set of records
+instead of the default (`Model.all`).
+
+#### Limit
+Model-level limits take precedence over global ones.  So if your model has a `:limit` set to
+20, it will result in a seed file with up to 20 records (rather than the global config of 30).
+
+#### Using your Reap Config with `reap`
+
+Just create a ruby file with a configuration like the above example, then when you summon the power
+that is `reap`, just point it at the file.  Here's what it'd look like if we saved a reap
+configuration file at `./db/seeds/reap_config.rb`:
+
+Rake Task:
+```
+rake db:seed:reap FILE="./db/seeds/reap_config.rb"
+```
+
+Rails Console
+```
+Sprig::Harvest.reap(:file => './db/seeds/reap_config.rb')
 ```
 
 ### Adding to Existing Seed Files (`.yaml` only)

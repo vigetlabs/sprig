@@ -1,7 +1,8 @@
 require 'spec_helper'
 
 describe Sprig::Harvest::SeedFile do
-  let(:model) { Sprig::Harvest::Model.new(Comment) }
+  let(:config) { Sprig::Harvest::ModelConfig.new(Comment) }
+  let(:model)  { Sprig::Harvest::Model.new(config) }
 
   subject { described_class.new(model) }
 
