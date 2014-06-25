@@ -60,6 +60,24 @@ describe "Seeding an application" do
     end
   end
 
+  context "with an invalid custom parser" do
+    around do |example|
+      load_seeds('posts.yml', &example)
+    end
+
+    it "fails with an argument error" do
+      expect {
+        sprig [
+          {
+            :class  => Post,
+            :source => open('spec/fixtures/seeds/test/posts.yml'),
+            :parser => Object # Not a valid parser
+          }
+        ]
+      }.to raise_error(ArgumentError, 'Parsers must define #parse.')
+    end
+  end
+
   context "with a custom source" do
     around do |example|
       load_seeds('legacy_posts.yml', &example)
@@ -78,6 +96,31 @@ describe "Seeding an application" do
     end
   end
 
+  context "with a custom source that cannot be parsed by native parsers" do
+    around do |example|
+      load_seeds('posts.md', &example)
+    end
+
+    it "fails with an unparsable file error" do
+      expect {
+        sprig [
+          {
+            :class  => Post,
+            :source => open('spec/fixtures/seeds/test/posts.md')
+          }
+        ]
+      }.to raise_error(Sprig::Source::ParserDeterminer::UnparsableFileError)
+    end
+  end
+
+  context "with an invalid custom source" do
+    it "fails with an argument error" do
+      expect {
+        sprig [ { :class  => Post, :source => 42 } ]
+      }.to raise_error(ArgumentError, 'Data sources must act like an IO.')
+    end
+  end
+
   context "with multiple file relationships" do
     around do |example|
       load_seeds('posts.yml', 'comments.yml', &example)
@@ -89,6 +132,14 @@ describe "Seeding an application" do
       Post.count.should    == 1
       Comment.count.should == 1
       Comment.first.post.should == Post.first
+    end
+  end
+
+  context "with missing seed files" do
+    it "raises a missing file error" do
+      expect {
+        sprig [Post]
+      }.to raise_error(Sprig::Source::SourceDeterminer::FileNotFoundError)
     end
   end
 
