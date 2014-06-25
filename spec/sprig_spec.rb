@@ -116,7 +116,7 @@ describe "Seeding an application" do
   context "with an invalid custom source" do
     it "fails with an argument error" do
       expect {
-        sprig [ { :class  => Post, :source => 42 } ]
+        sprig [ { :class => Post, :source => 42 } ]
       }.to raise_error(ArgumentError, 'Data sources must act like an IO.')
     end
   end
