@@ -48,10 +48,6 @@ module Sprig
       def options
         @options ||= datasource.options.merge(initial_options)
       end
-
-      def data
-        @data ||= datasource.to_hash
-      end
     end
   end
 end
