@@ -54,7 +54,7 @@ User.connection.execute "DROP TABLE IF EXISTS users;"
 User.connection.execute "CREATE TABLE users (id INTEGER PRIMARY KEY , first_name VARCHAR(255), last_name VARCHAR(255), type VARCHAR(255));"
 
 Post.connection.execute "DROP TABLE IF EXISTS posts;"
-Post.connection.execute "CREATE TABLE posts (id INTEGER PRIMARY KEY , title VARCHAR(255), content VARCHAR(255), published BOOLEAN , user_id INTEGER);"
+Post.connection.execute "CREATE TABLE posts (id INTEGER PRIMARY KEY , title VARCHAR(255), content VARCHAR(255), photo VARCHAR(255), published BOOLEAN , user_id INTEGER);"
 
 Comment.connection.execute "DROP TABLE IF EXISTS comments;"
 Comment.connection.execute "CREATE TABLE comments (id INTEGER PRIMARY KEY , post_id INTEGER, body VARCHAR(255));"
@@ -75,11 +75,15 @@ end
 def load_seeds(*files)
   env = Rails.env
 
+  `cp -R ./spec/fixtures/seeds/#{env}/files ./spec/fixtures/db/seeds/#{env}`
+
   files.each do |file|
     `cp ./spec/fixtures/seeds/#{env}/#{file} ./spec/fixtures/db/seeds/#{env}`
   end
 
   yield
+
+  `rm -R ./spec/fixtures/db/seeds/#{env}/files`
 
   files.each do |file|
     `rm ./spec/fixtures/db/seeds/#{env}/#{file}`

@@ -166,6 +166,25 @@ describe "Seeding an application" do
     end
   end
 
+  context "with files defined as attributes" do
+    around do |example|
+      stub_rails_env 'test'
+      load_seeds('posts_with_files.yml', &example)
+    end
+
+    it "seeds the db" do
+      sprig [
+        {
+          :class  => Post,
+          :source => open('spec/fixtures/seeds/test/posts_with_files.yml')
+        }
+      ]
+
+      Post.count.should == 1
+      Post.pluck(:photo).should =~ ['cat.png']
+    end
+  end
+
   context "with custom seed options" do
     context "using find_existing_by" do
       context "with a single attribute" do
