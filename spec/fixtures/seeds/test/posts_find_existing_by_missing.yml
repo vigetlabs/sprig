@@ -1,4 +1,3 @@
-# posts_find_existing_by_missing.yml
 options:
   find_existing_by: 'unicorn'
 

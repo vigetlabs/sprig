@@ -1,4 +1,3 @@
-# posts_find_existing_by_single.yml
 options:
   delete_existing_by: 'title'
 

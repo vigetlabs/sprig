@@ -1,5 +1,3 @@
-# posts_with_cyclic_dependencies.yml
-
 records:
   - sprig_id: 1
     title: "Title"

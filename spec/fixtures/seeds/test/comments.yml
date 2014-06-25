@@ -1,5 +1,3 @@
-# comments.yml
-
 records:
   - sprig_id: 1
     post_id: "<%= sprig_record(Post, 1).id %>"

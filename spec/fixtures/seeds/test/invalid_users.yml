@@ -1,5 +1,3 @@
-# users.yml
-
 records:
   - sprig_id: 1
     first_name: "Clark"

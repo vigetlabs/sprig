@@ -1,5 +1,3 @@
-# posts_with_files.yml
-
 records:
   - sprig_id: 1
     title: 'Staging yaml title'

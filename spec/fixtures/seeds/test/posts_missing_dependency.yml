@@ -1,5 +1,3 @@
-# posts_missing_dependency.yml
-
 records:
   - sprig_id: 1
     title: 'Yaml title'
