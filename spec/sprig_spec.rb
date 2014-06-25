@@ -319,6 +319,23 @@ describe "Seeding an application" do
     end
 
     context "using find_existing_by" do
+      context "with a missing attribute" do
+        around do |example|
+          load_seeds('posts_find_existing_by_missing.yml', &example)
+        end
+
+        it "raises a missing attribute error" do
+          expect {
+            sprig [
+              {
+                :class  => Post,
+                :source => open("spec/fixtures/seeds/test/posts_find_existing_by_missing.yml")
+              }
+            ]
+          }.to raise_error(Sprig::Seed::AttributeCollection::AttributeNotFoundError, "Attribute 'unicorn' is not present.")
+        end
+      end
+
       context "with a single attribute" do
         around do |example|
           load_seeds('posts.yml', 'posts_find_existing_by_single.yml', &example)
