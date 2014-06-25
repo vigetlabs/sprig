@@ -25,4 +25,6 @@ Gem::Specification.new do |s|
   s.add_development_dependency "vcr",              "~> 2.8.0"
   s.add_development_dependency "pry"
   s.add_development_dependency "generator_spec"
+  s.add_development_dependency "simplecov"
+  s.add_development_dependency "coveralls"
 end

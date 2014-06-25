@@ -4,3 +4,4 @@
 spec/db/*
 spec/db/!.
 pkg/
+/coverage
