@@ -4,10 +4,6 @@ module Sprig
       Sprig.configuration.directory
     end
 
-    def sprig_environment
-      Rails.env #TODO: make customizable
-    end
-
     def sprig(directive_definitions)
       hopper = []
       DirectiveList.new(directive_definitions).add_seeds_to_hopper(hopper)
