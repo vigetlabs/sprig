@@ -235,7 +235,64 @@ describe "Seeding an application" do
     end
   end
 
+  context "with cyclic dependencies" do
+    around do |example|
+      load_seeds('comments.yml', 'posts_with_cyclic_dependencies.yml', &example)
+    end
+
+    it "raises an cyclic dependency error" do
+      expect {
+        sprig [
+          {
+            :class  => Post,
+            :source => open('spec/fixtures/seeds/test/posts_with_cyclic_dependencies.yml')
+          },
+          Comment
+        ]
+      }.to raise_error(Sprig::DependencySorter::CircularDependencyError)
+    end
+  end
+
   context "with custom seed options" do
+    context "using delete_existing_by" do
+      around do |example|
+        load_seeds('posts_delete_existing_by.yml', &example)
+      end
+
+      context "with an existing record" do
+        let!(:existing_match) do
+          Post.create(
+            :title    => "Such Title",
+            :content  => "Old Content")
+        end
+
+        let!(:existing_nonmatch) do
+          Post.create(
+            :title    => "Wow Title",
+            :content  => "Much Content")
+        end
+
+        it "replaces only the matching existing record" do
+          sprig [
+            {
+              :class  => Post,
+              :source => open("spec/fixtures/seeds/test/posts_delete_existing_by.yml")
+            }
+          ]
+
+          Post.count.should == 2
+
+          expect {
+            existing_match.reload
+          }.to raise_error(ActiveRecord::RecordNotFound)
+
+          expect {
+            existing_nonmatch.reload
+          }.to_not raise_error
+        end
+      end
+    end
+
     context "using find_existing_by" do
       context "with a single attribute" do
         around do |example|

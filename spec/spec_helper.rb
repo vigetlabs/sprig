@@ -54,7 +54,7 @@ User.connection.execute "DROP TABLE IF EXISTS users;"
 User.connection.execute "CREATE TABLE users (id INTEGER PRIMARY KEY , first_name VARCHAR(255), last_name VARCHAR(255), type VARCHAR(255));"
 
 Post.connection.execute "DROP TABLE IF EXISTS posts;"
-Post.connection.execute "CREATE TABLE posts (id INTEGER PRIMARY KEY , title VARCHAR(255), content VARCHAR(255), photo VARCHAR(255), published BOOLEAN , user_id INTEGER);"
+Post.connection.execute "CREATE TABLE posts (id INTEGER PRIMARY KEY AUTOINCREMENT, title VARCHAR(255), content VARCHAR(255), photo VARCHAR(255), published BOOLEAN , user_id INTEGER);"
 
 Comment.connection.execute "DROP TABLE IF EXISTS comments;"
 Comment.connection.execute "CREATE TABLE comments (id INTEGER PRIMARY KEY , post_id INTEGER, body VARCHAR(255));"
