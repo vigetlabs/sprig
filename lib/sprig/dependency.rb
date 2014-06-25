@@ -33,9 +33,6 @@ module Sprig
       raise ArgumentError, 'First argument must be a Class.' unless klass.is_a?(Class)
 
       klass
-    rescue NameError => e
-      raise NameError, e.message
-      #TODO: rescue bad class references
     end
 
     def self.collection

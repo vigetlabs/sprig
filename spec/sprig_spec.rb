@@ -219,7 +219,6 @@ describe "Seeding an application" do
 
   context "with files defined as attributes" do
     around do |example|
-      stub_rails_env 'test'
       load_seeds('posts_with_files.yml', &example)
     end
 
