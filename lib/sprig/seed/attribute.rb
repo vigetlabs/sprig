@@ -9,46 +9,75 @@ module Sprig
       end
 
       def dependencies
-        @dependencies ||= determine_dependencies.uniq
+        @dependencies ||= find_dependencies_within(raw_value).uniq
       end
 
       def value
-        compute_value if @value.nil?
+        @value = compute_value(raw_value) if @value.nil?
 
         @value
       end
 
       private
 
-      def determine_dependencies
-        if computed_value?
-          matches = raw_value.scan(/(sprig_record\(([A-Z][^,]*), ([\d]*)\))+/)
-          matches.map {|match| Dependency.for(match[1], match[2]) }
+      def find_dependencies_within(value)
+        if array?(value)
+          find_dependencies_within_array(value)
+        elsif string?(value) && computed_value?(value)
+          find_dependencies_within_string(value)
         else
           []
         end
       end
 
-      def string?
-        raw_value.is_a?(String)
+      def find_dependencies_within_array(array)
+        array.map do |value|
+          find_dependencies_within(value)
+        end.flatten
       end
 
-      def computed_value?
-        string? && raw_value =~ computed_value_regex
+      def find_dependencies_within_string(string)
+        matches = string.scan(/(sprig_record\(([A-Z][^,]*), ([\d]*)\))+/)
+        matches.map { |match| Dependency.for(match[1], match[2]) }
+      end
+
+      def string?(value)
+        value.is_a?(String)
+      end
+
+      def array?(value)
+        value.is_a?(Array)
+      end
+
+      def computed_value?(value)
+        String(value) =~ computed_value_regex
       end
 
       def computed_value_regex
         /<%[=]?(.*)%>/
       end
 
-      def compute_value
-        @value = if computed_value?
-          matches = computed_value_regex.match(raw_value)
-          eval(matches[1])
+      def compute_value(value)
+        if array?(value)
+          compute_array_value(value)
+        elsif string?(value) && computed_value?(value)
+          compute_string_value(value)
         else
-          raw_value
+          value
         end
       end
+
+      def compute_array_value(array)
+        array.map do |value|
+          compute_value(value)
+        end
+      end
+
+      def compute_string_value(string)
+        matches = computed_value_regex.match(string)
+        eval(matches[1])
+      end
+
     end
   end
 end
