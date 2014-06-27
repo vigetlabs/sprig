@@ -74,6 +74,8 @@ records:
 
 Each seed record needs a `sprig_id` defined that must be *unique across all seed files per class*.  It can be an integer, string, whatever you prefer; as long as it is unique, Sprig can sort your seeds for insertion and detect any cyclic relationships.
 
+### Relationships
+
 Create relationships between seed records with the `sprig_record` helper:
 
 ```yaml
@@ -85,6 +87,28 @@ records:
     body: "Yaml Comment body"
 ```
 
+#### Has and Belongs to Many
+For `has_and_belongs_to_many` (HABTM) relationships, you may define relation ids in array format. So if `Post` `has_and_belongs_to_many :tags`, you could write:
+```yaml
+#posts.yml
+
+records:
+  - sprig_id: 1
+    title: 'All About Brains'
+    content: 'Lorem ipsum...'
+    tag_ids:
+      - '<%= sprig_record(Tag, 1).id %>'
+      - '<%= sprig_record(Tag, 2).id %>'
+```
+```yaml
+#tags.yml
+
+records:
+  - sprig_id: 1
+    name: 'Biology'
+  - sprig_id: 2
+    name: 'Neuroscience'
+```
 **Note: For namespaced or STI classes, you'll need to include the namespace with the class name in the seed file name. For example `Users::HeadManager` would need to be `users_head_managers.yml`**
 
 ### Special Options
