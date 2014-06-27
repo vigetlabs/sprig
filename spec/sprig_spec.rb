@@ -235,6 +235,24 @@ describe "Seeding an application" do
     end
   end
 
+  context "with has_and_belongs_to_many relationships" do
+    around do |example|
+      load_seeds('posts_with_habtm.yml', 'tags.yml', &example)
+    end
+
+    it "saves the habtm relationships" do
+      sprig [
+        Tag,
+        {
+          :class  => Post,
+          :source => open('spec/fixtures/seeds/test/posts_with_habtm.yml')
+        }
+      ]
+
+      Post.first.tags.map(&:name).should == ['Botany', 'Biology']
+    end
+  end
+
   context "with cyclic dependencies" do
     around do |example|
       load_seeds('comments.yml', 'posts_with_cyclic_dependencies.yml', &example)

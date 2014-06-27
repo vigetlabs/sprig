@@ -58,6 +58,12 @@ Post.connection.execute "CREATE TABLE posts (id INTEGER PRIMARY KEY AUTOINCREMEN
 Comment.connection.execute "DROP TABLE IF EXISTS comments;"
 Comment.connection.execute "CREATE TABLE comments (id INTEGER PRIMARY KEY , post_id INTEGER, body VARCHAR(255));"
 
+Tag.connection.execute "DROP TABLE IF EXISTS tags;"
+Tag.connection.execute "CREATE TABLE tags (id INTEGER PRIMARY KEY , name VARCHAR(255));"
+
+Tag.connection.execute "DROP TABLE IF EXISTS posts_tags;"
+Tag.connection.execute "CREATE TABLE posts_tags (id INTEGER PRIMARY KEY , post_id INTEGER, tag_id INTEGER);"
+
 # Helpers
 #
 # Setup fake `Rails.root`

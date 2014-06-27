@@ -1,0 +1,7 @@
+records:
+  - sprig_id: 1
+    title: 'Yaml title'
+    content: 'Yaml content'
+    tag_ids:
+      - '<%= sprig_record(Tag, 1).id %>'
+      - '<%= sprig_record(Tag, 2).id %>'
