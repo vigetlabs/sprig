@@ -31,9 +31,9 @@ module Sprig
       end
 
       def find_dependencies_within_array(array)
-        array.map do |value|
+        array.flat_map do |value|
           find_dependencies_within(value)
-        end.flatten
+        end
       end
 
       def find_dependencies_within_string(string)
