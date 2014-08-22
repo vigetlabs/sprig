@@ -8,6 +8,14 @@ module Sprig
 
     def save(record, sprig_id)
       records_of_klass(record.class)[sprig_id.to_s] = record
+
+      return unless record.class.column_names.include? record.class.inheritance_column
+
+      begin
+        sti_base_class = record.class.table_name.classify.constantize
+        records_of_klass(sti_base_class)[sprig_id.to_s] = record
+      rescue NameError
+      end
     end
 
     def get(klass, sprig_id)
