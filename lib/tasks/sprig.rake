@@ -37,7 +37,7 @@ namespace :db do
 
     def seed_filenames
       seed_files_path = Rails.root.join('db', 'seeds', ENV['ENVIRONMENT'])
-      Dir.glob("#{seed_files_path}/*.{yml,yaml,json,csv}")
+      Dir.glob("#{seed_files_path}/*")
     end
   end
 end
