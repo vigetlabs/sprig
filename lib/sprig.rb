@@ -36,3 +36,5 @@ module Sprig
     end
   end
 end
+
+require 'sprig/railtie' if defined?(Rails)
