@@ -17,6 +17,7 @@ module Sprig
   autoload :SprigRecordStore,     'sprig/sprig_record_store'
   autoload :Data,                 'sprig/data'
   autoload :Seed,                 'sprig/seed'
+  autoload :Task,                 'sprig/task'
 
   class << self
     def configuration

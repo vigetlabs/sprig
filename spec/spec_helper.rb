@@ -94,3 +94,12 @@ def load_seeds(*files)
     `rm ./spec/fixtures/db/seeds/#{env}/#{file}`
   end
 end
+
+def fake_stdin_gets(input)
+  begin
+    $stdin = double('STDIN', gets: input)
+    yield
+  ensure
+    $stdin = STDIN
+  end
+end
