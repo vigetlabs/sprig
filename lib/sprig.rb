@@ -18,6 +18,7 @@ module Sprig
   autoload :Data,                 'sprig/data'
   autoload :Seed,                 'sprig/seed'
   autoload :Task,                 'sprig/task'
+  autoload :Railtie,              'sprig/railtie'
 
   class << self
     def configuration
