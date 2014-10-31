@@ -64,6 +64,9 @@ Tag.connection.execute "CREATE TABLE tags (id INTEGER PRIMARY KEY , name VARCHAR
 Tag.connection.execute "DROP TABLE IF EXISTS posts_tags;"
 Tag.connection.execute "CREATE TABLE posts_tags (id INTEGER PRIMARY KEY , post_id INTEGER, tag_id INTEGER);"
 
+Page.connection.execute "DROP TABLE IF EXISTS pages;"
+Page.connection.execute "CREATE TABLE pages (id INTEGER PRIMARY KEY , title VARCHAR(255), type VARCHAR(255));"
+
 # Helpers
 #
 # Setup fake `Rails.root`
