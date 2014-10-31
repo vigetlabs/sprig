@@ -296,6 +296,23 @@ RSpec.describe "Seeding an application" do
     end
   end
 
+  context "with STI records" do
+    around do |example|
+      load_seeds('article_pages.yml', 'pages.yml', &example)
+    end
+
+    it "allows cross-referencing of STI records" do
+      sprig [
+        ArticlePage,
+        Page
+      ]
+
+      Page.all.map(&:title).should == [
+        'First Title', 'First Title', 'Second Title', 'Second Title'
+      ]
+    end
+  end
+
   context "with cyclic dependencies" do
     around do |example|
       load_seeds('comments.yml', 'posts_with_cyclic_dependencies.yml', &example)
