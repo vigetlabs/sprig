@@ -32,7 +32,6 @@ Seed files are unique to the environment in which your Rails application is runn
 
 Todo: [Support for shared seed files]
 
-
 ##Seed files
 
 Hang your seed definitions on a `records` key for *yaml* and *json* files.
@@ -174,7 +173,7 @@ end
 ## Populate Seed Files from Database
 
 Want to create Sprig seed files from the records in your database? Well,
-[Sprig::Reap](http://www.rubygems.org/sprig-reap) can create them for you! Check out the gem's
+[Sprig::Reap](https://rubygems.org/gems/sprig-reap) can create them for you! Check out the gem's
 [README](https://github.com/vigetlabs/sprig-reap#sprigreap) for installation instructions and
 details on usage.
 
