@@ -408,5 +408,33 @@ describe "Seeding an application" do
         end
       end
     end
+
+    context "defined within the directive" do
+      let!(:existing) do
+        Post.create(
+          :title    => "Yaml title",
+          :content  => "Existing content")
+      end
+
+      around do |example|
+        load_seeds('posts.yml', &example)
+      end
+
+      it "respects the directive option" do
+        sprig [
+          {
+            :class   => Post,
+            :source  => open("spec/fixtures/seeds/test/posts.yml"),
+            :delete_existing_by => :title
+          }
+        ]
+
+        Post.count.should == 1
+
+        expect {
+          existing.reload
+        }.to raise_error(ActiveRecord::RecordNotFound)
+      end
+    end
   end
 end
