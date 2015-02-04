@@ -29,7 +29,6 @@ module Sprig
     def source
       @source ||= begin
         source = args.fetch(:source) { default_source }
-
         unless source.respond_to?(:read) && source.respond_to?(:close)
           raise ArgumentError, 'Data sources must act like an IO.'
         end
