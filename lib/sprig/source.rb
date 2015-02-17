@@ -22,7 +22,7 @@ module Sprig
       @data ||= begin
         parser_class.new(source).parse.to_hash.with_indifferent_access
       ensure
-        source.close
+        source.close if source.respond_to?(:close)
       end
     end
 
