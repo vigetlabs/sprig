@@ -7,7 +7,7 @@ module Sprig
         case
         when args.is_a?(Hash)
           args
-        when args.is_a?(Class) && args < ActiveRecord::Base
+        when args.is_a?(Class) && args < orm_model
           { :class => args }
         else
           raise ArgumentError, argument_error_message
@@ -30,8 +30,17 @@ module Sprig
     private
 
     def argument_error_message
-      'Sprig::Directive must be instantiated with an '\
-      'ActiveRecord subclass or a Hash with :class defined'
+      'Sprig::Directive must be instantiated with a(n) '\
+      "#{orm_model} class or a Hash with :class defined"
+    end
+
+    def orm_model
+      case Sprig.adapter
+      when :active_record
+        ActiveRecord::Base
+      when :mongoid
+        Mongoid::Document
+      end
     end
   end
 end

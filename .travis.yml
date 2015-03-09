@@ -3,3 +3,10 @@ script: "bundle exec rspec"
 rvm:
   - 1.9.3
   - 2.0.0
+gemfile:
+  - gemfiles/active_record_3.gemfile
+  - gemfiles/active_record_4.gemfile
+  - gemfiles/mongoid_3.gemfile
+  - gemfiles/mongoid_4.gemfile
+services:
+  - mongodb
