@@ -30,7 +30,7 @@ module Sprig
       def klass=(klass)
         raise ArgumentError, 'Must provide a Class as first argument' unless klass.is_a? Class
 
-        klass.reset_column_information
+        klass.reset_column_information if defined?(ActiveRecord) && klass < ActiveRecord::Base
         @klass = klass
       end
 

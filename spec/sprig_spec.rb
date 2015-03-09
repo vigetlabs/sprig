@@ -2,6 +2,14 @@ require 'spec_helper'
 require 'open-uri'
 
 describe "Seeding an application" do
+  let(:missing_record_error) do
+    if defined?(ActiveRecord) && Post < ActiveRecord::Base
+      ActiveRecord::RecordNotFound
+    elsif defined?(Mongoid) && Post < Mongoid::Document
+      Mongoid::Errors::DocumentNotFound
+    end
+  end
+
   before do
     stub_rails_root
   end
@@ -272,7 +280,15 @@ describe "Seeding an application" do
   end
 
   context "with a malformed directive" do
-    let(:expected_error_message) { 'Sprig::Directive must be instantiated with an ActiveRecord subclass or a Hash with :class defined' }
+    let(:orm_model) do
+        case Sprig.adapter
+        when :active_record
+          'ActiveRecord::Base'
+        when :mongoid
+          'Mongoid::Document'
+        end
+      end
+    let(:expected_error_message) { "Sprig::Directive must be instantiated with a(n) #{orm_model} class or a Hash with :class defined" }
 
     context "including a class that is not a subclass of AR" do
       it "raises an argument error" do
@@ -327,7 +343,7 @@ describe "Seeding an application" do
 
           expect {
             existing_match.reload
-          }.to raise_error(ActiveRecord::RecordNotFound)
+          }.to raise_error(missing_record_error)
 
           expect {
             existing_nonmatch.reload
@@ -433,7 +449,7 @@ describe "Seeding an application" do
 
         expect {
           existing.reload
-        }.to raise_error(ActiveRecord::RecordNotFound)
+        }.to raise_error(missing_record_error)
       end
     end
   end

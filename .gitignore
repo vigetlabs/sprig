@@ -1,7 +1,9 @@
 .bundle/
 .rspec
+.ruby-gemset
 .ruby-version
 spec/db/*
 spec/db/!.
 pkg/
 /coverage
+gemfiles/*.lock

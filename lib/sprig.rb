@@ -19,6 +19,12 @@ module Sprig
   autoload :Seed,                 'sprig/seed'
 
   class << self
+    attr_writer :adapter
+
+    def adapter
+      @adapter ||= :active_record
+    end
+
     def configuration
       @@configuration ||= Sprig::Configuration.new
     end
