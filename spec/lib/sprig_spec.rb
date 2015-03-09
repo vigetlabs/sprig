@@ -9,7 +9,7 @@ describe Sprig do
 
   describe '#adapter' do
     let(:supported_adapters) do
-      %i(active_record mongoid)
+      [:active_record, :mongoid]
     end
 
     it { expect(described_class).to respond_to(:adapter).with(0).arguments }
