@@ -25,6 +25,17 @@ module Sprig
       @adapter ||= :active_record
     end
 
+    def adapter_model_class
+      @adapter_model_class ||= case adapter
+      when :active_record
+        ActiveRecord::Base
+      when :mongoid
+        Mongoid::Document
+      else
+        raise "Unknown model class for adapter #{adapter}"
+      end
+    end
+
     def configuration
       @@configuration ||= Sprig::Configuration.new
     end

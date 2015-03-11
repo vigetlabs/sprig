@@ -7,15 +7,6 @@ describe Sprig::Directive do
     end
   end
 
-  let(:orm_model) do
-    case Sprig.adapter
-    when :active_record
-      'ActiveRecord::Base'
-    when :mongoid
-      'Mongoid::Document'
-    end
-  end
-
   describe "#klass" do
     context "given a class" do
       subject { described_class.new(Post) }
@@ -44,7 +35,7 @@ describe Sprig::Directive do
         }.to raise_error(
           ArgumentError,
           'Sprig::Directive must be instantiated with a(n) '\
-          "#{orm_model} class or a Hash with :class defined"
+          "#{Sprig.adapter_model_class} class or a Hash with :class defined"
         )
       end
     end
