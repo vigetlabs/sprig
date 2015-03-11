@@ -280,15 +280,7 @@ describe "Seeding an application" do
   end
 
   context "with a malformed directive" do
-    let(:orm_model) do
-        case Sprig.adapter
-        when :active_record
-          'ActiveRecord::Base'
-        when :mongoid
-          'Mongoid::Document'
-        end
-      end
-    let(:expected_error_message) { "Sprig::Directive must be instantiated with a(n) #{orm_model} class or a Hash with :class defined" }
+    let(:expected_error_message) { "Sprig::Directive must be instantiated with a(n) #{Sprig.adapter_model_class} class or a Hash with :class defined" }
 
     context "including a class that is not a subclass of AR" do
       it "raises an argument error" do
