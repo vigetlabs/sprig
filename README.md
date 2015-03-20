@@ -147,6 +147,8 @@ records:
 If all your data is in `.wat` files, fear not. You can tell Sprig where to look for your data, and point it toward a custom parser class for turning your data into records. The example below tells Sprig to read `User` seed data from a Google Spreadsheet, and parse it accordingly.
 
 ```ruby
+require 'open-uri'
+
 fanciness = {
   :class  => User,
   :source => open('https://spreadsheets.google.com/feeds/list/somerandomtoken/1/public/values?alt=json'),
