@@ -4,6 +4,12 @@
 
 Seed Rails application by convention, not configuration.
 
+Tested against the following adapters:
+- ActiveRecord 3 (SQLite)
+- ActiveRecord 4 (SQLite)
+- Mongoid 3
+- Mongoid 4
+
 Provides support for common files types: *csv*, *yaml*, and *json*.  Extensible for the rest!
 
 Learn more about Sprig and view documentation at [http://vigetlabs.github.io/sprig/](http://vigetlabs.github.io/sprig/).
@@ -140,6 +146,22 @@ records:
   - sprig_id: 1
     body: "Yaml Post body"
     published_at: "<%= 1.week.ago %>"
+```
+
+Using Single-Table Inheritance? Want to keep your posts and comments in the same file? Sprig supports specifying the class used to seed each record by specifying the :class_name key.
+
+```yaml
+# posts.yml
+
+records:
+  - sprig_id: 1
+    body: "This is a sample Post"
+  - class_name: 'Comment'
+    post_id: <%= sprig_record(Post, 1).id %>
+    body: "This is a Comment on the sample Post"
+  - class_name: GuestPost
+    body: "This is a Guest Post, which has special behavior"
+    author_id: <%= sprig_record(User, 2).id %>
 ```
 
 ##Custom Sources and Parsers
