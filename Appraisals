@@ -1,5 +1,6 @@
 appraise "active_record-3" do
   gem "sqlite3", "~> 1.3.8"
+  gem "test-unit" # Required for Travis-CI.
 end
 
 appraise "active_record-4" do
@@ -9,6 +10,7 @@ end
 
 appraise "mongoid-3" do
   gem "mongoid", "~> 3.1.6"
+  gem "test-unit" # Required for Travis-CI.
 end
 
 appraise "mongoid-4" do
