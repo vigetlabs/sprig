@@ -135,6 +135,12 @@ options:
   find_existing_by: ['title', 'user_id']
 ```
 
+#### reserved_class_name_attribute:
+
+The reserved attribute name for specifying a different class for that seed (see Setting The Record Class, below).
+
+The default value is 'class_name'. This can be set to any string (e.g. 'klass' or 'type'), or to `null` to disable this feature for all seeds in the current document.
+
 ### Computed Values
 
 It's common to want seed values that are dynamic.  Sprig supports an ERB style syntax for computing seed attributes.
@@ -148,7 +154,9 @@ records:
     published_at: "<%= 1.week.ago %>"
 ```
 
-Using Single-Table Inheritance? Want to keep your posts and comments in the same file? Sprig supports specifying the class used to seed each record by specifying the :class_name key.
+### Setting The Record Class
+
+Using Single-Table Inheritance? Want to keep your posts and comments in the same file? Sprig supports specifying the class used to seed each record by specifying the 'class_name' key.
 
 ```yaml
 # posts.yml
@@ -163,6 +171,8 @@ records:
     body: "This is a Guest Post, which has special behavior"
     author_id: <%= sprig_record(User, 2).id %>
 ```
+
+If 'class_name' doesn't fit your source data, you can change the reserved attribute key by setting the 'reserved_class_name_attribute' option (see Special Options, above).
 
 ##Custom Sources and Parsers
 
