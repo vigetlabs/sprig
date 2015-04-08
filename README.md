@@ -152,7 +152,7 @@ require 'open-uri'
 fanciness = {
   :class  => User,
   :source => open('https://spreadsheets.google.com/feeds/list/somerandomtoken/1/public/values?alt=json'),
-  :parser => Sprig::Data::Parser::GoogleSpreadsheetJson
+  :parser => Sprig::Parser::GoogleSpreadsheetJson
 }
 
 sprig [
