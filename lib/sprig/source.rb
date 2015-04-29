@@ -75,11 +75,28 @@ module Sprig
       class FileNotFoundError < StandardError; end
 
       def filename
-        available_files.detect {|name| name =~ /^#{table_name}\./ } || file_not_found
+        environment_specific_filename || root_filename || file_not_found
       end
 
-      def available_files
+      def root_filename
+        detect_file(available_root_files)
+      end
+
+      def environment_specific_filename
+        name = detect_file(available_environment_files)
+        name.prepend("#{Rails.env}/") unless name.nil?
+      end
+
+      def detect_file(files)
+        files.detect {|name| name =~ /^#{table_name}\./ }
+      end
+
+      def available_root_files
         Dir.entries(seed_directory)
+      end
+
+      def available_environment_files
+        Dir.entries(seed_environment_directory)
       end
 
       def file_not_found

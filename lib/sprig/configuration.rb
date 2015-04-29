@@ -4,7 +4,11 @@ module Sprig
     attr_writer :directory, :logger
 
     def directory
-      Rails.root.join(@directory || default_directory, Rails.env)
+      Rails.root.join(@directory || default_directory)
+    end
+
+    def environment_directory
+      Rails.root.join(directory, Rails.env)
     end
 
     def logger
