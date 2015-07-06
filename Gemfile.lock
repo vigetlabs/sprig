@@ -67,6 +67,7 @@ GEM
     mime-types (1.25.1)
     multi_json (1.8.2)
     polyglot (0.3.3)
+    power_assert (0.2.3)
     pry (0.9.12)
       coderay (~> 1.0.5)
       method_source (~> 0.8)
@@ -121,6 +122,8 @@ GEM
     sqlite3 (1.3.10)
     term-ansicolor (1.2.2)
       tins (~> 0.8)
+    test-unit (3.1.2)
+      power_assert
     thor (0.18.1)
     tilt (1.4.1)
     tins (0.13.1)
@@ -147,5 +150,6 @@ DEPENDENCIES
   simplecov
   sprig!
   sqlite3
+  test-unit (~> 3.0)
   vcr (~> 2.8.0)
   webmock (~> 1.15.0)

@@ -23,6 +23,7 @@ Gem::Specification.new do |s|
   s.add_development_dependency "database_cleaner", "~> 1.2.0"
   s.add_development_dependency "webmock",          "~> 1.15.0"
   s.add_development_dependency "vcr",              "~> 2.8.0"
+  s.add_development_dependency "test-unit",        "~> 3.0"
   s.add_development_dependency "pry"
   s.add_development_dependency "generator_spec"
   s.add_development_dependency "simplecov"
