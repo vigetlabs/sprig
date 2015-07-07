@@ -25,7 +25,7 @@ module Sprig
     end
 
     def plant(seed)
-      notifier.in_progress
+      notifier.in_progress(seed)
       seed.before_save
 
       if seed.save_record

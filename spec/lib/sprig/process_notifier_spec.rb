@@ -79,10 +79,12 @@ describe Sprig::ProcessNotifier do
   end
 
   describe "#in_progress" do
-    it "logs an in-progress message" do
-      log_should_receive(:debug, with: "Planting those seeds...\r")
+    let(:seed) { Sprig::Seed::Entry.new(Post, { title: "Hello World!", content: "Stuff", sprig_id: 1 }, {}) }
 
-      subject.in_progress
+    it "logs an in-progress message" do
+      log_should_receive(:debug, with: "Planting Post with sprig_id 1")
+
+      subject.in_progress(seed)
     end
   end
 end

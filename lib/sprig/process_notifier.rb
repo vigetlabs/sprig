@@ -10,6 +10,10 @@ module Sprig
       @errors = []
     end
 
+    def in_progress(seed)
+      log_debug seed.in_progress_text
+    end
+
     def success(seed)
       log_info seed.success_log_text
       @success_count += 1
@@ -40,10 +44,6 @@ module Sprig
           log_error "#{error.errors.messages}\n"
         end
       end
-    end
-
-    def in_progress
-      log_debug "Planting those seeds...\r"
     end
 
     private

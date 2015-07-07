@@ -34,12 +34,16 @@ module Sprig
         SprigRecordStore.instance.save(record.orm_record, sprig_id)
       end
 
-      def success_log_text
-        "#{klass.name} with sprig_id #{sprig_id} successfully #{success_log_status_text}."
+      def in_progress_text
+        "Planting #{klass.name} with sprig_id #{sprig_id}"
       end
 
-      def success_log_status_text
-        record.existing? ? "updated" : "saved"
+      def success_log_text
+        if record.existing?
+          "Updated"
+        else
+          "Saved"
+        end
       end
 
       def error_log_text
