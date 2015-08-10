@@ -10,9 +10,9 @@ Learn more about Sprig and view documentation at [http://vigetlabs.github.io/spr
 
 ## Installation
 
-Add into your Gemfile, check [RubyGems](https://rubygems.org/gems/spring/versions/) for current version
+Add into your Gemfile
 ```ruby
-gem "sprig", "~> 1.3"
+gem "sprig"
 ```
 Use `rails generate sprig:install` to create environment-specific seed directories.
 
