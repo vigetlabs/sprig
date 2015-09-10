@@ -1,0 +1,10 @@
+options:
+  reserved_class_name_attribute: 'klass'
+
+records:
+  - sprig_id: 1
+    title: 'Yaml title'
+    content: 'Yaml content'
+  - klass: 'Comment'
+    post_id: <%= sprig_record(Post, 1).id %>
+    body: 'Comment body'

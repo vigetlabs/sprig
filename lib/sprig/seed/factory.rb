@@ -18,8 +18,17 @@ module Sprig
       end
 
       def add_seeds_to_hopper(hopper)
+        reserved_class_name_attribute = datasource.options.fetch('reserved_class_name_attribute', 'class_name')
+
         datasource.records.each do |record_data|
-          hopper << Entry.new(klass, record_data, options)
+          record_attrs, record_klass = record_data, klass
+
+          if reserved_class_name_attribute && record_data.key?(reserved_class_name_attribute)
+            record_attrs = record_attrs.dup
+            record_klass = record_attrs.delete(reserved_class_name_attribute).to_s.constantize
+          end
+
+          hopper << Entry.new(record_klass, record_attrs, options)
         end
       end
 

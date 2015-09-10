@@ -211,6 +211,58 @@ describe "Seeding an application" do
     end
   end
 
+  context "with the class specified in the entry" do
+    describe "with a yaml file" do
+      around do |example|
+        load_seeds('posts_and_comments.yml', &example)
+      end
+
+      it "seeds the db" do
+        sprig [
+          {
+            :class  => Post,
+            :source => open('spec/fixtures/seeds/test/posts_and_comments.yml')
+          }
+        ]
+
+        post, comment = Post.first, Comment.first
+
+        expect(Post.count).to be == 1
+        expect(Comment.count).to be == 1
+
+        expect(post.title).to be == 'Yaml title'
+        expect(comment.body).to be == 'Comment body'
+        expect(comment.post_id).to be == post.id
+      end
+    end
+
+    describe "with a yaml file with custom class_name attribute" do
+      describe "with a yaml file" do
+        around do |example|
+          load_seeds('posts_and_comments_with_custom_class.yml', &example)
+        end
+
+        it "seeds the db" do
+          sprig [
+            {
+              :class  => Post,
+              :source => open('spec/fixtures/seeds/test/posts_and_comments_with_custom_class.yml')
+            }
+          ]
+
+          post, comment = Post.first, Comment.first
+
+          expect(Post.count).to be == 1
+          expect(Comment.count).to be == 1
+
+          expect(post.title).to be == 'Yaml title'
+          expect(comment.body).to be == 'Comment body'
+          expect(comment.post_id).to be == post.id
+        end
+      end
+    end
+  end
+
   context "from a specific environment" do
     around do |example|
       stub_rails_env 'staging'

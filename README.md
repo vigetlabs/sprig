@@ -4,6 +4,12 @@
 
 Seed Rails application by convention, not configuration.
 
+Tested against the following adapters:
+- ActiveRecord 3 (SQLite)
+- ActiveRecord 4 (SQLite)
+- Mongoid 3
+- Mongoid 4
+
 Provides support for common files types: *csv*, *yaml*, and *json*.  Extensible for the rest!
 
 Learn more about Sprig and view documentation at [http://vigetlabs.github.io/sprig/](http://vigetlabs.github.io/sprig/).
@@ -133,6 +139,12 @@ options:
   find_existing_by: ['title', 'user_id']
 ```
 
+#### reserved_class_name_attribute:
+
+The reserved attribute name for specifying a different class for that seed (see Setting The Record Class, below).
+
+The default value is 'class_name'. This can be set to any string (e.g. 'klass' or 'type'), or to `null` to disable this feature for all seeds in the current document.
+
 ### Computed Values
 
 It's common to want seed values that are dynamic.  Sprig supports an ERB style syntax for computing seed attributes.
@@ -145,6 +157,26 @@ records:
     body: "Yaml Post body"
     published_at: "<%= 1.week.ago %>"
 ```
+
+### Setting The Record Class
+
+Using Single-Table Inheritance? Want to keep your posts and comments in the same file? Sprig supports specifying the class used to seed each record by specifying the 'class_name' key.
+
+```yaml
+# posts.yml
+
+records:
+  - sprig_id: 1
+    body: "This is a sample Post"
+  - class_name: 'Comment'
+    post_id: <%= sprig_record(Post, 1).id %>
+    body: "This is a Comment on the sample Post"
+  - class_name: GuestPost
+    body: "This is a Guest Post, which has special behavior"
+    author_id: <%= sprig_record(User, 2).id %>
+```
+
+If 'class_name' doesn't fit your source data, you can change the reserved attribute key by setting the 'reserved_class_name_attribute' option (see Special Options, above).
 
 ##Custom Sources and Parsers
 
