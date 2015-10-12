@@ -53,6 +53,23 @@ describe "Seeding an application" do
     end
   end
 
+  context "with a symlinked file" do
+    let(:env) { Rails.env }
+
+    around do |example|
+      `ln -s ./spec/fixtures/seeds/#{env}/posts.yml ./spec/fixtures/db/seeds/#{env}`
+      example.call
+      `rm ./spec/fixtures/db/seeds/#{env}/posts.yml`
+    end
+
+    it "seeds the db" do
+      sprig [Post]
+
+      Post.count.should == 1
+      Post.pluck(:title).should =~ ['Yaml title']
+    end
+  end
+
   context "with a google spreadsheet" do
     it "seeds the db", :vcr => { :cassette_name => 'google_spreadsheet_json_posts' } do
       sprig [

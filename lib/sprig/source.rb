@@ -67,7 +67,7 @@ module Sprig
       end
 
       def file
-        File.new(seed_directory.join(filename))
+        File.new(filepath)
       end
 
       private
@@ -76,6 +76,15 @@ module Sprig
 
       def filename
         available_files.detect {|name| name =~ /^#{table_name}\./ } || file_not_found
+      end
+
+      def filepath
+        path = seed_directory.join(filename)
+        if File.symlink?(path)
+          File.readlink(path)
+        else
+          path
+        end
       end
 
       def available_files
