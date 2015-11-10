@@ -1,4 +1,4 @@
 records:
   - sprig_id: 1
-    title: '<%= "Partially-dynamic" %> title'
+    title: '<%= "Partially" %> <%= "Dynamic" %> Title'
     content: 'Yaml content'

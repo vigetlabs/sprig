@@ -54,7 +54,7 @@ module Sprig
       end
 
       def computed_value_regex
-        /<%[=]?(.*)%>/
+        /(<%=?(.*?)%>)/
       end
 
       def compute_value(value)
@@ -73,9 +73,33 @@ module Sprig
         end
       end
 
+      def completely_dynamic_value?(string, matches)
+        return false if matches.count > 1
+
+        test_string = string.clone
+
+        matches.each do |match|
+          test_string = test_string.sub(match[0], "")
+        end
+
+        test_string.strip.length == 0
+      end
+
       def compute_string_value(string)
-        matches = computed_value_regex.match(string)
-        eval(matches[1])
+        matches = string.scan(computed_value_regex)
+
+        if completely_dynamic_value?(string, matches)
+          # If the dynamic portion is the entire value, return the result of the eval
+          # (This allows for the return of non-string types.)
+          eval(matches.first[1])
+        else
+          # Otherwise return the dynamic portion within the larger string.
+          string.clone.tap do |return_string|
+            matches.each do |match|
+              return_string.sub!(match[0], eval(match[1]))
+            end
+          end
+        end
       end
 
     end

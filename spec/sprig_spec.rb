@@ -67,7 +67,7 @@ describe "Seeding an application" do
       ]
 
       Post.count.should == 1
-      Post.pluck(:title).should =~ ['Partially-dynamic title']
+      Post.pluck(:title).should =~ ['Partially Dynamic Title']
     end
   end
 
