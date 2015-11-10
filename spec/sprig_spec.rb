@@ -53,6 +53,24 @@ describe "Seeding an application" do
     end
   end
 
+  context "with a partially-dynamic value" do
+    around do |example|
+      load_seeds('posts_partially_dynamic_value.yml', &example)
+    end
+
+    it "seeds the db with the full value" do
+      sprig [
+        {
+          :class  => Post,
+          :source => open('spec/fixtures/seeds/test/posts_partially_dynamic_value.yml')
+        }
+      ]
+
+      Post.count.should == 1
+      Post.pluck(:title).should =~ ['Partially-dynamic title']
+    end
+  end
+
   context "with a symlinked file" do
     let(:env) { Rails.env }
 
