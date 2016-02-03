@@ -50,7 +50,7 @@ records:
     first_name: 'Lawson'
     last_name: 'Kurtz'
     username: 'lawdawg'
-  - sprig_id: 2
+  - sprig_id: 'ryan' # Note: Sprig IDs can be integers or strings
     first_name: 'Ryan'
     last_name: 'Foster'
     username: 'mc_rubs'
@@ -96,7 +96,7 @@ For `has_and_belongs_to_many` (HABTM) relationships, you may define relation ids
 #posts.yml
 
 records:
-  - sprig_id: 1
+  - sprig_id: 42
     title: 'All About Brains'
     content: 'Lorem ipsum...'
     tag_ids:
@@ -107,9 +107,9 @@ records:
 #tags.yml
 
 records:
-  - sprig_id: 1
+  - sprig_id: 'bio'
     name: 'Biology'
-  - sprig_id: 2
+  - sprig_id: 'neuro'
     name: 'Neuroscience'
 ```
 **Note: For namespaced or STI classes, you'll need to include the namespace with the class name in the seed file name. For example `Users::HeadManager` would need to be `users_head_managers.yml`**
