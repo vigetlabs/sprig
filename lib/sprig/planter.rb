@@ -5,8 +5,10 @@ module Sprig
     end
 
     def sprig
-      dependency_sorted_seeds.each do |seed|
-        plant(seed)
+      wrap_in_transaction_if_supported do
+        dependency_sorted_seeds.each do |seed|
+          plant(seed)
+        end
       end
 
       notifier.finished
@@ -32,7 +34,25 @@ module Sprig
         seed.save_to_store
         notifier.success(seed)
       else
+        raise ActiveRecord::Rollback if transactional_wrapping_requested_and_supported?
         notifier.error(seed)
+      end
+    end
+
+    def transactional_wrapping_requested_and_supported?
+      Sprig.configuration.wrap_in_transaction && Sprig.adapter == :active_record
+    end
+
+    def wrap_in_transaction_if_supported
+      return yield unless Sprig.configuration.wrap_in_transaction
+
+      if Sprig.adapter != :active_record
+        notifier.warn("Only the `:active_record` adapter supports transactional wrapping. You specified `#{Sprig.adapter}`.")
+        return yield
+      end
+
+      Sprig.adapter_model_class.transaction do
+        yield
       end
     end
   end

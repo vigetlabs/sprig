@@ -33,4 +33,17 @@ describe Sprig::Configuration do
       subject.logger.should == logger
     end
   end
+
+  describe "#wrap_in_transaction" do
+    it "returns false by default" do
+      subject.wrap_in_transaction.should == false
+    end
+
+    it "returns a custom value if provided" do
+      custom_value = true
+      subject.wrap_in_transaction = custom_value
+
+      subject.wrap_in_transaction.should == custom_value
+    end
+  end
 end

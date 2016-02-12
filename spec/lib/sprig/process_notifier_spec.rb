@@ -15,6 +15,15 @@ describe Sprig::ProcessNotifier do
     end
   end
 
+  describe "#warning" do
+    it "logs the provided message as a warning" do
+      message = "oh noes!"
+      log_should_receive(:warn, with: message)
+
+      subject.warning(message)
+    end
+  end
+
   describe "#error" do
     let(:errors) { double('Errors', messages: 'error messages') }
     let(:seed_record) { double('Record', to_s: 'Seed Record', errors: errors) }

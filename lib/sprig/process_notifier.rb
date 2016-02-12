@@ -19,6 +19,10 @@ module Sprig
       @success_count += 1
     end
 
+    def warning(message)
+      log_warn message
+    end
+
     def error(seed)
       @errors << seed.record
       log_error seed.error_log_text

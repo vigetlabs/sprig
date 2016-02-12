@@ -173,6 +173,7 @@ When Sprig conventions don't suit, just add a configuration block to your seed f
 ```ruby
 Sprig.configure do |c|
   c.directory = 'seed_files'
+  c.wrap_in_transaction = true
 end
 ```
 
