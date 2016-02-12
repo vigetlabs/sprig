@@ -506,4 +506,48 @@ RSpec.describe "Seeding an application" do
       end
     end
   end
+
+  context "with Sprig configured to wrap the planting process in a transaction" do
+    before do
+      Sprig.configure do |c|
+        c.wrap_in_transaction = true
+      end
+    end
+
+    after do
+      Sprig.configure do |c|
+        c.wrap_in_transaction = false
+      end
+    end
+
+    context "with no errors" do
+      around do |example|
+        load_seeds('posts.yml', &example)
+      end
+
+      it "adds all the records to the database" do
+        sprig [Post]
+
+        expect(Post.count).to eq(1)
+        expect(Post.pluck(:title)).to match_array(['Yaml title'])
+      end
+    end
+
+    context "with some errors" do
+      around do |example|
+        load_seeds('posts_with_some_errors.yml', &example)
+      end
+
+      it "adds no records to the database" do
+        sprig [
+          {
+          :class  => Post,
+          :source => open('spec/fixtures/seeds/test/posts_with_some_errors.yml')
+          }
+        ]
+
+        expect(Post.count).to eq(0)
+      end
+    end
+  end
 end

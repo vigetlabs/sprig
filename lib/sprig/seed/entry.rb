@@ -1,6 +1,8 @@
 module Sprig
   module Seed
     class Entry
+      attr_reader :klass
+
       def initialize(klass, attrs, options)
         self.klass = klass
         attrs = attrs.to_hash.with_indifferent_access
@@ -56,7 +58,7 @@ module Sprig
 
       private
 
-      attr_reader :attributes, :klass, :options, :sprig_id
+      attr_reader :attributes, :options, :sprig_id
 
       def klass=(klass)
         raise ArgumentError, "First argument must be a Class" unless klass.is_a?(Class)
