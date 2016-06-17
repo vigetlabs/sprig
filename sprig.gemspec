@@ -20,6 +20,7 @@ Gem::Specification.new do |s|
   s.add_development_dependency "appraisal",        "~> 1.0", ">= 1.0.3"
   s.add_development_dependency "rails",            "~> 3.1"
   s.add_development_dependency "rspec",            "~> 2.14.0"
+  s.add_development_dependency "json",             "~> 1.8.3"
   s.add_development_dependency "database_cleaner", "~> 1.2.0"
   s.add_development_dependency "webmock",          "~> 1.15.0"
   s.add_development_dependency "vcr",              "~> 2.8.0"

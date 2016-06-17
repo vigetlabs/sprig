@@ -59,7 +59,7 @@ GEM
     hike (1.2.3)
     i18n (0.6.1)
     journey (1.0.4)
-    json (1.8.0)
+    json (1.8.3)
     mail (2.5.4)
       mime-types (~> 1.16)
       treetop (~> 1.4.8)
@@ -144,6 +144,7 @@ DEPENDENCIES
   coveralls
   database_cleaner (~> 1.2.0)
   generator_spec
+  json (~> 1.8.3)
   pry
   rails (~> 3.1)
   rspec (~> 2.14.0)
@@ -153,3 +154,6 @@ DEPENDENCIES
   test-unit (~> 3.0)
   vcr (~> 2.8.0)
   webmock (~> 1.15.0)
+
+BUNDLED WITH
+   1.12.5
