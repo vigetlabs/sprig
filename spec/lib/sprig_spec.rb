@@ -1,10 +1,10 @@
 require 'spec_helper'
 
-describe Sprig do
+RSpec.describe Sprig do
   let(:configuration) { double('Configuration') }
 
   before do
-    Sprig::Configuration.stub(:new).and_return(configuration)
+    allow(Sprig::Configuration).to receive(:new).and_return(configuration)
   end
 
   describe '.adapter' do
@@ -61,7 +61,7 @@ describe Sprig do
   describe ".configuration" do
     context "when there is not yet a Configuration instance" do
       it "returns a new Configuration instance" do
-        described_class.configuration.should == configuration
+        expect(described_class.configuration).to eq(configuration)
       end
     end
 
@@ -72,9 +72,9 @@ describe Sprig do
 
       it "returns the existing Configuration instance" do
         new_configuration = double('Configuration')
-        Sprig::Configuration.stub(:new).and_return(new_configuration)
+        allow(Sprig::Configuration).to receive(:new).and_return(new_configuration)
 
-        described_class.configuration.should == configuration
+        expect(described_class.configuration).to eq(configuration)
       end
     end
   end
@@ -87,16 +87,16 @@ describe Sprig do
     it "clears the existing configuration" do
       described_class.reset_configuration
       new_configuration = double('Configuration')
-      Sprig::Configuration.stub(:new).and_return(new_configuration)
+      allow(Sprig::Configuration).to receive(:new).and_return(new_configuration)
 
-      described_class.configuration.should == new_configuration
+      expect(described_class.configuration).to eq(new_configuration)
     end
   end
 
   describe ".configure" do
     it "yields the configuration" do
       described_class.configure do |config|
-        config.should == configuration
+        expect(config).to eq(configuration)
       end
     end
   end
