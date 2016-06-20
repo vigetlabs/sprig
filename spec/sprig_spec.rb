@@ -247,19 +247,16 @@ RSpec.describe "Seeding an application" do
   end
 
   context "from a specific environment" do
-    around do |example|
-      # Fix RSpec3 stubbing issue - RF 6-17-16
-      #stub_rails_env 'staging'
-      #load_seeds('posts.yml', &example)
-    end
-
     it "seeds the db" do
-      pending("RSpec3 stubbing issues")
+      ex = Proc.new do
+        sprig [Post]
 
-      sprig [Post]
+        expect(Post.count).to eq(1)
+        expect(Post.pluck(:title)).to eq(['Staging yaml title'])
+      end
 
-      expect(Post.count).to eq(1)
-      expect(Post.pluck(:title)).to eq(['Staging yaml title'])
+      stub_rails_env 'staging'
+      load_seeds('posts.yml', &ex)
     end
   end
 
