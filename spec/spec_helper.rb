@@ -21,6 +21,14 @@ RSpec.configure do |c|
   c.include ColoredText
   c.include LoggerMock
 
+  c.disable_monkey_patching!
+
+  c.order = :random
+
+  c.mock_with :rspec do |mocks|
+    mocks.verify_partial_doubles = true
+  end
+
   c.after(:each) do
     Sprig.reset_configuration
   end
@@ -56,12 +64,12 @@ require "adapters/#{Sprig.adapter}.rb"
 #
 # Setup fake `Rails.root`
 def stub_rails_root(path='./spec/fixtures')
-  Rails.stub(:root).and_return(Pathname.new(path))
+  allow(Rails).to receive(:root).and_return(Pathname.new(path))
 end
 
 # Setup fake `Rails.env`
 def stub_rails_env(env='development')
-  Rails.stub(:env).and_return(env)
+  allow(Rails).to receive(:env).and_return(env)
 end
 
 # Copy and Remove Seed files around a spec

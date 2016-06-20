@@ -1,10 +1,10 @@
 language: ruby
 script: "bundle exec rspec"
 rvm:
-  - 1.9.3
   - 2.0.0
   - 2.1.5
   - 2.2.1
+  - 2.3.1
 gemfile:
   - gemfiles/active_record_3.gemfile
   - gemfiles/active_record_4.gemfile
@@ -12,3 +12,5 @@ gemfile:
   - gemfiles/mongoid_4.gemfile
 services:
   - mongodb
+before_install:
+  - gem install bundler -v 1.12.5

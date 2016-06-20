@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe Sprig::Parser::Base do
+RSpec.describe Sprig::Parser::Base do
   describe "#parse" do
     it "enforces implementation in a subclass" do
       expect {

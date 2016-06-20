@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe Sprig::NullRecord do
+RSpec.describe Sprig::NullRecord do
   let(:error_msg) { 'Something bad happened.' }
   subject { described_class.new(error_msg) }
 
@@ -14,7 +14,7 @@ describe Sprig::NullRecord do
 
   describe "#method_missing" do
     it "returns nil for undefined method calls" do
-      subject.enhance_your_calm.should == nil
+      expect(subject.enhance_your_calm).to eq(nil)
     end
   end
 

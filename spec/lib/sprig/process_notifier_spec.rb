@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe Sprig::ProcessNotifier do
+RSpec.describe Sprig::ProcessNotifier do
   it_behaves_like "a logging entity" do
     subject { described_class.new }
   end

@@ -1,13 +1,13 @@
 require 'spec_helper'
 
-describe Sprig::Seed::Entry do
+RSpec.describe Sprig::Seed::Entry do
   describe ".success_log_text" do
     context "on a new record" do
       it "indicates the record was 'saved'" do
         subject = described_class.new(Post, { title: "Hello World!", content: "Stuff", sprig_id: 1 }, {})
         subject.save_record
 
-        subject.success_log_text.should == "Saved"
+        expect(subject.success_log_text).to eq("Saved")
       end
     end
 
@@ -24,7 +24,7 @@ describe Sprig::Seed::Entry do
         subject = described_class.new(Post, { title: "Existing title", content: "Existing content", sprig_id: 1 }, { find_existing_by: [:title] })
         subject.save_record
 
-        subject.success_log_text.should == "Updated"
+        expect(subject.success_log_text).to eq("Updated")
       end
     end
   end
