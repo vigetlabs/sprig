@@ -1,3 +1,10 @@
 module Sprig
-  VERSION = "0.2.0"
+
+  #:nocov:
+  VERSION = [
+    0, # major
+    3, # minor
+    0  # patch
+  ].join('.')
+  #:nocov:
 end

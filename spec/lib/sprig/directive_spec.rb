@@ -1,6 +1,6 @@
 require 'spec_helper'
 
-describe Sprig::Directive do
+RSpec.describe Sprig::Directive do
 
   module Users
     class Admin < User
@@ -11,19 +11,25 @@ describe Sprig::Directive do
     context "given a class" do
       subject { described_class.new(Post) }
 
-      its(:klass) { should == Post }
+      it "returns the class" do
+        expect(subject.klass).to eq(Post)
+      end
     end
 
     context "given a class within a module" do
       subject { described_class.new(Users::Admin) }
 
-      its(:klass) { should == Users::Admin }
+      it "returns the full class" do
+        expect(subject.klass).to eq(Users::Admin)
+      end
     end
 
     context "given options with a class" do
       subject { described_class.new(:class => Post) }
 
-      its(:klass) { should == Post }
+      it "returns the class" do
+        expect(subject.klass).to eq(Post)
+      end
     end
 
     context "given options without a class" do
@@ -45,13 +51,17 @@ describe Sprig::Directive do
     context "given no options" do
       subject { described_class.new(Post) }
 
-      its(:options) { should == {} }
+      it "returns an empty hash" do
+        expect(subject.options).to eq({})
+      end
     end
 
     context "given options" do
       subject { described_class.new(:class => Post, :source => 'source') }
 
-      its(:options) { should == { :source => 'source' } }
+      it "returns a the options" do
+        expect(subject.options).to eq(:source => 'source')
+      end
     end
   end
 
@@ -62,11 +72,11 @@ describe Sprig::Directive do
       subject { described_class.new(:class => Post, :source => 'source') }
 
       before do
-        Sprig::Source.stub(:new).with('posts', { :source => 'source' }).and_return(datasource)
+        allow(Sprig::Source).to receive(:new).with('posts', { :source => 'source' }).and_return(datasource)
       end
 
       it "returns a sprig data source" do
-        subject.datasource.should == datasource
+        expect(subject.datasource).to eq(datasource)
       end
     end
 
@@ -74,7 +84,7 @@ describe Sprig::Directive do
       subject { described_class.new(Users::Admin) }
 
       it "passes the correct path to Source" do
-        Sprig::Source.should_receive(:new).with("users_admins", {})
+        expect(Sprig::Source).to receive(:new).with("users_admins", {})
 
         subject.datasource
       end

@@ -1,7 +1,7 @@
 require 'spec_helper'
 require 'open-uri'
 
-describe "Seeding an application" do
+RSpec.describe "Seeding an application" do
   let(:missing_record_error) do
     if defined?(ActiveRecord) && Post < ActiveRecord::Base
       ActiveRecord::RecordNotFound
@@ -22,8 +22,8 @@ describe "Seeding an application" do
     it "seeds the db" do
       sprig [Post]
 
-      Post.count.should == 1
-      Post.pluck(:title).should =~ ['Yaml title']
+      expect(Post.count).to eq(1)
+      expect(Post.pluck(:title)).to eq(['Yaml title'])
     end
   end
 
@@ -35,8 +35,8 @@ describe "Seeding an application" do
     it "seeds the db" do
       sprig [Post]
 
-      Post.count.should == 1
-      Post.pluck(:title).should =~ ['Csv title']
+      expect(Post.count).to eq(1)
+      expect(Post.pluck(:title)).to eq(['Csv title'])
     end
   end
 
@@ -48,8 +48,8 @@ describe "Seeding an application" do
     it "seeds the db" do
       sprig [Post]
 
-      Post.count.should == 1
-      Post.pluck(:title).should =~ ['Json title']
+      expect(Post.count).to eq(1)
+      expect(Post.pluck(:title)).to eq(['Json title'])
     end
   end
 
@@ -66,8 +66,8 @@ describe "Seeding an application" do
         }
       ]
 
-      Post.count.should == 1
-      Post.pluck(:title).should =~ ['Partially Dynamic Title']
+      expect(Post.count).to eq(1)
+      expect(Post.pluck(:title)).to eq(['Partially Dynamic Title'])
     end
   end
 
@@ -83,8 +83,8 @@ describe "Seeding an application" do
     it "seeds the db" do
       sprig [Post]
 
-      Post.count.should == 1
-      Post.pluck(:title).should =~ ['Yaml title']
+      expect(Post.count).to eq(1)
+      expect(Post.pluck(:title)).to eq(['Yaml title'])
     end
   end
 
@@ -98,8 +98,8 @@ describe "Seeding an application" do
         }
       ]
 
-      Post.count.should == 1
-      Post.pluck(:title).should =~ ['Google spreadsheet json title']
+      expect(Post.count).to eq(1)
+      expect(Post.pluck(:title)).to eq(['Google spreadsheet json title'])
     end
   end
 
@@ -134,8 +134,8 @@ describe "Seeding an application" do
         }
       ]
 
-      Post.count.should == 1
-      Post.pluck(:title).should =~ ['Legacy yaml title']
+      expect(Post.count).to eq(1)
+      expect(Post.pluck(:title)).to eq(['Legacy yaml title'])
     end
   end
 
@@ -172,9 +172,9 @@ describe "Seeding an application" do
     it "seeds the db" do
       sprig [Post, Comment]
 
-      Post.count.should    == 1
-      Comment.count.should == 1
-      Comment.first.post.should == Post.first
+      expect(Post.count).to eq(1)
+      expect(Comment.count).to eq(1)
+      expect(Comment.first.post).to eq(Post.first)
     end
   end
 
@@ -241,22 +241,22 @@ describe "Seeding an application" do
         }
       ]
 
-      Post.count.should == 2
-      Post.pluck(:title).should=~ ['Yaml title', 'Legacy yaml title']
+      expect(Post.count).to eq(2)
+      expect(Post.pluck(:title)).to eq(['Yaml title', 'Legacy yaml title'])
     end
   end
 
   context "from a specific environment" do
-    around do |example|
-      stub_rails_env 'staging'
-      load_seeds('posts.yml', &example)
-    end
-
     it "seeds the db" do
-      sprig [Post]
+      ex = Proc.new do
+        sprig [Post]
 
-      Post.count.should == 1
-      Post.pluck(:title).should =~ ['Staging yaml title']
+        expect(Post.count).to eq(1)
+        expect(Post.pluck(:title)).to eq(['Staging yaml title'])
+      end
+
+      stub_rails_env 'staging'
+      load_seeds('posts.yml', &ex)
     end
   end
 
@@ -273,8 +273,8 @@ describe "Seeding an application" do
         }
       ]
 
-      Post.count.should == 1
-      Post.pluck(:photo).should =~ ['cat.png']
+      expect(Post.count).to eq(1)
+      expect(Post.pluck(:photo)).to eq(['cat.png'])
     end
   end
 
@@ -292,7 +292,7 @@ describe "Seeding an application" do
         }
       ]
 
-      Post.first.tags.map(&:name).should == ['Botany', 'Biology']
+      expect(Post.first.tags.map(&:name)).to eq(['Botany', 'Biology'])
     end
   end
 
@@ -366,7 +366,7 @@ describe "Seeding an application" do
             }
           ]
 
-          Post.count.should == 2
+          expect(Post.count).to eq(2)
 
           expect {
             existing_match.reload
@@ -417,8 +417,8 @@ describe "Seeding an application" do
               }
             ]
 
-            Post.count.should == 1
-            existing.reload.content.should == "Updated content"
+            expect(Post.count).to eq(1)
+            expect(existing.reload.content).to eq("Updated content")
           end
         end
       end
@@ -445,8 +445,8 @@ describe "Seeding an application" do
               }
             ]
 
-            Post.count.should == 1
-            existing.reload.published.should == true
+            expect(Post.count).to eq(1)
+            expect(existing.reload.published).to eq(true)
           end
         end
       end
@@ -472,7 +472,7 @@ describe "Seeding an application" do
           }
         ]
 
-        Post.count.should == 1
+        expect(Post.count).to eq(1)
 
         expect {
           existing.reload
