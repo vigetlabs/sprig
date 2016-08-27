@@ -18,6 +18,19 @@ RSpec.describe Sprig::Configuration do
     end
   end
 
+  describe "#shared_directory" do
+    it "returns nil by default" do
+      expect(subject.shared_directory).to be_nil
+    end
+
+    it "returns a shared directory" do
+      subject.shared_directory = 'shared'
+      subject.directory = 'seed_files'
+
+      expect(subject.directory.to_path).to eq('~/seed_files/shared')
+    end
+  end
+
   describe "#logger" do
     it "returns an stdout logger by default" do
       logger = double('Logger')
