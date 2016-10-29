@@ -1,10 +1,10 @@
 module Sprig
   class Configuration
 
-    attr_writer :directory, :logger
+    attr_writer :directory, :seeds_directory, :logger
 
     def directory
-      Rails.root.join(@directory || default_directory, Rails.env)
+      Rails.root.join(@directory || default_directory, @seeds_directory || default_seeds_directory)
     end
 
     def logger
@@ -15,6 +15,10 @@ module Sprig
 
     def default_directory
       'db/seeds'
+    end
+
+    def default_seeds_directory
+      Rails.env
     end
   end
 end

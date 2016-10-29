@@ -5,9 +5,12 @@ module Sprig
     end
 
     def sprig(directive_definitions)
-      hopper = []
-      DirectiveList.new(directive_definitions).add_seeds_to_hopper(hopper)
-      Planter.new(hopper).sprig
+      plant_records(directive_definitions)
+    end
+
+    def sprig_shared(directive_definitions)
+      Sprig.configuration.seeds_directory = 'shared'
+      plant_records(directive_definitions)
     end
 
     def sprig_record(klass, seed_id)
@@ -18,6 +21,14 @@ module Sprig
 
     def sprig_file(relative_path)
       File.new(seed_directory.join('files', relative_path))
+    end
+
+    private
+
+    def plant_records(directive_definitions)
+      hopper = []
+      DirectiveList.new(directive_definitions).add_seeds_to_hopper(hopper)
+      Planter.new(hopper).sprig
     end
   end
 end
