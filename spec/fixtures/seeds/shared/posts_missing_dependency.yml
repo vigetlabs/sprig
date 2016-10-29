@@ -1,0 +1,5 @@
+records:
+  - sprig_id: 1
+    title: 'Yaml title'
+    content: 'Yaml content'
+    comment_id: "<%= sprig_record(Comment, 42).id %>" # This sprig record does not exist.

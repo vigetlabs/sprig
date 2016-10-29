@@ -1,0 +1,7 @@
+options:
+  find_existing_by: 'title'
+
+records:
+  - sprig_id: 1
+    title: 'Existing title'
+    content: 'Updated content'

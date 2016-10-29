@@ -1,0 +1,8 @@
+options:
+  find_existing_by: ['title', 'content']
+
+records:
+  - sprig_id: 1
+    title: 'Existing title'
+    content: 'Existing content'
+    published: true

@@ -14,6 +14,10 @@ RSpec.describe Sprig::Generators::InstallGenerator, type: :generator do
     assert_directory "db/seeds"
   end
 
+  it "creates empty shared directory" do
+    assert_directory "db/seeds/shared"
+  end
+
   it "creates empty seed environment directories" do
     [
       :development,

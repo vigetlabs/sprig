@@ -1,0 +1,7 @@
+options:
+  delete_existing_by: 'title'
+
+records:
+  - sprig_id: 1
+    title: 'Such Title'
+    content: 'New content'
