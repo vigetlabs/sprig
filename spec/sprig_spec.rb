@@ -71,12 +71,25 @@ RSpec.describe "Seeding an application" do
     end
   end
 
-  context "with a symlinked file" do
+  context "with a relative symlink" do
     let(:env) { Rails.env }
 
     around do |example|
-      `ln -s ./spec/fixtures/seeds/#{env}/posts.yml ./spec/fixtures/db/seeds/#{env}`
+      # Create shared directory
+      `mkdir ./spec/fixtures/db/seeds/shared`
+
+      # Copy posts.yml to the shared directory
+      `cp ./spec/fixtures/seeds/#{env}/posts.yml ./spec/fixtures/db/seeds/shared/posts.yml`
+
+      # Create relative symlink in environment directory to shared directory
+      `cd ./spec/fixtures/db/seeds/#{env} && ln -s ../shared/posts.yml posts.yml`
+
       example.call
+
+      # Remove shared directory
+      `rm -dr ./spec/fixtures/db/seeds/shared`
+
+      # Remove posts.yml
       `rm ./spec/fixtures/db/seeds/#{env}/posts.yml`
     end
 
