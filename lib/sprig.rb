@@ -19,7 +19,7 @@ module Sprig
   autoload :Seed,                 'sprig/seed'
 
   class << self
-    attr_writer :adapter
+    attr_writer :adapter, :shared_seeding
 
     def adapter
       @adapter ||= :active_record
@@ -34,6 +34,10 @@ module Sprig
       else
         raise "Unknown model class for adapter #{adapter}"
       end
+    end
+
+    def shared_seeding
+      @shared_seeding ||= false
     end
 
     def configuration

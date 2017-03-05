@@ -5,11 +5,12 @@ module Sprig
     end
 
     def sprig(directive_definitions)
+      Sprig.shared_seeding = false
       plant_records(directive_definitions)
     end
 
     def sprig_shared(directive_definitions)
-      Sprig.configuration.seeds_directory = 'shared'
+      Sprig.shared_seeding = true
       plant_records(directive_definitions)
     end
 
