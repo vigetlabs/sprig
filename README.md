@@ -39,14 +39,15 @@ Seed files are unique to the environment in which your Rails application is runn
 
 ###Shared
 
-Shared seed files must be inserted to `shared` folder, eg. `db/seeds/shared`
+Shared seed files default directory is `shared` (eg `db/seeds/shared`)
+You can change it by settings`
 
 To insert env specific together with shared seeds use:
 ```ruby
 sprig [User]
 sprig_shared [User]
 ```
-This will insert `env/users` and `shared/useres` seeds
+This will insert `:env/users` and `shared/users` seeds
 
 ##Seed files
 
@@ -185,6 +186,7 @@ When Sprig conventions don't suit, just add a configuration block to your seed f
 ```ruby
 Sprig.configure do |c|
   c.directory = 'seed_files'
+  c.shared_directory = 'shared'
 end
 ```
 
