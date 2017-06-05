@@ -1,0 +1,5 @@
+records:
+  - sprig_id: 1
+    title: 'Staging yaml title'
+    content: 'Staging yaml content'
+    photo: '<%= sprig_file("cat.png") %>'

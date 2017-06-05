@@ -9,11 +9,15 @@ module Sprig
 
       def create_enviroment_directories
         empty_directory 'db/seeds'
-
+        create_shared_directory
         envs.each { |env| empty_directory "db/seeds/#{env}" }
       end
 
       private
+
+      def create_shared_directory
+        empty_directory 'db/seeds/shared'
+      end
 
       def envs
         arg_envs ? arg_envs : default_envs

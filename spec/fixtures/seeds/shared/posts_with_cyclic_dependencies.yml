@@ -1,0 +1,4 @@
+records:
+  - sprig_id: 1
+    title: "Title"
+    content: "<%= sprig_record(Comment, 1) %>"

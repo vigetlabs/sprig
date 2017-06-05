@@ -1,0 +1,4 @@
+records:
+  - sprig_id: 1
+    first_name: "Clark"
+    # intentionally leaving out last_name so record fails to create

@@ -1,0 +1,4 @@
+records:
+  - sprig_id: 1
+    title: 'Yaml title'
+    content: 'Yaml content'

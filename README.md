@@ -14,7 +14,7 @@ Add into your Gemfile
 ```ruby
 gem "sprig"
 ```
-Use `rails generate sprig:install` to create environment-specific seed directories.
+Use `rails generate sprig:install` to create environment-specific and shared seed directories.
 
 ##The Sprig Directive
 
@@ -26,6 +26,9 @@ Within your seed file, you can use the `sprig` directive to initiate Sprig's dar
 include Sprig::Helpers
 
 sprig [User, Post, Comment]
+
+For shared seeds:
+sprig_shared [User, Post, Comment]
 ```
 
 This directive tells Sprig to go find your datafiles for the `User`, `Post`, and `Comment` seed resources, build records from the data entries, and insert them into the database. Sprig will automatically detect known datafile types like `.yml`, `.json`, or `.csv` within your environment-specific seed directory.
@@ -34,7 +37,17 @@ This directive tells Sprig to go find your datafiles for the `User`, `Post`, and
 
 Seed files are unique to the environment in which your Rails application is running. Within `db/seeds` create an environment-specific directory (i.e. `/development` for your 'development' environment).
 
-Todo: [Support for shared seed files]
+###Shared
+
+Shared seed files default directory is `shared` (eg `db/seeds/shared`)
+You can change it by settings`
+
+To insert env specific together with shared seeds use:
+```ruby
+sprig [User]
+sprig_shared [User]
+```
+This will insert `:env/users` and `shared/users` seeds
 
 ##Seed files
 
@@ -173,6 +186,7 @@ When Sprig conventions don't suit, just add a configuration block to your seed f
 ```ruby
 Sprig.configure do |c|
   c.directory = 'seed_files'
+  c.shared_directory = 'shared'
 end
 ```
 

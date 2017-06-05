@@ -1,0 +1,4 @@
+records:
+  - sprig_id: 'l_1'
+    title: 'Legacy yaml title'
+    content: 'Legacy yaml content'

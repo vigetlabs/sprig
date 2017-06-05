@@ -73,20 +73,28 @@ def stub_rails_env(env='development')
 end
 
 # Copy and Remove Seed files around a spec
-def load_seeds(*files)
+def load_seeds(*files, &block)
   env = Rails.env
+  prepare_seeds(env, *files, &block)
+end
 
-  `cp -R ./spec/fixtures/seeds/#{env}/files ./spec/fixtures/db/seeds/#{env}`
+# Copy and Remove shared seed files around a spec
+def load_shared_seeds(*files, &block)
+  prepare_seeds('shared', *files, &block)
+end
+
+def prepare_seeds(directory, *files, &block)
+  `cp -R ./spec/fixtures/seeds/#{directory}/files ./spec/fixtures/db/seeds/#{directory}`
 
   files.each do |file|
-    `cp ./spec/fixtures/seeds/#{env}/#{file} ./spec/fixtures/db/seeds/#{env}`
+    `cp ./spec/fixtures/seeds/#{directory}/#{file} ./spec/fixtures/db/seeds/#{directory}`
   end
 
-  yield
+  block.call
 
-  `rm -R ./spec/fixtures/db/seeds/#{env}/files`
+  `rm -R ./spec/fixtures/db/seeds/#{directory}/files`
 
   files.each do |file|
-    `rm ./spec/fixtures/db/seeds/#{env}/#{file}`
+    `rm ./spec/fixtures/db/seeds/#{directory}/#{file}`
   end
 end
