@@ -16,7 +16,7 @@ gem "sprig"
 ```
 Use `rails generate sprig:install` to create environment-specific and shared seed directories.
 
-##The Sprig Directive
+## The Sprig Directive
 
 Within your seed file, you can use the `sprig` directive to initiate Sprig's dark magicks. A simple directive might look like this.
 
@@ -33,11 +33,11 @@ sprig_shared [User, Post, Comment]
 
 This directive tells Sprig to go find your datafiles for the `User`, `Post`, and `Comment` seed resources, build records from the data entries, and insert them into the database. Sprig will automatically detect known datafile types like `.yml`, `.json`, or `.csv` within your environment-specific seed directory.
 
-##Environment
+## Environment
 
 Seed files are unique to the environment in which your Rails application is running. Within `db/seeds` create an environment-specific directory (i.e. `/development` for your 'development' environment).
 
-###Shared
+### Shared
 
 Shared seed files default directory is `shared` (eg `db/seeds/shared`)
 You can change it by settings`
@@ -49,7 +49,7 @@ sprig_shared [User]
 ```
 This will insert `:env/users` and `shared/users` seeds
 
-##Seed files
+## Seed files
 
 Hang your seed definitions on a `records` key for *yaml* and *json* files.
 
@@ -159,7 +159,7 @@ records:
     published_at: "<%= 1.week.ago %>"
 ```
 
-##Custom Sources and Parsers
+## Custom Sources and Parsers
 
 If all your data is in `.wat` files, fear not. You can tell Sprig where to look for your data, and point it toward a custom parser class for turning your data into records. The example below tells Sprig to read `User` seed data from a Google Spreadsheet, and parse it accordingly.
 
@@ -179,7 +179,7 @@ sprig [
 ]
 ```
 
-##Configuration
+## Configuration
 
 When Sprig conventions don't suit, just add a configuration block to your seed file.
 
