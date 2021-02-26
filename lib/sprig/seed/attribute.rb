@@ -96,7 +96,7 @@ module Sprig
           # Otherwise return the dynamic portion within the larger string.
           string.clone.tap do |return_string|
             matches.each do |match|
-              return_string.sub!(match[0], eval(match[1]))
+              return_string.sub!(match[0], eval(match[1]).to_s)
             end
           end
         end
