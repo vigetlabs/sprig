@@ -22,6 +22,11 @@ module Sprig
         orm_record.save
       end
 
+      def save!
+        populate_attributes
+        orm_record.save!
+      end
+
       def existing?
         @existing
       end

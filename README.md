@@ -187,6 +187,7 @@ When Sprig conventions don't suit, just add a configuration block to your seed f
 Sprig.configure do |c|
   c.directory = 'seed_files'
   c.shared_directory = 'shared'
+  c.raise_on_error = true
 end
 ```
 

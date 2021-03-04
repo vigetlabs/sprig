@@ -1,7 +1,7 @@
 module Sprig
   class Configuration
 
-    attr_writer :directory, :shared_directory, :logger
+    attr_writer :directory, :shared_directory, :logger, :raise_on_error
 
     def directory
       Rails.root.join(@directory || default_directory, seeds_directory)
@@ -9,6 +9,10 @@ module Sprig
 
     def logger
       @logger ||= Logger.new($stdout)
+    end
+
+    def raise_on_error?
+      @raise_on_error
     end
 
     private

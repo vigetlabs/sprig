@@ -52,6 +52,10 @@ module Sprig
       @@configuration = nil
     end
 
+    def raise_on_error?
+      configuration.raise_on_error?
+    end
+
     def logger
       configuration.logger
     end

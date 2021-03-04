@@ -28,7 +28,9 @@ module Sprig
       notifier.in_progress(seed)
       seed.before_save
 
-      if seed.save_record
+      if Sprig.configuration.raise_on_error?
+        seed.save_record!
+      elsif seed.save_record
         seed.save_to_store
         notifier.success(seed)
       else

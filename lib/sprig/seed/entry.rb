@@ -30,6 +30,10 @@ module Sprig
         record.save
       end
 
+      def save_record!
+        record.save!
+      end
+
       def save_to_store
         SprigRecordStore.instance.save(record.orm_record, sprig_id)
       end
