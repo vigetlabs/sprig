@@ -32,7 +32,14 @@ module Sprig
 
       def populate_attributes
         attributes.each do |attribute|
-          orm_record.send(:"#{attribute.name}=", attribute.value)
+          value = attribute.value
+
+          relation = orm_record.class.reflect_on_all_associations.find{|a| a.name.to_s == attribute.name}
+          if relation
+            value = SprigRecordStore.instance.get(relation.klass, attribute.value)
+          end
+
+          orm_record.send(:"#{attribute.name}=", value)
         end
       end
     end

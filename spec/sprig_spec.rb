@@ -103,6 +103,47 @@ RSpec.describe "Seeding an application" do
     end
   end
 
+  context "with a fixtures file" do
+    around do |example|
+      load_seeds('posts_fixtures_format.yml', &example)
+    end
+
+    it "seeds the db" do
+      sprig [
+        :class => Post,
+        :source => File.new("./spec/fixtures/db/seeds/test/posts_fixtures_format.yml"),
+        :parser => Sprig::Parser::Fixtures
+      ]
+
+      Post.count.should == 1
+      Post.pluck(:title).should =~ ['Yaml title']
+    end
+  end
+
+  context "with dependent fixtures files" do
+    around do |example|
+      load_seeds('posts_fixtures_format.yml', 'comments_fixtures_format.yml', &example)
+    end
+
+    it "seeds the db" do
+      sprig [
+        {
+          :class => Post,
+          :source => File.new("./spec/fixtures/db/seeds/test/posts_fixtures_format.yml"),
+          :parser => Sprig::Parser::Fixtures
+        },
+        {
+          :class => Comment,
+          :source => File.new("./spec/fixtures/db/seeds/test/comments_fixtures_format.yml"),
+          :parser => Sprig::Parser::Fixtures
+        },
+      ]
+
+      Post.count.should == 1
+      Post.pluck(:title).should =~ ['Yaml title']
+    end
+  end
+
   context "with an invalid custom parser" do
     around do |example|
       load_seeds('posts.yml', &example)

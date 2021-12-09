@@ -22,15 +22,14 @@ module Sprig
       @data ||= begin
         parser_class.new(source).parse.to_hash.with_indifferent_access
       ensure
-        source.close
+        source.close if source.respond_to?(:close)
       end
     end
 
     def source
       @source ||= begin
         source = args.fetch(:source) { default_source }
-
-        unless source.respond_to?(:read) && source.respond_to?(:close)
+        unless source.respond_to?(:read) && source.respond_to?(:close) || parser_class == Parser::Hash
           raise ArgumentError, 'Data sources must act like an IO.'
         end
 
