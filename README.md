@@ -106,7 +106,7 @@ records:
 #### Has and Belongs to Many
 For `has_and_belongs_to_many` (HABTM) relationships, you may define relation ids in array format. So if `Post` `has_and_belongs_to_many :tags`, you could write:
 ```yaml
-#posts.yml
+# posts.yml
 
 records:
   - sprig_id: 42
@@ -117,7 +117,7 @@ records:
       - '<%= sprig_record(Tag, 2).id %>'
 ```
 ```yaml
-#tags.yml
+# tags.yml
 
 records:
   - sprig_id: 'bio'
