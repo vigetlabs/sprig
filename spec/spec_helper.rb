@@ -98,3 +98,12 @@ def prepare_seeds(directory, *files, &block)
     `rm ./spec/fixtures/db/seeds/#{directory}/#{file}`
   end
 end
+
+def fake_stdin_gets(input)
+  begin
+    $stdin = double('STDIN', gets: input)
+    yield
+  ensure
+    $stdin = STDIN
+  end
+end

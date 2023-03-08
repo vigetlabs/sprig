@@ -17,6 +17,8 @@ module Sprig
   autoload :SprigRecordStore,     'sprig/sprig_record_store'
   autoload :Data,                 'sprig/data'
   autoload :Seed,                 'sprig/seed'
+  autoload :Task,                 'sprig/task'
+  autoload :Railtie,              'sprig/railtie'
 
   class << self
     attr_writer :adapter, :shared_seeding
@@ -57,3 +59,5 @@ module Sprig
     end
   end
 end
+
+require 'sprig/railtie' if defined?(Rails)
