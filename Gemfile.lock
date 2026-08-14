@@ -163,6 +163,8 @@ GEM
     nio4r (2.7.5)
     nokogiri (1.19.4-arm64-darwin)
       racc (~> 1.4)
+    nokogiri (1.19.4-x86_64-linux-gnu)
+      racc (~> 1.4)
     parallel (2.1.0)
     parser (3.3.12.0)
       ast (~> 2.4.1)
@@ -272,6 +274,7 @@ GEM
       simplecov-html (~> 0.10.0)
     simplecov-html (0.10.2)
     sqlite3 (2.9.6-arm64-darwin)
+    sqlite3 (2.9.6-x86_64-linux-gnu)
     standard (1.56.0)
       language_server-protocol (~> 3.17.0.2)
       lint_roller (~> 1.0)
@@ -318,6 +321,7 @@ GEM
 
 PLATFORMS
   arm64-darwin-24
+  x86_64-linux
 
 DEPENDENCIES
   appraisal
