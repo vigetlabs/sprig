@@ -29,6 +29,8 @@ RSpec.configure do |c|
 
   c.after(:each) do
     Sprig.reset_configuration
+    Sprig::SprigRecordStore.instance.reset
+    Sprig::DependencyCollection.instance.reset
   end
 end
 

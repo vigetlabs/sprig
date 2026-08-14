@@ -13,7 +13,6 @@ module Sprig
   autoload :Planter,              'sprig/planter'
   autoload :ProcessNotifier,      'sprig/process_notifier'
   autoload :Logging,              'sprig/logging'
-  autoload :NullRecord,           'sprig/null_record'
   autoload :SprigRecordStore,     'sprig/sprig_record_store'
   autoload :Data,                 'sprig/data'
   autoload :Seed,                 'sprig/seed'

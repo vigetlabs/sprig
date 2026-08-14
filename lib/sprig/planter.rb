@@ -34,6 +34,8 @@ module Sprig
       else
         notifier.error(seed)
       end
+    rescue => e
+      notifier.exception(seed, e)
     end
   end
 end

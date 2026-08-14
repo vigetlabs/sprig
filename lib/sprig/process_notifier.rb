@@ -7,7 +7,7 @@ module Sprig
     def initialize
       @success_count = 0
       @error_count = 0
-      @errors = []
+      @failure_summaries = []
     end
 
     def in_progress(seed)
@@ -20,11 +20,18 @@ module Sprig
     end
 
     def error(seed)
-      @errors << seed.record
       log_error seed.error_log_text
       log_error seed.record
       log_error seed.record.errors.messages
-      @error_count += 1
+
+      record_failure(seed.error_log_text)
+    end
+
+    def exception(seed, error)
+      log_error seed.error_log_text
+      log_error "#{error.class}: #{error.message}"
+
+      record_failure(seed.error_log_text)
     end
 
     def finished
@@ -39,14 +46,18 @@ module Sprig
       if @error_count > 0
         log_error error_summary
 
-        @errors.each do |error|
-          log_error error
-          log_error "#{error.errors.messages}\n"
+        @failure_summaries.each do |summary|
+          log_error summary
         end
       end
     end
 
     private
+
+    def record_failure(summary)
+      @failure_summaries << summary
+      @error_count += 1
+    end
 
     def success_summary
       "#{@success_count} #{'seed'.pluralize(@success_count)} successfully planted."
