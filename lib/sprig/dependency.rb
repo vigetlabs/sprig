@@ -2,11 +2,25 @@ module Sprig
   class Dependency
     attr_reader :id
 
-    def self.for(klass, sprig_id)
-      klass = to_klass(klass)
-      sprig_id = sprig_id.to_s
+    class << self
+      def for(klass, sprig_id)
+        klass = to_klass(klass)
+        sprig_id = sprig_id.to_s
 
-      DependencyCollection.instance.get(klass, sprig_id) || new(klass, sprig_id)
+        DependencyCollection.instance.get(klass, sprig_id) || new(klass, sprig_id)
+      end
+
+      private
+
+      def to_klass(klass)
+        if klass.is_a?(String)
+          klass = klass.classify.constantize
+        end
+
+        raise ArgumentError, "First argument must be a Class." unless klass.is_a?(Class)
+
+        klass
+      end
     end
 
     def initialize(klass, sprig_id)
@@ -24,15 +38,5 @@ module Sprig
     private
 
     attr_reader :klass, :sprig_id
-
-    def self.to_klass(klass)
-      if klass.is_a?(String)
-        klass = klass.classify.constantize
-      end
-
-      raise ArgumentError, 'First argument must be a Class.' unless klass.is_a?(Class)
-
-      klass
-    end
   end
 end

@@ -8,7 +8,7 @@ module Sprig
       end
 
       def parse
-        raise NotImplementedError, 'Parsers must implement #parse'
+        raise NotImplementedError, "Parsers must implement #parse"
       end
     end
   end

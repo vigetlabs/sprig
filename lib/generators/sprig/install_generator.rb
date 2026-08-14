@@ -1,14 +1,14 @@
-require 'rails/generators/base'
+require "rails/generators/base"
 
 module Sprig
   module Generators
     class InstallGenerator < Rails::Generators::Base
-      argument :arg_envs, :type => :array, :optional => true
+      argument :arg_envs, type: :array, optional: true
 
       desc "Install Sprig seed directories"
 
       def create_enviroment_directories
-        empty_directory 'db/seeds'
+        empty_directory "db/seeds"
         create_shared_directory
         envs.each { |env| empty_directory "db/seeds/#{env}" }
       end
@@ -16,11 +16,11 @@ module Sprig
       private
 
       def create_shared_directory
-        empty_directory 'db/seeds/shared'
+        empty_directory "db/seeds/shared"
       end
 
       def envs
-        arg_envs ? arg_envs : default_envs
+        arg_envs || default_envs
       end
 
       def default_envs
@@ -28,7 +28,7 @@ module Sprig
       end
 
       def env_configs
-        Dir[Rails.root.join('config/environments', '*.rb')]
+        Dir[Rails.root.join("config/environments", "*.rb")]
       end
     end
   end

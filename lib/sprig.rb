@@ -1,21 +1,21 @@
 module Sprig
-  autoload :Configuration,        'sprig/configuration'
-  autoload :Planter,              'sprig/planter'
-  autoload :TsortableHash,        'sprig/tsortable_hash'
-  autoload :Dependency,           'sprig/dependency'
-  autoload :DependencyCollection, 'sprig/dependency_collection'
-  autoload :DependencySorter,     'sprig/dependency_sorter'
-  autoload :Directive,            'sprig/directive'
-  autoload :DirectiveList,        'sprig/directive_list'
-  autoload :Source,               'sprig/source'
-  autoload :Parser,               'sprig/parser'
-  autoload :Helpers,              'sprig/helpers'
-  autoload :Planter,              'sprig/planter'
-  autoload :ProcessNotifier,      'sprig/process_notifier'
-  autoload :Logging,              'sprig/logging'
-  autoload :SprigRecordStore,     'sprig/sprig_record_store'
-  autoload :Data,                 'sprig/data'
-  autoload :Seed,                 'sprig/seed'
+  autoload :Configuration, "sprig/configuration"
+  autoload :Planter, "sprig/planter"
+  autoload :TsortableHash, "sprig/tsortable_hash"
+  autoload :Dependency, "sprig/dependency"
+  autoload :DependencyCollection, "sprig/dependency_collection"
+  autoload :DependencySorter, "sprig/dependency_sorter"
+  autoload :Directive, "sprig/directive"
+  autoload :DirectiveList, "sprig/directive_list"
+  autoload :Source, "sprig/source"
+  autoload :Parser, "sprig/parser"
+  autoload :Helpers, "sprig/helpers"
+  autoload :Planter, "sprig/planter"
+  autoload :ProcessNotifier, "sprig/process_notifier"
+  autoload :Logging, "sprig/logging"
+  autoload :SprigRecordStore, "sprig/sprig_record_store"
+  autoload :Data, "sprig/data"
+  autoload :Seed, "sprig/seed"
 
   class << self
     attr_writer :adapter, :shared_seeding

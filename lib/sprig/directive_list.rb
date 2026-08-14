@@ -1,6 +1,5 @@
 module Sprig
   class DirectiveList
-
     def initialize(definitions)
       @definitions = Array(definitions)
     end

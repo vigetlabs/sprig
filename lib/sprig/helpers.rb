@@ -19,7 +19,7 @@ module Sprig
     end
 
     def sprig_file(relative_path)
-      File.new(seed_directory.join('files', relative_path))
+      File.new(seed_directory.join("files", relative_path))
     end
 
     private

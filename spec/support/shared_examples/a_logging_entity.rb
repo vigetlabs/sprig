@@ -1,5 +1,5 @@
 shared_examples_for "a logging entity" do
-  let(:message) { 'A log message.' }
+  let(:message) { "A log message." }
 
   [
     :debug,

@@ -17,21 +17,17 @@ module Sprig
     private
 
     def id_dictionary
-      @id_dictionary ||= begin
-        {}.tap do |hash|
-          items.each do |item|
-            hash[item.dependency_id] = item
-          end
+      @id_dictionary ||= {}.tap do |hash|
+        items.each do |item|
+          hash[item.dependency_id] = item
         end
       end
     end
 
     def dependency_hash
-      @dependency_hash ||= begin
-        TsortableHash.new.tap do |hash|
-          items.each do |item|
-            hash[item.dependency_id] = item.dependencies.map(&:id)
-          end
+      @dependency_hash ||= TsortableHash.new.tap do |hash|
+        items.each do |item|
+          hash[item.dependency_id] = item.dependencies.map(&:id)
         end
       end
     end
@@ -56,7 +52,7 @@ module Sprig
 
     class MissingDependencyError < StandardError
       def initialize(missing_dependency = nil)
-        super message_for(missing_dependency)
+        super(message_for(missing_dependency))
       end
 
       private

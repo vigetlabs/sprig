@@ -1,4 +1,4 @@
-require 'singleton'
+require "singleton"
 
 module Sprig
   class SprigRecordStore
@@ -8,7 +8,7 @@ module Sprig
     # between runs to ensure stale data doesn't leak.
     include Singleton
 
-    class RecordNotFoundError < StandardError;end
+    class RecordNotFoundError < StandardError; end
 
     def save(record, sprig_id)
       records_of_klass(record.class)[sprig_id.to_s] = record

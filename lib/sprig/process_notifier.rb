@@ -1,4 +1,4 @@
-require 'active_support/inflector'
+require "active_support/inflector"
 
 module Sprig
   class ProcessNotifier
@@ -35,7 +35,7 @@ module Sprig
     end
 
     def finished
-      log_debug 'Seeding complete.'
+      log_debug "Seeding complete."
 
       if @success_count > 0
         log_info success_summary
@@ -60,11 +60,11 @@ module Sprig
     end
 
     def success_summary
-      "#{@success_count} #{'seed'.pluralize(@success_count)} successfully planted."
+      "#{@success_count} #{"seed".pluralize(@success_count)} successfully planted."
     end
 
     def error_summary
-      "#{@error_count} #{'seed'.pluralize(@error_count)} couldn't be planted:"
+      "#{@error_count} #{"seed".pluralize(@error_count)} couldn't be planted:"
     end
   end
 end
