@@ -38,3 +38,16 @@ jobs:
           path: coverage/
       - name: Coveralls Coverage Report
         uses: coverallsapp/github-action@v2
+        with:
+          parallel: true
+          flag-name: run-${{ join(matrix.*, '-') }}
+
+  finish:
+    needs: test
+    if: ${{ always() }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Close parallel build
+        uses: coverallsapp/github-action@v2
+        with:
+          parallel-finished: true
