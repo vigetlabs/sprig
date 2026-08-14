@@ -1,7 +1,9 @@
 module Sprig
   module Seed
     class Attribute
-      attr_reader :name, :raw_value, :value
+      include Sprig::Helpers
+
+      attr_reader :name, :raw_value
 
       def initialize(name, raw_value)
         @name = name.to_s
@@ -13,9 +15,9 @@ module Sprig
       end
 
       def value
-        @value = compute_value(raw_value) if @value.nil?
+        return @value if defined?(@value)
 
-        @value
+        @value = compute_value(raw_value)
       end
 
       private

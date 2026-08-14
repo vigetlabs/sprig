@@ -60,6 +60,8 @@ module Sprig
 
 
     class SourceDeterminer
+      include Sprig::Helpers
+
       attr_reader :table_name
 
       def initialize(table_name)
