@@ -41,7 +41,11 @@ RSpec.describe Sprig do
       end
     end
 
-    before(:each) { described_class.instance_variable_set(:@adapter_model_class, nil) }
+    around(:each) do |example|
+      described_class.instance_variable_set(:@adapter_model_class, nil)
+      example.run
+      described_class.instance_variable_set(:@adapter_model_class, nil)
+    end
 
     it { expect(described_class).to respond_to(:adapter_model_class).with(0).arguments }
 
