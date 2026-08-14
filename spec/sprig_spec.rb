@@ -88,21 +88,6 @@ RSpec.describe "Seeding an application" do
     end
   end
 
-  context "with a google spreadsheet" do
-    it "seeds the db", :vcr => { :cassette_name => 'google_spreadsheet_json_posts' } do
-      sprig [
-        {
-          :class  => Post,
-          :parser => Sprig::Parser::GoogleSpreadsheetJson,
-          :source => open('https://spreadsheets.google.com/feeds/list/0AjVLPMnHm86rdDVHQ2dCUS03RTN5ZUtVNzVOYVBwT0E/1/public/values?alt=json'),
-        }
-      ]
-
-      expect(Post.count).to eq(1)
-      expect(Post.pluck(:title)).to eq(['Google spreadsheet json title'])
-    end
-  end
-
   context "with an invalid custom parser" do
     around do |example|
       load_seeds('posts.yml', &example)

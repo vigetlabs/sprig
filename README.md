@@ -4,16 +4,18 @@
 
 Seed Rails application by convention, not configuration.
 
-Provides support for common files types: *csv*, *yaml*, and *json*.  Extensible for the rest!
+Provides support for common files types: _csv_, _yaml_, and _json_. Extensible for the rest!
 
 Learn more about Sprig and view documentation at [http://vigetlabs.github.io/sprig/](http://vigetlabs.github.io/sprig/).
 
 ## Installation
 
 Add into your Gemfile
+
 ```ruby
 gem "sprig"
 ```
+
 Use `rails generate sprig:install` to create environment-specific and shared seed directories.
 
 ## The Sprig Directive
@@ -43,15 +45,17 @@ Shared seed files default directory is `shared` (eg `db/seeds/shared`)
 You can change it by settings`
 
 To insert env specific together with shared seeds use:
+
 ```ruby
 sprig [User]
 sprig_shared [User]
 ```
+
 This will insert `:env/users` and `shared/users` seeds
 
 ## Seed files
 
-Hang your seed definitions on a `records` key for *yaml* and *json* files.
+Hang your seed definitions on a `records` key for _yaml_ and _json_ files.
 
 Examples:
 
@@ -60,35 +64,35 @@ Examples:
 
 records:
   - sprig_id: 1
-    first_name: 'Lawson'
-    last_name: 'Kurtz'
-    username: 'lawdawg'
-  - sprig_id: 'ryan' # Note: Sprig IDs can be integers or strings
-    first_name: 'Ryan'
-    last_name: 'Foster'
-    username: 'mc_rubs'
+    first_name: "Lawson"
+    last_name: "Kurtz"
+    username: "lawdawg"
+  - sprig_id: "ryan" # Note: Sprig IDs can be integers or strings
+    first_name: "Ryan"
+    last_name: "Foster"
+    username: "mc_rubs"
 ```
 
 ```json
 // posts.json
 
 {
-  "records":[
+  "records": [
     {
-      "sprig_id":1,
-      "title":"Json title",
-      "content":"Json content"
+      "sprig_id": 1,
+      "title": "Json title",
+      "content": "Json content"
     },
     {
-      "sprig_id":2,
-      "title":"Headline",
-      "content":"Words about things"
+      "sprig_id": 2,
+      "title": "Headline",
+      "content": "Words about things"
     }
   ]
 }
 ```
 
-Each seed record needs a `sprig_id` defined that must be *unique across all seed files per class*.  It can be an integer, string, whatever you prefer; as long as it is unique, Sprig can sort your seeds for insertion and detect any cyclic relationships.
+Each seed record needs a `sprig_id` defined that must be _unique across all seed files per class_. It can be an integer, string, whatever you prefer; as long as it is unique, Sprig can sort your seeds for insertion and detect any cyclic relationships.
 
 ### Relationships
 
@@ -104,32 +108,36 @@ records:
 ```
 
 #### Has and Belongs to Many
+
 For `has_and_belongs_to_many` (HABTM) relationships, you may define relation ids in array format. So if `Post` `has_and_belongs_to_many :tags`, you could write:
+
 ```yaml
 #posts.yml
 
 records:
   - sprig_id: 42
-    title: 'All About Brains'
-    content: 'Lorem ipsum...'
+    title: "All About Brains"
+    content: "Lorem ipsum..."
     tag_ids:
-      - '<%= sprig_record(Tag, 1).id %>'
-      - '<%= sprig_record(Tag, 2).id %>'
+      - "<%= sprig_record(Tag, 1).id %>"
+      - "<%= sprig_record(Tag, 2).id %>"
 ```
+
 ```yaml
 #tags.yml
 
 records:
-  - sprig_id: 'bio'
-    name: 'Biology'
-  - sprig_id: 'neuro'
-    name: 'Neuroscience'
+  - sprig_id: "bio"
+    name: "Biology"
+  - sprig_id: "neuro"
+    name: "Neuroscience"
 ```
+
 **Note: For namespaced or STI classes, you'll need to include the namespace with the class name in the seed file name. For example `Users::HeadManager` would need to be `users_head_managers.yml`**
 
 ### Special Options
 
-These are provided in a `options:` key for *yaml* and *json* files.
+These are provided in a `options:` key for _yaml_ and _json_ files.
 
 #### find_existing_by:
 
@@ -143,12 +151,12 @@ Example:
 # posts.yml
 
 options:
-  find_existing_by: ['title', 'user_id']
+  find_existing_by: ["title", "user_id"]
 ```
 
 ### Computed Values
 
-It's common to want seed values that are dynamic.  Sprig supports an ERB style syntax for computing seed attributes.
+It's common to want seed values that are dynamic. Sprig supports an ERB style syntax for computing seed attributes.
 
 ```yaml
 # posts.yml
@@ -161,15 +169,15 @@ records:
 
 ## Custom Sources and Parsers
 
-If all your data is in `.wat` files, fear not. You can tell Sprig where to look for your data, and point it toward a custom parser class for turning your data into records. The example below tells Sprig to read `User` seed data from a Google Spreadsheet, and parse it accordingly.
+If all your data is in `.wat` files, fear not. You can tell Sprig where to look for your data, and point it toward a custom parser class for turning your data into records.
 
 ```ruby
 require 'open-uri'
 
 fanciness = {
   :class  => User,
-  :source => open('https://spreadsheets.google.com/feeds/list/somerandomtoken/1/public/values?alt=json'),
-  :parser => Sprig::Parser::GoogleSpreadsheetJson
+  :source => open('https://example.com/users.wat'),
+  :parser => MyApp::WatParser
 }
 
 sprig [
@@ -201,7 +209,7 @@ details on usage.
 
 This project rocks and uses MIT-LICENSE.
 
-***
+---
 
 <a href="http://code.viget.com">
   <img src="http://code.viget.com/github-banner.png" alt="Code At Viget">

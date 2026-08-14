@@ -7,8 +7,6 @@ SimpleCov.formatter = Coveralls::SimpleCov::Formatter
 SimpleCov.start "rails"
 
 require "rails"
-require "webmock"
-require "vcr"
 require "pry"
 require "generator_spec"
 
@@ -32,12 +30,6 @@ RSpec.configure do |c|
   c.after(:each) do
     Sprig.reset_configuration
   end
-end
-
-VCR.configure do |c|
-  c.configure_rspec_metadata!
-  c.cassette_library_dir = 'spec/fixtures/cassettes'
-  c.hook_into :webmock
 end
 
 # ActiveRecord (via SQlite3)
