@@ -6,7 +6,7 @@ module Sprig
       klass = to_klass(klass)
       sprig_id = sprig_id.to_s
 
-      collection.get(klass, sprig_id) || new(klass, sprig_id)
+      DependencyCollection.instance.get(klass, sprig_id) || new(klass, sprig_id)
     end
 
     def initialize(klass, sprig_id)
@@ -14,7 +14,7 @@ module Sprig
       @sprig_id = sprig_id
       @id = SecureRandom.uuid
 
-      self.class.collection.set(klass, sprig_id, self)
+      DependencyCollection.instance.set(klass, sprig_id, self)
     end
 
     def sprig_record_reference
@@ -33,10 +33,6 @@ module Sprig
       raise ArgumentError, 'First argument must be a Class.' unless klass.is_a?(Class)
 
       klass
-    end
-
-    def self.collection
-      @@collection ||= DependencyCollection.new
     end
   end
 end

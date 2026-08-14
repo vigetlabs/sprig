@@ -211,7 +211,7 @@ RSpec.describe "Seeding an application" do
       load_seeds('invalid_users.yml', 'posts_missing_record.yml', &example)
     end
 
-    it "does not error, but carries on with the seeding" do
+    it "does not raise, but skips the record instead of saving it with a broken reference" do
       expect {
         sprig [
           {
@@ -224,6 +224,8 @@ RSpec.describe "Seeding an application" do
           }
         ]
       }.to_not raise_error
+
+      expect(Post.count).to eq(0)
     end
   end
 

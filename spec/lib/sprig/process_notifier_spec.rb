@@ -29,6 +29,18 @@ RSpec.describe Sprig::ProcessNotifier do
     end
   end
 
+  describe "#exception" do
+    let(:seed) { double('Seed', error_log_text: 'I am a teapot.') }
+    let(:error) { RuntimeError.new('Something went wrong.') }
+
+    it "logs the seed's error message and the exception" do
+      log_should_receive(:error, with: 'I am a teapot.').ordered
+      log_should_receive(:error, with: 'RuntimeError: Something went wrong.').ordered
+
+      subject.exception(seed, error)
+    end
+  end
+
   describe "#finished" do
     it "logs a complete message" do
       log_should_receive(:debug, with: 'Seeding complete.')
@@ -70,8 +82,7 @@ RSpec.describe Sprig::ProcessNotifier do
       it "logs a summary of errors" do
         log_should_receive(:error, with: '0 seeds successfully planted.').ordered
         log_should_receive(:error, with: "1 seed couldn't be planted:").ordered
-        log_should_receive(:error, with: 'Seed Record').ordered
-        log_should_receive(:error, with: "error messages\n").ordered
+        log_should_receive(:error, with: 'I am a teapot.').ordered
 
         subject.finished
       end

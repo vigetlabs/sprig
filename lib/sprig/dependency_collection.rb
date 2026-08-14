@@ -1,8 +1,12 @@
+require 'singleton'
+
 module Sprig
   class DependencyCollection
-    def initialize
-      @records = {}
-    end
+    # Use a single, global store to avoid having to pass references everywhere;
+    # NOTE: This has the side effect of potentially allowing the store to persist
+    # between runs within the same session (e.g. during testing); it must be reset
+    # between runs to ensure stale data doesn't leak.
+    include Singleton
 
     def get(klass, id)
       records_for_klass(klass)[id]
@@ -12,9 +16,15 @@ module Sprig
       records_for_klass(klass)[id] = value
     end
 
+    def reset
+      @records = {}
+    end
+
     private
 
-    attr_reader :records
+    def records
+      @records ||= {}
+    end
 
     def records_for_klass(klass)
       records[klass] ||= {}

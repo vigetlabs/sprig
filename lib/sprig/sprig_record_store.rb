@@ -2,6 +2,10 @@ require 'singleton'
 
 module Sprig
   class SprigRecordStore
+    # Use a single, global store to avoid having to pass references everywhere;
+    # NOTE: This has the side effect of potentially allowing the store to persist
+    # between runs within the same session (e.g. during testing); it must be reset
+    # between runs to ensure stale data doesn't leak.
     include Singleton
 
     class RecordNotFoundError < StandardError;end
@@ -12,6 +16,10 @@ module Sprig
 
     def get(klass, sprig_id)
       records_of_klass(klass)[sprig_id.to_s] || record_not_found(klass, sprig_id)
+    end
+
+    def reset
+      @records = {}
     end
 
     private
