@@ -81,7 +81,7 @@ module Sprig
       def filepath
         path = seed_directory.join(filename)
         if File.symlink?(path)
-          File.readlink(path)
+          File.realpath(path)
         else
           path
         end
