@@ -1,6 +1,8 @@
 ENV["RAILS_ENV"] ||= 'test'
 
 require 'simplecov'
+require 'tmpdir'
+require 'fileutils'
 
 SimpleCov.start "rails"
 
@@ -80,17 +82,22 @@ def load_shared_seeds(*files, &block)
 end
 
 def prepare_seeds(directory, *files, &block)
-  `cp -R ./spec/fixtures/seeds/#{directory}/files ./spec/fixtures/db/seeds/#{directory}`
+  seed_directory = "./spec/fixtures/db/seeds/#{directory}"
+  source_files_directory = "./spec/fixtures/seeds/#{directory}/files"
+
+  FileUtils.cp_r(source_files_directory, seed_directory) if File.directory?(source_files_directory)
 
   files.each do |file|
-    `cp ./spec/fixtures/seeds/#{directory}/#{file} ./spec/fixtures/db/seeds/#{directory}`
+    FileUtils.cp("./spec/fixtures/seeds/#{directory}/#{file}", seed_directory)
   end
 
-  block.call
+  begin
+    block.call
+  ensure
+    FileUtils.rm_rf(File.join(seed_directory, 'files'))
 
-  `rm -R ./spec/fixtures/db/seeds/#{directory}/files`
-
-  files.each do |file|
-    `rm ./spec/fixtures/db/seeds/#{directory}/#{file}`
+    files.each do |file|
+      FileUtils.rm_f(File.join(seed_directory, file))
+    end
   end
 end

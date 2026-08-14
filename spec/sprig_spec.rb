@@ -75,22 +75,21 @@ RSpec.describe "Seeding an application" do
     let(:env) { Rails.env }
 
     around do |example|
-      # Create shared directory
-      `mkdir ./spec/fixtures/db/seeds/shared`
+      symlink_path = "./spec/fixtures/db/seeds/#{env}/posts.yml"
 
-      # Copy posts.yml to the shared directory
-      `cp ./spec/fixtures/seeds/#{env}/posts.yml ./spec/fixtures/db/seeds/shared/posts.yml`
+      # mktmpdir guarantees a unique directory name, so this can't collide
+      # with another example's fixtures, and it's removed automatically
+      # (even on failure) once the block returns.
+      Dir.mktmpdir(nil, './spec/fixtures/db/seeds') do |tmp_dir|
+        FileUtils.cp("./spec/fixtures/seeds/#{env}/posts.yml", File.join(tmp_dir, 'posts.yml'))
+        File.symlink(File.join('..', File.basename(tmp_dir), 'posts.yml'), symlink_path)
 
-      # Create relative symlink in environment directory to shared directory
-      `cd ./spec/fixtures/db/seeds/#{env} && ln -s ../shared/posts.yml posts.yml`
-
-      example.call
-
-      # Remove shared directory
-      `rm -dr ./spec/fixtures/db/seeds/shared`
-
-      # Remove posts.yml
-      `rm ./spec/fixtures/db/seeds/#{env}/posts.yml`
+        begin
+          example.call
+        ensure
+          FileUtils.rm_f(symlink_path)
+        end
+      end
     end
 
     it "seeds the db" do
