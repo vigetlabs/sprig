@@ -73,7 +73,7 @@ RSpec.describe "Seeding an application with shared seeds" do
 
   context "with a symlinked file" do
     around do |example|
-      `ln -s ./spec/fixtures/seeds/shared/posts.yml ./spec/fixtures/db/seeds/shared/`
+      `cd ./spec/fixtures/db/seeds/shared && ln -s ../../../seeds/shared/posts.yml posts.yml`
       example.call
       `rm ./spec/fixtures/db/seeds/shared/posts.yml`
     end

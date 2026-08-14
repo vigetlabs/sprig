@@ -36,3 +36,5 @@ jobs:
         with:
           name: coverage-report-${{ matrix.appraisal }}
           path: coverage/
+      - name: Coveralls Coverage Report
+        uses: coverallsapp/github-action@v2
