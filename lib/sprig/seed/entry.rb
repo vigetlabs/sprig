@@ -22,7 +22,7 @@ module Sprig
       def before_save
         # TODO: make these filters take chains like rails before_filters
         if options[:delete_existing_by]
-          klass.delete_all(options[:delete_existing_by] => attributes.find_by_name(options[:delete_existing_by]).value)
+          klass.where(options[:delete_existing_by] => attributes.find_by_name(options[:delete_existing_by]).value).delete_all
         end
       end
 

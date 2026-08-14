@@ -56,6 +56,17 @@ RSpec.describe Sprig do
         expect { described_class.adapter_model_class }.to raise_error(/unknown model class/i)
       end
     end
+
+    describe 'with the mongoid adapter' do
+      before do
+        stub_const('Mongoid::Document', Class.new)
+        allow(described_class).to receive(:adapter).and_return(:mongoid)
+      end
+
+      it 'returns Mongoid::Document' do
+        expect(described_class.adapter_model_class).to eq(Mongoid::Document)
+      end
+    end
   end
 
   describe ".configuration" do

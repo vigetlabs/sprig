@@ -16,9 +16,11 @@ Gem::Specification.new do |s|
 
   s.files = Dir["lib/**/*", "MIT-LICENSE", "Rakefile", "README.md"]
   s.test_files = Dir["spec/**/*"]
+  
+  s.add_dependency "csv", "~> 3.3"
 
   s.add_development_dependency "appraisal"
-  s.add_development_dependency "rails",            "~> 4.2.4"
+  s.add_development_dependency "rails", ">= 7.2", "< 9.0"
 
   s.add_development_dependency "rspec"
   s.add_development_dependency "database_cleaner"
@@ -29,4 +31,5 @@ Gem::Specification.new do |s|
   s.add_development_dependency "simplecov"
   s.add_development_dependency "coveralls"
   s.add_development_dependency "sqlite3"
+  s.add_development_dependency "standard"
 end

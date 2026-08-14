@@ -1,0 +1,38 @@
+name: CI
+
+on:
+  pull_request:
+
+jobs:
+
+  # TODO: Apply Standard formatting
+  # code-quality:
+  #   - name: StandardRB
+  #     run: bundle exec standardrb
+  test:
+
+    strategy:
+      fail-fast: false
+      matrix:
+        appraisal: ['rails-7.2', 'rails-8.0', 'rails-8.1']
+
+    runs-on: ubuntu-latest
+    env:
+      RAILS_ENV: test
+    steps:
+      - uses: actions/checkout@v7
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 3.4.8
+          bundler-cache: true
+
+      - name: Install dependencies for Appraisal
+        run: bundle exec appraisal install
+      - name: RSpec
+        run: bundle exec appraisal ${{ matrix.appraisal }} rspec
+      - name: Upload coverage report
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: coverage-report-${{ matrix.appraisal }}
+          path: coverage/
