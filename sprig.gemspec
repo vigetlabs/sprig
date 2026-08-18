@@ -5,18 +5,17 @@ require "sprig/version"
 
 # Describe your gem and declare its dependencies:
 Gem::Specification.new do |s|
-  s.name        = "sprig"
-  s.version     = Sprig::VERSION
-  s.authors     = ["Lawson Kurtz", "Ryan Foster"]
-  s.email       = ["lawson.kurtz@viget.com", "ryan.foster@viget.com"]
-  s.homepage    = "http://www.github.com/vigetlabs/sprig"
-  s.summary     = "Relational, environment-specific seeding for Rails apps."
+  s.name = "sprig"
+  s.version = Sprig::VERSION
+  s.authors = ["Lawson Kurtz", "Ryan Foster"]
+  s.email = ["lawson.kurtz@viget.com", "ryan.foster@viget.com"]
+  s.homepage = "http://www.github.com/vigetlabs/sprig"
+  s.summary = "Relational, environment-specific seeding for Rails apps."
   s.description = "Sprig is a library for managing interconnected, environment-specific seed data."
-  s.license     = "MIT"
+  s.license = "MIT"
 
   s.files = Dir["lib/**/*", "MIT-LICENSE", "Rakefile", "README.md"]
-  s.test_files = Dir["spec/**/*"]
-  
+
   s.add_dependency "csv", "~> 3.3"
 
   s.add_development_dependency "appraisal"

@@ -1,11 +1,10 @@
-require 'csv'
+require "csv"
 
 module Sprig
   module Parser
     class Csv < Base
-
       def parse
-        { :records => records }
+        {records: records}
       end
 
       private

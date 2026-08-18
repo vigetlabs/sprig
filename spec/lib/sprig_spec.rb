@@ -1,19 +1,19 @@
-require 'spec_helper'
+require "spec_helper"
 
 RSpec.describe Sprig do
-  let(:configuration) { double('Configuration') }
+  let(:configuration) { double("Configuration") }
 
   before do
     allow(Sprig::Configuration).to receive(:new).and_return(configuration)
   end
 
-  describe '.adapter' do
+  describe ".adapter" do
     it { expect(described_class).to respond_to(:adapter).with(0).arguments }
 
     it { expect(described_class.adapter).not_to be nil }
   end
 
-  describe '.adapter=' do
+  describe ".adapter=" do
     let(:value) { :mongo_mapper }
 
     around(:each) do |example|
@@ -26,12 +26,12 @@ RSpec.describe Sprig do
 
     it { expect(described_class).to respond_to(:adapter=).with(1).argument }
 
-    it 'changes the value' do
+    it "changes the value" do
       expect { described_class.adapter = value }.to change(described_class, :adapter).to(value)
     end
   end
 
-  describe '.adapter_model_class' do
+  describe ".adapter_model_class" do
     let(:expected_class) do
       case Sprig.adapter
       when :active_record
@@ -51,23 +51,23 @@ RSpec.describe Sprig do
 
     it { expect(described_class.adapter_model_class).to be expected_class }
 
-    describe 'with an unrecognized adapter' do
+    describe "with an unrecognized adapter" do
       let(:value) { :mongo_mapper }
 
-      it 'raises an error' do
+      it "raises an error" do
         allow(described_class).to receive(:adapter).and_return(value)
 
         expect { described_class.adapter_model_class }.to raise_error(/unknown model class/i)
       end
     end
 
-    describe 'with the mongoid adapter' do
+    describe "with the mongoid adapter" do
       before do
-        stub_const('Mongoid::Document', Class.new)
+        stub_const("Mongoid::Document", Class.new)
         allow(described_class).to receive(:adapter).and_return(:mongoid)
       end
 
-      it 'returns Mongoid::Document' do
+      it "returns Mongoid::Document" do
         expect(described_class.adapter_model_class).to eq(Mongoid::Document)
       end
     end
@@ -86,7 +86,7 @@ RSpec.describe Sprig do
       end
 
       it "returns the existing Configuration instance" do
-        new_configuration = double('Configuration')
+        new_configuration = double("Configuration")
         allow(Sprig::Configuration).to receive(:new).and_return(new_configuration)
 
         expect(described_class.configuration).to eq(configuration)
@@ -101,7 +101,7 @@ RSpec.describe Sprig do
 
     it "clears the existing configuration" do
       described_class.reset_configuration
-      new_configuration = double('Configuration')
+      new_configuration = double("Configuration")
       allow(Sprig::Configuration).to receive(:new).and_return(new_configuration)
 
       expect(described_class.configuration).to eq(new_configuration)

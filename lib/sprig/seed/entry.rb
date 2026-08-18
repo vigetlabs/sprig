@@ -59,7 +59,7 @@ module Sprig
       attr_reader :attributes, :klass, :options, :sprig_id
 
       def klass=(klass)
-        raise ArgumentError, 'First argument must be a Class' unless klass.is_a?(Class)
+        raise ArgumentError, "First argument must be a Class" unless klass.is_a?(Class)
 
         @klass = klass
       end
@@ -79,7 +79,7 @@ module Sprig
       def find_existing_params
         Array(options[:find_existing_by]).inject({}) do |hash, attribute_name|
           hash.merge!(
-            { attribute_name => attributes.find_by_name(attribute_name).value }
+            {attribute_name => attributes.find_by_name(attribute_name).value}
           )
         end
       end

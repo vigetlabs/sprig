@@ -1,9 +1,8 @@
 module Sprig
   class Source
-
     def initialize(table_name, args = {})
       @table_name = table_name
-      @args       = args
+      @args = args
     end
 
     def records
@@ -31,7 +30,7 @@ module Sprig
         source = args.fetch(:source) { default_source }
 
         unless source.respond_to?(:read) && source.respond_to?(:close)
-          raise ArgumentError, 'Data sources must act like an IO.'
+          raise ArgumentError, "Data sources must act like an IO."
         end
 
         source
@@ -43,7 +42,7 @@ module Sprig
         parser_class = args.fetch(:parser) { default_parser_class }
 
         unless parser_class.method_defined?(:parse)
-          raise ArgumentError, 'Parsers must define #parse.'
+          raise ArgumentError, "Parsers must define #parse."
         end
 
         parser_class
@@ -57,7 +56,6 @@ module Sprig
     def default_parser_class
       ParserDeterminer.new(source).parser
     end
-
 
     class SourceDeterminer
       include Sprig::Helpers
@@ -77,7 +75,7 @@ module Sprig
       class FileNotFoundError < StandardError; end
 
       def filename
-        available_files.detect {|name| name =~ /^#{table_name}\./ } || file_not_found
+        available_files.detect { |name| name =~ /^#{table_name}\./ } || file_not_found
       end
 
       def filepath
@@ -95,21 +93,19 @@ module Sprig
 
       def file_not_found
         raise FileNotFoundError,
-          "No datasource file could be found for '#{table_name}'. Try creating "\
-          "#{table_name}.yml, #{table_name}.json, or #{table_name}.csv within "\
+          "No datasource file could be found for '#{table_name}'. Try creating " \
+          "#{table_name}.yml, #{table_name}.json, or #{table_name}.csv within " \
           "#{seed_directory}, or define a custom datasource."
       end
     end
 
-
     class ParserDeterminer
-
       def initialize(file)
         @file = file
       end
 
       def parser
-        match = parser_matchers.detect {|p| p[:extension] =~ extension } || unparsable_file
+        match = parser_matchers.detect { |p| p[:extension] =~ extension } || unparsable_file
         match[:parser]
       end
 
@@ -141,12 +137,12 @@ module Sprig
       end
 
       def parsable_formats
-        ['YAML', 'JSON', 'CSV']
+        ["YAML", "JSON", "CSV"]
       end
 
       def unparsable_file
         raise UnparsableFileError,
-          "No parser was found for the file '#{file}'. Provide a custom parser, or "\
+          "No parser was found for the file '#{file}'. Provide a custom parser, or " \
           "use a supported data format (#{parsable_formats})."
       end
     end

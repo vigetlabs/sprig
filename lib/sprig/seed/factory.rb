@@ -2,7 +2,7 @@ module Sprig
   module Seed
     class Factory
       def self.new_from_directive(directive)
-        raise ArgumentError, 'Must provide a Directive' unless directive.is_a? Directive
+        raise ArgumentError, "Must provide a Directive" unless directive.is_a? Directive
 
         new(
           directive.klass,
@@ -12,8 +12,8 @@ module Sprig
       end
 
       def initialize(klass, datasource, options)
-        self.klass           = klass
-        self.datasource      = datasource
+        self.klass = klass
+        self.datasource = datasource
         self.initial_options = options
       end
 
@@ -28,14 +28,14 @@ module Sprig
       attr_reader :datasource, :initial_options, :klass
 
       def klass=(klass)
-        raise ArgumentError, 'Must provide a Class as first argument' unless klass.is_a? Class
+        raise ArgumentError, "Must provide a Class as first argument" unless klass.is_a? Class
 
         klass.reset_column_information if defined?(ActiveRecord) && klass < ActiveRecord::Base
         @klass = klass
       end
 
       def datasource=(datasource)
-        raise ArgumentError, 'Datasource must respond to #records and #options' unless datasource.respond_to?(:records) && datasource.respond_to?(:options)
+        raise ArgumentError, "Datasource must respond to #records and #options" unless datasource.respond_to?(:records) && datasource.respond_to?(:options)
 
         @datasource = datasource
       end

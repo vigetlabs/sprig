@@ -1,5 +1,5 @@
-require 'spec_helper'
-require 'generators/sprig/install_generator'
+require "spec_helper"
+require "generators/sprig/install_generator"
 
 RSpec.describe Sprig::Generators::InstallGenerator, type: :generator do
   destination File.expand_path("../../tmp", __FILE__)
@@ -29,14 +29,13 @@ RSpec.describe Sprig::Generators::InstallGenerator, type: :generator do
   end
 end
 
-
 # Generator arguments are set on a class basis. We need to open
 # a new describe block to make these examples work.
 
 RSpec.describe Sprig::Generators::InstallGenerator, type: :generator do
   context "with arguments" do
     destination File.expand_path("../../tmp", __FILE__)
-    arguments %w(development test integration)
+    arguments %w[development test integration]
 
     before do
       stub_rails_root

@@ -1,12 +1,11 @@
-require 'spec_helper'
+require "spec_helper"
+
+module Users
+  class Admin < User
+  end
+end
 
 RSpec.describe Sprig::Directive do
-
-  module Users
-    class Admin < User
-    end
-  end
-
   describe "#klass" do
     context "given a class" do
       subject { described_class.new(Post) }
@@ -25,7 +24,7 @@ RSpec.describe Sprig::Directive do
     end
 
     context "given options with a class" do
-      subject { described_class.new(:class => Post) }
+      subject { described_class.new(class: Post) }
 
       it "returns the class" do
         expect(subject.klass).to eq(Post)
@@ -33,14 +32,14 @@ RSpec.describe Sprig::Directive do
     end
 
     context "given options without a class" do
-      subject { described_class.new(:source => 'source') }
+      subject { described_class.new(source: "source") }
 
       it "raises and argument error" do
         expect {
           subject.klass
         }.to raise_error(
           ArgumentError,
-          'Sprig::Directive must be instantiated with a(n) '\
+          "Sprig::Directive must be instantiated with a(n) " \
           "#{Sprig.adapter_model_class} class or a Hash with :class defined"
         )
       end
@@ -57,22 +56,22 @@ RSpec.describe Sprig::Directive do
     end
 
     context "given options" do
-      subject { described_class.new(:class => Post, :source => 'source') }
+      subject { described_class.new(class: Post, source: "source") }
 
       it "returns a the options" do
-        expect(subject.options).to eq(:source => 'source')
+        expect(subject.options).to eq(source: "source")
       end
     end
   end
 
   describe "#datasource" do
-    let(:datasource) { double('datasource') }
+    let(:datasource) { double("datasource") }
 
     context "with a class" do
-      subject { described_class.new(:class => Post, :source => 'source') }
+      subject { described_class.new(class: Post, source: "source") }
 
       before do
-        allow(Sprig::Source).to receive(:new).with('posts', { :source => 'source' }).and_return(datasource)
+        allow(Sprig::Source).to receive(:new).with("posts", {source: "source"}).and_return(datasource)
       end
 
       it "returns a sprig data source" do

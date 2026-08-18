@@ -1,5 +1,5 @@
-require 'spec_helper'
-require 'open-uri'
+require "spec_helper"
+require "open-uri"
 
 RSpec.describe "Seeding an application" do
   let(:missing_record_error) do
@@ -16,58 +16,58 @@ RSpec.describe "Seeding an application" do
 
   context "with a yaml file" do
     around do |example|
-      load_seeds('posts.yml', &example)
+      load_seeds("posts.yml", &example)
     end
 
     it "seeds the db" do
       sprig [Post]
 
       expect(Post.count).to eq(1)
-      expect(Post.pluck(:title)).to eq(['Yaml title'])
+      expect(Post.pluck(:title)).to eq(["Yaml title"])
     end
   end
 
   context "with a csv file" do
     around do |example|
-      load_seeds('posts.csv', &example)
+      load_seeds("posts.csv", &example)
     end
 
     it "seeds the db" do
       sprig [Post]
 
       expect(Post.count).to eq(1)
-      expect(Post.pluck(:title)).to eq(['Csv title'])
+      expect(Post.pluck(:title)).to eq(["Csv title"])
     end
   end
 
   context "with a json file" do
     around do |example|
-      load_seeds('posts.json', &example)
+      load_seeds("posts.json", &example)
     end
 
     it "seeds the db" do
       sprig [Post]
 
       expect(Post.count).to eq(1)
-      expect(Post.pluck(:title)).to eq(['Json title'])
+      expect(Post.pluck(:title)).to eq(["Json title"])
     end
   end
 
   context "with a partially-dynamic value" do
     around do |example|
-      load_seeds('posts_partially_dynamic_value.yml', &example)
+      load_seeds("posts_partially_dynamic_value.yml", &example)
     end
 
     it "seeds the db with the full value" do
       sprig [
         {
-          :class  => Post,
-          :source => open('spec/fixtures/seeds/test/posts_partially_dynamic_value.yml')
+          class: Post,
+          source: open("spec/fixtures/seeds/test/posts_partially_dynamic_value.yml")
         }
       ]
 
       expect(Post.count).to eq(1)
-      expect(Post.pluck(:title)).to eq(['Partially Dynamic Title'])
+      expect(Post.pluck(:title)).to eq(["Partially Dynamic Title"])
     end
   end
 
@@ -80,9 +80,9 @@ RSpec.describe "Seeding an application" do
       # mktmpdir guarantees a unique directory name, so this can't collide
       # with another example's fixtures, and it's removed automatically
       # (even on failure) once the block returns.
-      Dir.mktmpdir(nil, './spec/fixtures/db/seeds') do |tmp_dir|
-        FileUtils.cp("./spec/fixtures/seeds/#{env}/posts.yml", File.join(tmp_dir, 'posts.yml'))
-        File.symlink(File.join('..', File.basename(tmp_dir), 'posts.yml'), symlink_path)
+      Dir.mktmpdir(nil, "./spec/fixtures/db/seeds") do |tmp_dir|
+        FileUtils.cp("./spec/fixtures/seeds/#{env}/posts.yml", File.join(tmp_dir, "posts.yml"))
+        File.symlink(File.join("..", File.basename(tmp_dir), "posts.yml"), symlink_path)
 
         begin
           example.call
@@ -96,57 +96,57 @@ RSpec.describe "Seeding an application" do
       sprig [Post]
 
       expect(Post.count).to eq(1)
-      expect(Post.pluck(:title)).to eq(['Yaml title'])
+      expect(Post.pluck(:title)).to eq(["Yaml title"])
     end
   end
 
   context "with an invalid custom parser" do
     around do |example|
-      load_seeds('posts.yml', &example)
+      load_seeds("posts.yml", &example)
     end
 
     it "fails with an argument error" do
       expect {
         sprig [
           {
-            :class  => Post,
-            :source => open('spec/fixtures/seeds/test/posts.yml'),
-            :parser => Object # Not a valid parser
+            class: Post,
+            source: open("spec/fixtures/seeds/test/posts.yml"),
+            parser: Object # Not a valid parser
           }
         ]
-      }.to raise_error(ArgumentError, 'Parsers must define #parse.')
+      }.to raise_error(ArgumentError, "Parsers must define #parse.")
     end
   end
 
   context "with a custom source" do
     around do |example|
-      load_seeds('legacy_posts.yml', &example)
+      load_seeds("legacy_posts.yml", &example)
     end
 
     it "seeds" do
       sprig [
         {
-          :class  => Post,
-          :source => open('spec/fixtures/seeds/test/legacy_posts.yml')
+          class: Post,
+          source: open("spec/fixtures/seeds/test/legacy_posts.yml")
         }
       ]
 
       expect(Post.count).to eq(1)
-      expect(Post.pluck(:title)).to eq(['Legacy yaml title'])
+      expect(Post.pluck(:title)).to eq(["Legacy yaml title"])
     end
   end
 
   context "with a custom source that cannot be parsed by native parsers" do
     around do |example|
-      load_seeds('posts.md', &example)
+      load_seeds("posts.md", &example)
     end
 
     it "fails with an unparsable file error" do
       expect {
         sprig [
           {
-            :class  => Post,
-            :source => open('spec/fixtures/seeds/test/posts.md')
+            class: Post,
+            source: open("spec/fixtures/seeds/test/posts.md")
           }
         ]
       }.to raise_error(Sprig::Source::ParserDeterminer::UnparsableFileError)
@@ -156,14 +156,14 @@ RSpec.describe "Seeding an application" do
   context "with an invalid custom source" do
     it "fails with an argument error" do
       expect {
-        sprig [ { :class => Post, :source => 42 } ]
-      }.to raise_error(ArgumentError, 'Data sources must act like an IO.')
+        sprig [{class: Post, source: 42}]
+      }.to raise_error(ArgumentError, "Data sources must act like an IO.")
     end
   end
 
   context "with multiple file relationships" do
     around do |example|
-      load_seeds('posts.yml', 'comments.yml', &example)
+      load_seeds("posts.yml", "comments.yml", &example)
     end
 
     it "seeds the db" do
@@ -185,15 +185,15 @@ RSpec.describe "Seeding an application" do
 
   context "with a relationship to an undefined record" do
     around do |example|
-      load_seeds('posts.yml', 'posts_missing_dependency.yml', &example)
+      load_seeds("posts.yml", "posts_missing_dependency.yml", &example)
     end
 
     it "raises a helpful error message" do
       expect {
         sprig [
           {
-            :class  => Post,
-            :source => open('spec/fixtures/seeds/test/posts_missing_dependency.yml')
+            class: Post,
+            source: open("spec/fixtures/seeds/test/posts_missing_dependency.yml")
           }
         ]
       }.to raise_error(
@@ -205,19 +205,19 @@ RSpec.describe "Seeding an application" do
 
   context "with a relationship to a record that didn't save" do
     around do |example|
-      load_seeds('invalid_users.yml', 'posts_missing_record.yml', &example)
+      load_seeds("invalid_users.yml", "posts_missing_record.yml", &example)
     end
 
     it "does not raise, but skips the record instead of saving it with a broken reference" do
       expect {
         sprig [
           {
-            :class  => Post,
-            :source => open('spec/fixtures/seeds/test/posts_missing_record.yml')
+            class: Post,
+            source: open("spec/fixtures/seeds/test/posts_missing_record.yml")
           },
           {
-            :class  => User,
-            :source => open('spec/fixtures/seeds/test/invalid_users.yml')
+            class: User,
+            source: open("spec/fixtures/seeds/test/invalid_users.yml")
           }
         ]
       }.to_not raise_error
@@ -228,77 +228,77 @@ RSpec.describe "Seeding an application" do
 
   context "with multiple files for a class" do
     around do |example|
-      load_seeds('posts.yml', 'legacy_posts.yml', &example)
+      load_seeds("posts.yml", "legacy_posts.yml", &example)
     end
 
     it "seeds the db" do
       sprig [
         Post,
         {
-          :class  => Post,
-          :source => open('spec/fixtures/seeds/test/legacy_posts.yml')
+          class: Post,
+          source: open("spec/fixtures/seeds/test/legacy_posts.yml")
         }
       ]
 
       expect(Post.count).to eq(2)
-      expect(Post.pluck(:title)).to eq(['Yaml title', 'Legacy yaml title'])
+      expect(Post.pluck(:title)).to eq(["Yaml title", "Legacy yaml title"])
     end
   end
 
   context "from a specific environment" do
     it "seeds the db" do
-      ex = Proc.new do
+      ex = proc do
         sprig [Post]
 
         expect(Post.count).to eq(1)
-        expect(Post.pluck(:title)).to eq(['Staging yaml title'])
+        expect(Post.pluck(:title)).to eq(["Staging yaml title"])
       end
 
-      stub_rails_env 'staging'
-      load_seeds('posts.yml', &ex)
+      stub_rails_env "staging"
+      load_seeds("posts.yml", &ex)
     end
   end
 
   context "with files defined as attributes" do
     around do |example|
-      load_seeds('posts_with_files.yml', &example)
+      load_seeds("posts_with_files.yml", &example)
     end
 
     it "seeds the db" do
       sprig [
         {
-          :class  => Post,
-          :source => open('spec/fixtures/seeds/test/posts_with_files.yml')
+          class: Post,
+          source: open("spec/fixtures/seeds/test/posts_with_files.yml")
         }
       ]
 
       expect(Post.count).to eq(1)
-      expect(Post.pluck(:photo)).to eq(['cat.png'])
+      expect(Post.pluck(:photo)).to eq(["cat.png"])
     end
   end
 
   context "with has_and_belongs_to_many relationships" do
     around do |example|
-      load_seeds('posts_with_habtm.yml', 'tags.yml', &example)
+      load_seeds("posts_with_habtm.yml", "tags.yml", &example)
     end
 
     it "saves the habtm relationships" do
       sprig [
         Tag,
         {
-          :class  => Post,
-          :source => open('spec/fixtures/seeds/test/posts_with_habtm.yml')
+          class: Post,
+          source: open("spec/fixtures/seeds/test/posts_with_habtm.yml")
         }
       ]
 
-      expect(Post.first.tags.map(&:name)).to eq(['Botany', 'Biology'])
+      expect(Post.first.tags.map(&:name)).to eq(["Botany", "Biology"])
     end
   end
 
   if Sprig.adapter == :active_record
     context "with STI records" do
       around do |example|
-        load_seeds('article_pages.yml', 'pages.yml', &example)
+        load_seeds("article_pages.yml", "pages.yml", &example)
       end
 
       it "allows cross-referencing of STI records" do
@@ -308,7 +308,7 @@ RSpec.describe "Seeding an application" do
         ]
 
         expect(Page.all.map(&:title)).to eq(
-          ['First Title', 'First Title', 'Second Title', 'Second Title']
+          ["First Title", "First Title", "Second Title", "Second Title"]
         )
       end
     end
@@ -316,15 +316,15 @@ RSpec.describe "Seeding an application" do
 
   context "with cyclic dependencies" do
     around do |example|
-      load_seeds('comments.yml', 'posts_with_cyclic_dependencies.yml', &example)
+      load_seeds("comments.yml", "posts_with_cyclic_dependencies.yml", &example)
     end
 
     it "raises an cyclic dependency error" do
       expect {
         sprig [
           {
-            :class  => Post,
-            :source => open('spec/fixtures/seeds/test/posts_with_cyclic_dependencies.yml')
+            class: Post,
+            source: open("spec/fixtures/seeds/test/posts_with_cyclic_dependencies.yml")
           },
           Comment
         ]
@@ -356,31 +356,32 @@ RSpec.describe "Seeding an application" do
     end
   end
 
-
   context "with custom seed options" do
     context "using delete_existing_by" do
       around do |example|
-        load_seeds('posts_delete_existing_by.yml', &example)
+        load_seeds("posts_delete_existing_by.yml", &example)
       end
 
       context "with an existing record" do
         let!(:existing_match) do
           Post.create(
-            :title    => "Such Title",
-            :content  => "Old Content")
+            title: "Such Title",
+            content: "Old Content"
+          )
         end
 
         let!(:existing_nonmatch) do
           Post.create(
-            :title    => "Wow Title",
-            :content  => "Much Content")
+            title: "Wow Title",
+            content: "Much Content"
+          )
         end
 
         it "replaces only the matching existing record" do
           sprig [
             {
-              :class  => Post,
-              :source => open("spec/fixtures/seeds/test/posts_delete_existing_by.yml")
+              class: Post,
+              source: open("spec/fixtures/seeds/test/posts_delete_existing_by.yml")
             }
           ]
 
@@ -400,7 +401,7 @@ RSpec.describe "Seeding an application" do
     context "using find_existing_by" do
       context "with a missing attribute" do
         around do |example|
-          load_seeds('posts_find_existing_by_missing.yml', &example)
+          load_seeds("posts_find_existing_by_missing.yml", &example)
         end
 
         it "logs a missing attribute error" do
@@ -412,8 +413,8 @@ RSpec.describe "Seeding an application" do
           expect {
             sprig [
               {
-                :class  => Post,
-                :source => open("spec/fixtures/seeds/test/posts_find_existing_by_missing.yml")
+                class: Post,
+                source: open("spec/fixtures/seeds/test/posts_find_existing_by_missing.yml")
               }
             ]
           }.to_not raise_error
@@ -422,21 +423,22 @@ RSpec.describe "Seeding an application" do
 
       context "with a single attribute" do
         around do |example|
-          load_seeds('posts.yml', 'posts_find_existing_by_single.yml', &example)
+          load_seeds("posts.yml", "posts_find_existing_by_single.yml", &example)
         end
 
         context "with an existing record" do
           let!(:existing) do
             Post.create(
-              :title    => "Existing title",
-              :content  => "Existing content")
+              title: "Existing title",
+              content: "Existing content"
+            )
           end
 
           it "updates the existing record" do
             sprig [
               {
-                :class  => Post,
-                :source => open("spec/fixtures/seeds/test/posts_find_existing_by_single.yml")
+                class: Post,
+                source: open("spec/fixtures/seeds/test/posts_find_existing_by_single.yml")
               }
             ]
 
@@ -448,23 +450,23 @@ RSpec.describe "Seeding an application" do
 
       context "with multiple attributes" do
         around do |example|
-          load_seeds('posts.yml', 'posts_find_existing_by_multiple.yml', &example)
+          load_seeds("posts.yml", "posts_find_existing_by_multiple.yml", &example)
         end
 
         context "with an existing record" do
           let!(:existing) do
             Post.create(
-              :title      => "Existing title",
-              :content    => "Existing content",
-              :published  => false
+              title: "Existing title",
+              content: "Existing content",
+              published: false
             )
           end
 
           it "updates the existing record" do
             sprig [
               {
-                :class  => Post,
-                :source => open("spec/fixtures/seeds/test/posts_find_existing_by_multiple.yml")
+                class: Post,
+                source: open("spec/fixtures/seeds/test/posts_find_existing_by_multiple.yml")
               }
             ]
 
@@ -478,20 +480,21 @@ RSpec.describe "Seeding an application" do
     context "defined within the directive" do
       let!(:existing) do
         Post.create(
-          :title    => "Yaml title",
-          :content  => "Existing content")
+          title: "Yaml title",
+          content: "Existing content"
+        )
       end
 
       around do |example|
-        load_seeds('posts.yml', &example)
+        load_seeds("posts.yml", &example)
       end
 
       it "respects the directive option" do
         sprig [
           {
-            :class   => Post,
-            :source  => open("spec/fixtures/seeds/test/posts.yml"),
-            :delete_existing_by => :title
+            class: Post,
+            source: open("spec/fixtures/seeds/test/posts.yml"),
+            delete_existing_by: :title
           }
         ]
 

@@ -3,7 +3,7 @@ module Sprig
     class Record
       attr_reader :orm_record
 
-      delegate :errors, :to => :orm_record
+      delegate :errors, to: :orm_record
 
       def self.new_or_existing(klass, attributes, find_params)
         orm_record = klass.where(find_params).first
@@ -11,10 +11,10 @@ module Sprig
       end
 
       def initialize(klass, attributes, orm_record = nil)
-        @klass      = klass
+        @klass = klass
         @attributes = attributes
         @orm_record = orm_record || klass.new
-        @existing   = @orm_record.persisted?
+        @existing = @orm_record.persisted?
       end
 
       def save

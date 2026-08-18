@@ -1,6 +1,5 @@
 module Sprig
   class Configuration
-
     attr_writer :directory, :shared_directory, :logger
 
     def directory
@@ -14,7 +13,7 @@ module Sprig
     private
 
     def default_directory
-      'db/seeds'
+      "db/seeds"
     end
 
     def seeds_directory
@@ -31,7 +30,7 @@ module Sprig
     end
 
     def default_shared_directory
-      'shared'
+      "shared"
     end
   end
 end

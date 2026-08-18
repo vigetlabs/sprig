@@ -39,7 +39,7 @@ module Sprig
       end
 
       def find_dependencies_within_string(string)
-        matches = string.scan(/(sprig_record\(([A-Z][^,]*), ([\d]*)\))+/)
+        matches = string.scan(/(sprig_record\(([A-Z][^,]*), (\d*)\))+/)
         matches.map { |match| Dependency.for(match[1], match[2]) }
       end
 
@@ -90,20 +90,21 @@ module Sprig
       def compute_string_value(string)
         matches = string.scan(computed_value_regex)
 
+        # Values come from developer-authored seed files (YAML/CSV in db/seeds),
+        # not runtime user input — arbitrary Ruby evaluation is the intended feature.
         if completely_dynamic_value?(string, matches)
           # If the dynamic portion is the entire value, return the result of the eval
           # (This allows for the return of non-string types.)
-          eval(matches.first[1])
+          eval(matches.first[1]) # rubocop:disable Security/Eval
         else
           # Otherwise return the dynamic portion within the larger string.
           string.clone.tap do |return_string|
             matches.each do |match|
-              return_string.sub!(match[0], eval(match[1]).to_s)
+              return_string.sub!(match[0], eval(match[1]).to_s) # rubocop:disable Security/Eval
             end
           end
         end
       end
-
     end
   end
 end

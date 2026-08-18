@@ -1,5 +1,4 @@
 module LoggerMock
-
   def log_should_receive(level, options)
     expect(Sprig.logger).to receive(level).with(send("log_#{level}_text", options.fetch(:with)))
   end

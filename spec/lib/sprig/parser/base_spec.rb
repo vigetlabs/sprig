@@ -1,10 +1,10 @@
-require 'spec_helper'
+require "spec_helper"
 
 RSpec.describe Sprig::Parser::Base do
   describe "#parse" do
     it "enforces implementation in a subclass" do
       expect {
-        described_class.new('data').parse
+        described_class.new("data").parse
       }.to raise_error(NotImplementedError)
     end
   end

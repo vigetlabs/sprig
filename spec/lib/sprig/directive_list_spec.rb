@@ -1,11 +1,10 @@
-require 'spec_helper'
+require "spec_helper"
 
 RSpec.describe Sprig::DirectiveList do
-
   describe "#add_seeds_to_hopper" do
-    let(:hopper)       { Array.new }
-    let(:directive)    { double('directive') }
-    let(:seed_factory) { double('seed_factory') }
+    let(:hopper) { [] }
+    let(:directive) { double("directive") }
+    let(:seed_factory) { double("seed_factory") }
 
     subject { described_class.new(Post) }
 

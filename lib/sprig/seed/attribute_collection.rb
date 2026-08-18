@@ -3,14 +3,14 @@ module Sprig
     class AttributeCollection
       include Enumerable
 
-      delegate :each, :to => :attributes
+      delegate :each, to: :attributes
 
       def initialize(attrs_hash)
         @attrs_hash = attrs_hash.to_hash
       end
 
       def find_by_name(name)
-        attributes.detect {|attribute| attribute.name == name.to_s } || attribute_not_found(name)
+        attributes.detect { |attribute| attribute.name == name.to_s } || attribute_not_found(name)
       end
 
       private
