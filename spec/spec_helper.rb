@@ -55,8 +55,11 @@ Dir[File.dirname(__FILE__) + "/fixtures/models/#{Sprig.adapter}/*.rb"].each {|fi
 
 require "adapters/#{Sprig.adapter}.rb"
 
-Page.connection.execute "DROP TABLE IF EXISTS pages;"
-Page.connection.execute "CREATE TABLE pages (id INTEGER PRIMARY KEY , title VARCHAR(255), type VARCHAR(255));"
+# Page/ArticlePage exist only to exercise STI, which is an ActiveRecord-only concept.
+if Sprig.adapter == :active_record
+  Page.connection.execute "DROP TABLE IF EXISTS pages;"
+  Page.connection.execute "CREATE TABLE pages (id INTEGER PRIMARY KEY , title VARCHAR(255), type VARCHAR(255));"
+end
 
 # Helpers
 #

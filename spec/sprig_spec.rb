@@ -295,20 +295,22 @@ RSpec.describe "Seeding an application" do
     end
   end
 
-  context "with STI records" do
-    around do |example|
-      load_seeds('article_pages.yml', 'pages.yml', &example)
-    end
+  if Sprig.adapter == :active_record
+    context "with STI records" do
+      around do |example|
+        load_seeds('article_pages.yml', 'pages.yml', &example)
+      end
 
-    it "allows cross-referencing of STI records" do
-      sprig [
-        ArticlePage,
-        Page
-      ]
+      it "allows cross-referencing of STI records" do
+        sprig [
+          ArticlePage,
+          Page
+        ]
 
-      Page.all.map(&:title).should == [
-        'First Title', 'First Title', 'Second Title', 'Second Title'
-      ]
+        expect(Page.all.map(&:title)).to eq(
+          ['First Title', 'First Title', 'Second Title', 'Second Title']
+        )
+      end
     end
   end
 
