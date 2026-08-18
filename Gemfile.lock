@@ -294,7 +294,7 @@ DEPENDENCIES
   pry
   rails (>= 7.2, < 9.0)
   rspec
-  simplecov
+  simplecov (~> 1.1)
   sprig!
   sqlite3
   standard

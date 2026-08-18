@@ -9,16 +9,45 @@ jobs:
   # code-quality:
   #   - name: StandardRB
   #     run: bundle exec standardrb
+  
+  discover:
+    runs-on: ubuntu-latest
+    outputs:
+      appraisals: ${{ steps.list.outputs.appraisals }}
+    steps:
+      - uses: actions/checkout@v7
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 3.4.8
+          bundler-cache: true
+
+      - name: List appraisals
+        id: list
+        run: |
+          appraisals=$(bundle exec appraisal list | ruby -rjson -e 'puts JSON.generate($stdin.read.split("\n").reject(&:empty?))')
+          echo "appraisals=$appraisals" >> "$GITHUB_OUTPUT"
+
   test:
+    needs: discover
 
     strategy:
       fail-fast: false
       matrix:
-        appraisal: ['rails-7.2', 'rails-8.0', 'rails-8.1']
+        appraisal: ${{ fromJson(needs.discover.outputs.appraisals) }}
 
     runs-on: ubuntu-latest
     env:
       RAILS_ENV: test
+    services:
+      mongodb:
+        image: mongo:8
+        ports:
+          - 27017:27017
+        options: >-
+          --health-cmd "mongosh --quiet --eval 'db.runCommand(\"ping\")'"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
     steps:
       - uses: actions/checkout@v7
       - uses: ruby/setup-ruby@v1
