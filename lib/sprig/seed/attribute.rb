@@ -3,6 +3,22 @@ module Sprig
     class Attribute
       include Sprig::Helpers
 
+      # Matches a `sprig_record(Klass, <id text>)` reference, capturing the
+      # klass name and the raw, unparsed id text between the comma and the
+      # closing paren, eliminating any wrapping whitespace.
+      # Example matches: `5`, `'cooldev'`, `"cooldev"`, or `:cooldev`.
+      SPRIG_RECORD_REFERENCE = /sprig_record\(([A-Z][^,]*),\s*([^)]*?)\s*\)/
+
+      # The four literal shapes an id can take, each capturing its unquoted value.
+      SINGLE_QUOTED_ID = /'([^']*)'/
+      DOUBLE_QUOTED_ID = /"([^"]*)"/
+      SYMBOL_ID = /:(\w+)/
+      NUMERIC_ID = /(\d+)/
+
+      # Matches the raw id text captured above in its entirety against each of
+      # the shapes above, figuring out which literal it is.
+      ID_LITERAL = /\A(?:#{SINGLE_QUOTED_ID}|#{DOUBLE_QUOTED_ID}|#{SYMBOL_ID}|#{NUMERIC_ID})\z/
+
       attr_reader :name, :raw_value
 
       def initialize(name, raw_value)
@@ -39,8 +55,15 @@ module Sprig
       end
 
       def find_dependencies_within_string(string)
-        matches = string.scan(/(sprig_record\(([A-Z][^,]*), (\d*)\))+/)
-        matches.map { |match| Dependency.for(match[1], match[2]) }
+        matches = string.scan(SPRIG_RECORD_REFERENCE)
+        matches.map do |klass, id_text|
+          Dependency.for(klass, id_from(id_text))
+        end
+      end
+
+      def id_from(id_text)
+        single_quoted, double_quoted, symbol, numeric = ID_LITERAL.match(id_text)&.captures
+        single_quoted || double_quoted || symbol || numeric
       end
 
       def string?(value)

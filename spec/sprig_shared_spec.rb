@@ -166,6 +166,29 @@ RSpec.describe "Seeding an application with shared seeds" do
     end
   end
 
+  context "with a string sprig_id dependency, listed out of dependency order" do
+    around do |example|
+      load_shared_seeds("posts_with_string_sprig_id.yml", "comments_with_string_dependency.yml", &example)
+    end
+
+    it "sorts by dependency and seeds the db correctly regardless of array order" do
+      sprig_shared [
+        {
+          class: Comment,
+          source: open("spec/fixtures/seeds/shared/comments_with_string_dependency.yml")
+        },
+        {
+          class: Post,
+          source: open("spec/fixtures/seeds/shared/posts_with_string_sprig_id.yml")
+        }
+      ]
+
+      expect(Post.count).to eq(1)
+      expect(Comment.count).to eq(1)
+      expect(Comment.first.post).to eq(Post.first)
+    end
+  end
+
   context "with missing seed files" do
     it "raises a missing file error" do
       expect {

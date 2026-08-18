@@ -1,0 +1,4 @@
+records:
+  - sprig_id: "my-post"
+    title: 'String Id Title'
+    content: 'String Id Content'
