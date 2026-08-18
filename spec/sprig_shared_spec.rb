@@ -73,9 +73,14 @@ RSpec.describe "Seeding an application with shared seeds" do
 
   context "with a symlinked file" do
     around do |example|
-      `ln -s ./spec/fixtures/seeds/shared/posts.yml ./spec/fixtures/db/seeds/shared/`
-      example.call
-      `rm ./spec/fixtures/db/seeds/shared/posts.yml`
+      symlink_path = './spec/fixtures/db/seeds/shared/posts.yml'
+      File.symlink('../../../seeds/shared/posts.yml', symlink_path)
+
+      begin
+        example.call
+      ensure
+        FileUtils.rm_f(symlink_path)
+      end
     end
 
     it "seeds the db" do
@@ -356,7 +361,12 @@ RSpec.describe "Seeding an application with shared seeds" do
           load_shared_seeds('posts_find_existing_by_missing.yml', &example)
         end
 
-        it "raises a missing attribute error" do
+        it "logs a missing attribute error" do
+          allow(Sprig.logger).to receive(:error)
+
+          log_should_receive(:error, with: "There was an error saving Post with sprig_id 1.")
+          log_should_receive(:error, with: "Sprig::Seed::AttributeCollection::AttributeNotFoundError: Attribute 'unicorn' is not present.")
+
           expect {
             sprig_shared [
               {
@@ -364,7 +374,7 @@ RSpec.describe "Seeding an application with shared seeds" do
                 :source => open("spec/fixtures/seeds/shared/posts_find_existing_by_missing.yml")
               }
             ]
-          }.to raise_error(Sprig::Seed::AttributeCollection::AttributeNotFoundError, "Attribute 'unicorn' is not present.")
+          }.to_not raise_error
         end
       end
 

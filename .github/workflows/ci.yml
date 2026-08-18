@@ -1,0 +1,82 @@
+name: CI
+
+on:
+  pull_request:
+
+jobs:
+
+  # TODO: Apply Standard formatting
+  # code-quality:
+  #   - name: StandardRB
+  #     run: bundle exec standardrb
+  
+  discover:
+    runs-on: ubuntu-latest
+    outputs:
+      appraisals: ${{ steps.list.outputs.appraisals }}
+    steps:
+      - uses: actions/checkout@v7
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 3.4.8
+          bundler-cache: true
+
+      - name: List appraisals
+        id: list
+        run: |
+          appraisals=$(bundle exec appraisal list | ruby -rjson -e 'puts JSON.generate($stdin.read.split("\n").reject(&:empty?))')
+          echo "appraisals=$appraisals" >> "$GITHUB_OUTPUT"
+
+  test:
+    needs: discover
+
+    strategy:
+      fail-fast: false
+      matrix:
+        appraisal: ${{ fromJson(needs.discover.outputs.appraisals) }}
+
+    runs-on: ubuntu-latest
+    env:
+      RAILS_ENV: test
+    services:
+      mongodb:
+        image: mongo:8
+        ports:
+          - 27017:27017
+        options: >-
+          --health-cmd "mongosh --quiet --eval 'db.runCommand(\"ping\")'"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    steps:
+      - uses: actions/checkout@v7
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 3.4.8
+          bundler-cache: true
+
+      - name: Install dependencies for Appraisal
+        run: bundle exec appraisal install
+      - name: RSpec
+        run: bundle exec appraisal ${{ matrix.appraisal }} rspec
+      - name: Upload coverage report
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: coverage-report-${{ matrix.appraisal }}
+          path: coverage/
+      - name: Coveralls Coverage Report
+        uses: coverallsapp/github-action@v2
+        with:
+          parallel: true
+          flag-name: run-${{ join(matrix.*, '-') }}
+
+  finish:
+    needs: test
+    if: ${{ always() }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Close parallel build
+        uses: coverallsapp/github-action@v2
+        with:
+          parallel-finished: true

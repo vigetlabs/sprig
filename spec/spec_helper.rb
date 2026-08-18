@@ -1,9 +1,9 @@
 ENV["RAILS_ENV"] ||= 'test'
 
 require 'simplecov'
-require 'coveralls'
+require 'tmpdir'
+require 'fileutils'
 
-SimpleCov.formatter = Coveralls::SimpleCov::Formatter
 SimpleCov.start "rails"
 
 require "rails"
@@ -29,6 +29,7 @@ RSpec.configure do |c|
 
   c.after(:each) do
     Sprig.reset_configuration
+    Sprig.shared_seeding = false
     Sprig::SprigRecordStore.instance.reset
     Sprig::DependencyCollection.instance.reset
   end
@@ -54,8 +55,11 @@ Dir[File.dirname(__FILE__) + "/fixtures/models/#{Sprig.adapter}/*.rb"].each {|fi
 
 require "adapters/#{Sprig.adapter}.rb"
 
-Page.connection.execute "DROP TABLE IF EXISTS pages;"
-Page.connection.execute "CREATE TABLE pages (id INTEGER PRIMARY KEY , title VARCHAR(255), type VARCHAR(255));"
+# Page/ArticlePage exist only to exercise STI, which is an ActiveRecord-only concept.
+if Sprig.adapter == :active_record
+  Page.connection.execute "DROP TABLE IF EXISTS pages;"
+  Page.connection.execute "CREATE TABLE pages (id INTEGER PRIMARY KEY , title VARCHAR(255), type VARCHAR(255));"
+end
 
 # Helpers
 #
@@ -81,17 +85,22 @@ def load_shared_seeds(*files, &block)
 end
 
 def prepare_seeds(directory, *files, &block)
-  `cp -R ./spec/fixtures/seeds/#{directory}/files ./spec/fixtures/db/seeds/#{directory}`
+  seed_directory = "./spec/fixtures/db/seeds/#{directory}"
+  source_files_directory = "./spec/fixtures/seeds/#{directory}/files"
+
+  FileUtils.cp_r(source_files_directory, seed_directory) if File.directory?(source_files_directory)
 
   files.each do |file|
-    `cp ./spec/fixtures/seeds/#{directory}/#{file} ./spec/fixtures/db/seeds/#{directory}`
+    FileUtils.cp("./spec/fixtures/seeds/#{directory}/#{file}", seed_directory)
   end
 
-  block.call
+  begin
+    block.call
+  ensure
+    FileUtils.rm_rf(File.join(seed_directory, 'files'))
 
-  `rm -R ./spec/fixtures/db/seeds/#{directory}/files`
-
-  files.each do |file|
-    `rm ./spec/fixtures/db/seeds/#{directory}/#{file}`
+    files.each do |file|
+      FileUtils.rm_f(File.join(seed_directory, file))
+    end
   end
 end

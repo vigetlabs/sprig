@@ -75,22 +75,21 @@ RSpec.describe "Seeding an application" do
     let(:env) { Rails.env }
 
     around do |example|
-      # Create shared directory
-      `mkdir ./spec/fixtures/db/seeds/shared`
+      symlink_path = "./spec/fixtures/db/seeds/#{env}/posts.yml"
 
-      # Copy posts.yml to the shared directory
-      `cp ./spec/fixtures/seeds/#{env}/posts.yml ./spec/fixtures/db/seeds/shared/posts.yml`
+      # mktmpdir guarantees a unique directory name, so this can't collide
+      # with another example's fixtures, and it's removed automatically
+      # (even on failure) once the block returns.
+      Dir.mktmpdir(nil, './spec/fixtures/db/seeds') do |tmp_dir|
+        FileUtils.cp("./spec/fixtures/seeds/#{env}/posts.yml", File.join(tmp_dir, 'posts.yml'))
+        File.symlink(File.join('..', File.basename(tmp_dir), 'posts.yml'), symlink_path)
 
-      # Create relative symlink in environment directory to shared directory
-      `cd ./spec/fixtures/db/seeds/#{env} && ln -s ../shared/posts.yml posts.yml`
-
-      example.call
-
-      # Remove shared directory
-      `rm -dr ./spec/fixtures/db/seeds/shared`
-
-      # Remove posts.yml
-      `rm ./spec/fixtures/db/seeds/#{env}/posts.yml`
+        begin
+          example.call
+        ensure
+          FileUtils.rm_f(symlink_path)
+        end
+      end
     end
 
     it "seeds the db" do
@@ -296,20 +295,22 @@ RSpec.describe "Seeding an application" do
     end
   end
 
-  context "with STI records" do
-    around do |example|
-      load_seeds('article_pages.yml', 'pages.yml', &example)
-    end
+  if Sprig.adapter == :active_record
+    context "with STI records" do
+      around do |example|
+        load_seeds('article_pages.yml', 'pages.yml', &example)
+      end
 
-    it "allows cross-referencing of STI records" do
-      sprig [
-        ArticlePage,
-        Page
-      ]
+      it "allows cross-referencing of STI records" do
+        sprig [
+          ArticlePage,
+          Page
+        ]
 
-      Page.all.map(&:title).should == [
-        'First Title', 'First Title', 'Second Title', 'Second Title'
-      ]
+        expect(Page.all.map(&:title)).to eq(
+          ['First Title', 'First Title', 'Second Title', 'Second Title']
+        )
+      end
     end
   end
 
@@ -402,7 +403,12 @@ RSpec.describe "Seeding an application" do
           load_seeds('posts_find_existing_by_missing.yml', &example)
         end
 
-        it "raises a missing attribute error" do
+        it "logs a missing attribute error" do
+          allow(Sprig.logger).to receive(:error)
+
+          log_should_receive(:error, with: "There was an error saving Post with sprig_id 1.")
+          log_should_receive(:error, with: "Sprig::Seed::AttributeCollection::AttributeNotFoundError: Attribute 'unicorn' is not present.")
+
           expect {
             sprig [
               {
@@ -410,7 +416,7 @@ RSpec.describe "Seeding an application" do
                 :source => open("spec/fixtures/seeds/test/posts_find_existing_by_missing.yml")
               }
             ]
-          }.to raise_error(Sprig::Seed::AttributeCollection::AttributeNotFoundError, "Attribute 'unicorn' is not present.")
+          }.to_not raise_error
         end
       end
 

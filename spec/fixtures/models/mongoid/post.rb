@@ -1,11 +1,7 @@
 class Post
   include Mongoid::Document
 
-  if Mongoid::VERSION.split('.').first == "3"
-    field :user_id,   :type => Moped::BSON::ObjectId
-  else
-    field :user_id,   :type => BSON::ObjectId
-  end
+  field :user_id,   :type => BSON::ObjectId
   field :title,     :type => String
   field :content,   :type => String
   field :published, :type => Boolean

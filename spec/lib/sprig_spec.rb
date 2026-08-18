@@ -41,7 +41,11 @@ RSpec.describe Sprig do
       end
     end
 
-    before(:each) { described_class.instance_variable_set(:@adapter_model_class, nil) }
+    around(:each) do |example|
+      described_class.instance_variable_set(:@adapter_model_class, nil)
+      example.run
+      described_class.instance_variable_set(:@adapter_model_class, nil)
+    end
 
     it { expect(described_class).to respond_to(:adapter_model_class).with(0).arguments }
 
@@ -54,6 +58,17 @@ RSpec.describe Sprig do
         allow(described_class).to receive(:adapter).and_return(value)
 
         expect { described_class.adapter_model_class }.to raise_error(/unknown model class/i)
+      end
+    end
+
+    describe 'with the mongoid adapter' do
+      before do
+        stub_const('Mongoid::Document', Class.new)
+        allow(described_class).to receive(:adapter).and_return(:mongoid)
+      end
+
+      it 'returns Mongoid::Document' do
+        expect(described_class.adapter_model_class).to eq(Mongoid::Document)
       end
     end
   end
