@@ -52,6 +52,10 @@ module Sprig
         "There was an error saving #{klass.name} with sprig_id #{sprig_id}."
       end
 
+      def success_summary_text
+        "#{klass.name} with sprig_id #{sprig_id} (#{success_log_text})"
+      end
+
       def record
         @record ||= new_or_existing_record
       end

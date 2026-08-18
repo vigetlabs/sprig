@@ -13,6 +13,11 @@ module Sprig
         dependency_sorted_seeds.each do |seed|
           plant(seed)
         end
+
+        if notifier.errors? && transactional_wrapping_requested_and_supported?
+          notifier.rollback
+          raise Rollback
+        end
       end
 
       notifier.finished
@@ -39,10 +44,8 @@ module Sprig
         notifier.success(seed)
       else
         notifier.error(seed)
-        raise Rollback if transactional_wrapping_requested_and_supported?
       end
     rescue => e
-      raise if e.instance_of?(Rollback)
       notifier.exception(seed, e)
     end
 

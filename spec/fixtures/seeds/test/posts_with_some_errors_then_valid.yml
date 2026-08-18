@@ -1,0 +1,10 @@
+records:
+  - sprig_id: 1
+    title: 'First title'
+    content: 'Yaml content'
+  - sprig_id: 2
+    title:
+    content: 'Yaml content'
+  - sprig_id: 3
+    title: 'Third title'
+    content: 'Yaml content'
