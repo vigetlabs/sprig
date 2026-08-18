@@ -1,0 +1,5 @@
+records:
+  - sprig_id: 1
+    title: First Title
+  - sprig_id: 2
+    title: "<%= sprig_record(ArticlePage, 2).title %>"
