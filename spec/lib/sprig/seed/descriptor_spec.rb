@@ -128,6 +128,68 @@ RSpec.describe Sprig::Seed::Descriptor do
     end
   end
 
+  describe "with Sprig.configuration.spill_seed_rows_to_disk enabled" do
+    before do
+      Sprig.configure { |c| c.spill_seed_rows_to_disk = true }
+      Sprig::RawRowStore.instance.reset
+    end
+
+    it "holds the raw row in memory until #spill_to_disk! is called -- construction alone never spills" do
+      descriptor = described_class.new(Post, {"sprig_id" => "1", "title" => "Hello"}, {})
+
+      expect(descriptor.instance_variable_get(:@raw_attrs)).to eq({"sprig_id" => "1", "title" => "Hello"})
+    end
+
+    it "still produces a correct Entry when never spilled (the common, immediately-planted case)" do
+      descriptor = described_class.new(Post, {"sprig_id" => "1", "title" => "Hello", "content" => "World"}, {})
+
+      entry = descriptor.to_entry
+      entry.save_record
+
+      expect(Post.last.title).to eq("Hello")
+      expect(Post.last.content).to eq("World")
+    end
+
+    describe "#spill_to_disk!" do
+      it "moves the raw row to RawRowStore and drops the in-memory reference" do
+        descriptor = described_class.new(Post, {"sprig_id" => "1", "title" => "Hello"}, {})
+
+        descriptor.spill_to_disk!
+
+        expect(descriptor.instance_variable_get(:@raw_attrs)).to be_nil
+        expect(Sprig::RawRowStore.instance.fetch(descriptor.dependency_id)).to eq({"sprig_id" => "1", "title" => "Hello"})
+      end
+
+      it "still produces a correct Entry via the disk-backed store after spilling" do
+        descriptor = described_class.new(Post, {"sprig_id" => "1", "title" => "Hello", "content" => "World"}, {})
+
+        descriptor.spill_to_disk!
+        entry = descriptor.to_entry
+        entry.save_record
+
+        expect(Post.last.title).to eq("Hello")
+        expect(Post.last.content).to eq("World")
+      end
+
+      it "keeps the same dependency_id/sprig_id consistency guarantees as the in-memory path" do
+        descriptor = described_class.new(Post, {"title" => "Hello"}, {}) # no explicit sprig_id
+        dependency_id_before = descriptor.dependency_id
+
+        descriptor.spill_to_disk!
+
+        expect(descriptor.to_entry.dependency_id).to eq(dependency_id_before)
+      end
+
+      it "drops the descriptor to at most 3 ivars, keeping it within CRuby's smallest embedded object size" do
+        descriptor = described_class.new(Post, {"sprig_id" => "1", "title" => "Hello"}, {})
+
+        descriptor.spill_to_disk!
+
+        expect(descriptor.instance_variables.size).to be <= 3
+      end
+    end
+  end
+
   describe "dependency_id / dependencies (not stored as ivars)" do
     it "does not retain dependency_id or dependencies as instance state" do
       descriptor = described_class.new(Post, {"sprig_id" => "1", "user_id" => "<%= sprig_record(Comment, 5) %>"}, {})

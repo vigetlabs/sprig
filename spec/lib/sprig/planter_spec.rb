@@ -196,5 +196,48 @@ RSpec.describe Sprig::Planter do
       expect(planted.keys).to all(be_a(String))
       expect(planted.values).not_to include(seed)
     end
+
+    context "with Sprig.configuration.spill_seed_rows_to_disk enabled" do
+      before do
+        Sprig.configure { |c| c.spill_seed_rows_to_disk = true }
+        allow(notifier).to receive(:success)
+      end
+
+      def spillable_descriptor(id, deps = [], entry: double("entry", before_save: nil, save_record: true, save_to_store: nil))
+        double("descriptor", dependency_id: id, dependencies: deps, to_entry: entry, spill_to_disk!: nil)
+      end
+
+      it "never spills a descriptor that's ready the instant it's offered" do
+        ready = spillable_descriptor("a")
+
+        planter = described_class.new
+        planter.sprig { planter << ready }
+
+        expect(ready).not_to have_received(:spill_to_disk!)
+      end
+
+      it "spills a descriptor the moment it's determined to be waiting" do
+        blocked = spillable_descriptor("b", [dep("a")])
+
+        planter = described_class.new
+        planter << blocked
+
+        expect(blocked).to have_received(:spill_to_disk!)
+      end
+
+      it "does not spill a descriptor whose dependency was already planted" do
+        parent = spillable_descriptor("a")
+        child = spillable_descriptor("b", [dep("a")])
+
+        planter = described_class.new
+        planter.sprig do
+          planter << parent
+          planter << child
+        end
+
+        expect(parent).not_to have_received(:spill_to_disk!)
+        expect(child).not_to have_received(:spill_to_disk!)
+      end
+    end
   end
 end

@@ -11,6 +11,7 @@ module Sprig
   autoload :ProcessNotifier, "sprig/process_notifier"
   autoload :Logging, "sprig/logging"
   autoload :SprigRecordStore, "sprig/sprig_record_store"
+  autoload :RawRowStore, "sprig/raw_row_store"
   autoload :Data, "sprig/data"
   autoload :Seed, "sprig/seed"
 
