@@ -4,15 +4,48 @@ module Sprig
     # Adapter-specific wrapping translates or rescues this as appropriate.
     class Rollback < StandardError; end
 
-    def initialize(seeds)
-      @seeds = seeds.to_a
+    class MissingDependencyError < StandardError; end
+
+    class CircularDependencyError < StandardError; end
+
+    # `transactional_anchor_class` is an optional hint used only by the Mongoid
+    # wrapping path (see #transactional_anchor_class below) -- ActiveRecord doesn't
+    # need one. Sprig::Helpers#plant_records derives it from the first directive
+    # definition, before any parsing happens.
+    def initialize(transactional_anchor_class = nil)
+      @planted = {}                                # dependency_id => true
+      @waiting_for = Hash.new { |h, k| h[k] = [] }  # unmet dependency_id => [descriptor]
+      @pending_count = {}                           # descriptor => remaining unmet count
+      @transactional_anchor_class_hint = transactional_anchor_class
     end
 
+    # Offers a descriptor for planting. If everything it depends on has already
+    # been planted, it -- and anything that was only waiting on it -- is planted
+    # immediately; otherwise it's held until its remaining dependencies resolve.
+    # This is what lets Factory#add_seeds_to_hopper push descriptors straight into
+    # a Planter as they're parsed instead of collecting them into an array first.
+    def <<(descriptor)
+      unmet = unmet_dependency_ids(descriptor)
+      if unmet.empty?
+        plant_and_cascade(descriptor)
+      else
+        @pending_count[descriptor] = unmet.size
+        unmet.each { |id| @waiting_for[id] << descriptor }
+      end
+    end
+
+    # Wraps population -- performed by the given block, which is expected to push
+    # descriptors via `<<` -- and finalization in the seeding transaction, if
+    # configured/supported. Unlike the old whole-graph-then-plant design (where
+    # `sprig` just looped over an already-complete, pre-sorted list), records are
+    # now built and saved continuously as they're offered, so the transaction has
+    # to wrap the population step itself -- wrapping only the finalization below
+    # would let every real save happen outside of it, making rollback a no-op.
     def sprig
       wrap_in_transaction_if_supported do
-        dependency_sorted_seeds.each do |seed|
-          plant(seed)
-        end
+        yield
+
+        raise_if_anything_left_unresolved
 
         if notifier.errors? && transactional_wrapping_requested_and_supported?
           notifier.rollback
@@ -25,19 +58,47 @@ module Sprig
 
     private
 
-    attr_reader :seeds
-
-    def dependency_sorted_seeds
-      @dependency_sorted_seeds ||= DependencySorter.new(seeds).sorted_items
-    end
+    attr_reader :transactional_anchor_class_hint
 
     def notifier
       @notifier ||= ProcessNotifier.new
     end
 
-    def plant(seed)
-      notifier.in_progress(seed)
-      entry = seed.to_entry
+    def unmet_dependency_ids(descriptor)
+      descriptor.dependencies.map(&:id).reject { |id| @planted[id] }
+    end
+
+    # Iterative, not recursive: a long chain (self-referencing hierarchies are
+    # exactly what this gem is often used to seed) can cascade-resolve thousands of
+    # waiters at once when the blocking record finally arrives -- a recursive
+    # version of this blew Ruby's stack at ~11,000 deep during prototyping.
+    def plant_and_cascade(first)
+      queue = [first]
+      until queue.empty?
+        descriptor = queue.shift
+        plant(descriptor)
+
+        # Marked "planted" (attempted) regardless of whether the save itself
+        # succeeded -- this is what lets a descriptor whose dependency failed to
+        # save still be attempted and independently fail/skip on its own, exactly
+        # like today, instead of being stuck forever as if the dependency graph
+        # itself were broken.
+        @planted[descriptor.dependency_id] = true
+
+        woken = @waiting_for.delete(descriptor.dependency_id) || []
+        woken.each do |waiting|
+          @pending_count[waiting] -= 1
+          if @pending_count[waiting] == 0
+            @pending_count.delete(waiting)
+            queue << waiting
+          end
+        end
+      end
+    end
+
+    def plant(descriptor)
+      notifier.in_progress(descriptor)
+      entry = descriptor.to_entry
       entry.before_save
 
       if entry.save_record
@@ -47,7 +108,38 @@ module Sprig
         notifier.error(entry)
       end
     rescue => e
-      notifier.exception(entry || seed, e)
+      notifier.exception(entry || descriptor, e)
+    end
+
+    # Anything still waiting once every descriptor has been offered means a
+    # structural problem: either a genuine reference to a sprig_id that appears
+    # nowhere in the data, or a cycle (directly, or a chain stuck behind one
+    # elsewhere). A missing reference is reported in preference to a cycle when
+    # both are present, matching the specificity of the diagnostic that's possible.
+    def raise_if_anything_left_unresolved
+      return if @pending_count.empty?
+
+      stuck = @pending_count.keys
+      stuck_ids = {}
+      stuck.each { |descriptor| stuck_ids[descriptor.dependency_id] = true }
+
+      stuck.each do |descriptor|
+        unmet_dependency_ids(descriptor).each do |id|
+          unless stuck_ids[id]
+            raise MissingDependencyError, "Undefined reference to '#{format_dependency_id(id)}'"
+          end
+        end
+      end
+
+      formatted = stuck_ids.keys.map { |id| format_dependency_id(id) }
+      raise CircularDependencyError, "Your sprig directives contain circular dependencies among: #{formatted.join(", ")}"
+    end
+
+    # A Dependency#id is always "<klass.name> <sprig_id>" -- klass.name can never
+    # contain a space, so splitting on the first one reliably recovers both parts.
+    def format_dependency_id(id)
+      klass_name, sprig_id = id.split(" ", 2)
+      "sprig_record(#{klass_name}, #{sprig_id})"
     end
 
     def transactional_wrapping_requested_and_supported?
@@ -56,7 +148,6 @@ module Sprig
 
     def wrap_in_transaction_if_supported
       return yield unless Sprig.configuration.wrap_in_transaction
-      return yield if dependency_sorted_seeds.empty?
 
       klass = transactional_anchor_class
 
@@ -99,15 +190,19 @@ module Sprig
 
     # The class whose client a seeding run's transaction is anchored to.
     # ActiveRecord's connection is shared across all its models, so
-    # ActiveRecord::Base works as a generic anchor. Mongoid sessions are
-    # scoped to a specific model's client, so a real seeded class has to be
-    # used instead of the `Mongoid::Document` module.
+    # ActiveRecord::Base works as a generic anchor regardless of what's being
+    # seeded. Mongoid sessions are scoped to a specific model's client, so a real
+    # seeded class has to be used instead of the `Mongoid::Document` module --
+    # supplied via the constructor hint (see #initialize), since unlike the old
+    # whole-graph design, Planter no longer has a complete list of what's being
+    # seeded available up front to read a class off of; the hint is derived from
+    # the first directive definition instead, before any parsing happens.
     def transactional_anchor_class
-      case Sprig.adapter
+      @transactional_anchor_class ||= case Sprig.adapter
       when :active_record
         ActiveRecord::Base
       when :mongoid
-        dependency_sorted_seeds.first.klass
+        transactional_anchor_class_hint
       end
     end
   end

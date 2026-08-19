@@ -11,12 +11,17 @@ module Sprig
         @options = options
       end
 
-      # Computed on demand rather than memoized to limit memory use
+      # Computed on demand rather than memoized to limit memory use; Planter reads this
+      # a handful of times per descriptor (when offered, when planted, and possibly
+      # once more if it's ever stuck waiting) but each read is a cheap string build, so
+      # caching it would just be a permanently-retained string with no real benefit --
+      # Planter's own bookkeeping (`@planted`, `@waiting_for`) already holds its own
+      # copy of whatever it needs to keep.
       def dependency_id
         Dependency.for(klass, sprig_id).id
       end
 
-      # Computed on demand rather than memoized to limit memory use
+      # As with dependency_id, computed on demand rather than memoized to limit memory use
       def dependencies
         deps = []
 
