@@ -32,6 +32,8 @@ module Sprig
 
       def populate_attributes
         attributes.each do |attribute|
+          next if existing? && attribute.name.in?(klass.readonly_attributes)
+
           orm_record.send(:"#{attribute.name}=", attribute.value)
         end
       end

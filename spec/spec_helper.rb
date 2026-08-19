@@ -6,6 +6,11 @@ require "fileutils"
 
 SimpleCov.start "rails"
 
+# Each Appraisal gemfile runs as its own process, so without a distinct
+# command_name every run after the first overwrites the shared resultset
+# entry instead of merging into it (see SimpleCov::ResultMerger#store_result).
+SimpleCov.command_name(ENV["BUNDLE_GEMFILE"] ? File.basename(ENV["BUNDLE_GEMFILE"], ".gemfile") : "rspec")
+
 require "rails"
 require "pry"
 require "generator_spec"
