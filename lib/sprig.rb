@@ -3,7 +3,6 @@ module Sprig
   autoload :Planter, "sprig/planter"
   autoload :TsortableHash, "sprig/tsortable_hash"
   autoload :Dependency, "sprig/dependency"
-  autoload :DependencyCollection, "sprig/dependency_collection"
   autoload :DependencySorter, "sprig/dependency_sorter"
   autoload :Directive, "sprig/directive"
   autoload :DirectiveList, "sprig/directive_list"

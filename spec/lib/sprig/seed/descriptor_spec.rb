@@ -8,7 +8,7 @@ RSpec.describe Sprig::Seed::Descriptor do
       expect(descriptor.dependency_id).to eq(Sprig::Dependency.for(Post, "1").id)
     end
 
-    it "is memoized" do
+    it "is stable across repeated calls, despite no longer being memoized" do
       descriptor = described_class.new(Post, {"sprig_id" => "1", "title" => "Hello"}, {})
 
       expect(descriptor.dependency_id).to eq(descriptor.dependency_id)
@@ -125,6 +125,17 @@ RSpec.describe Sprig::Seed::Descriptor do
 
       expect(Post.last.title).to eq("Hello")
       expect(Post.last.content).to eq("World")
+    end
+  end
+
+  describe "dependency_id / dependencies (not stored as ivars)" do
+    it "does not retain dependency_id or dependencies as instance state" do
+      descriptor = described_class.new(Post, {"sprig_id" => "1", "user_id" => "<%= sprig_record(Comment, 5) %>"}, {})
+
+      descriptor.dependency_id
+      descriptor.dependencies
+
+      expect(descriptor.instance_variables).not_to include(:@dependency_id, :@dependencies)
     end
   end
 
