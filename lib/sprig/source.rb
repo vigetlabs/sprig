@@ -5,8 +5,16 @@ module Sprig
       @args = args
     end
 
+    # The source IO deliberately stays open past this method returning -- closing it
+    # happens once the records enumerator below is actually exhausted, since some
+    # parsers (Yml, Json) defer part of their own parsing until #records is iterated,
+    # and can't do that off an already-closed IO.
     def records
-      data[:records] || []
+      @records ||= Enumerator.new do |yielder|
+        (data[:records] || []).each { |row| yielder << row }
+      ensure
+        source.close
+      end
     end
 
     def options
@@ -20,8 +28,9 @@ module Sprig
     def data
       @data ||= begin
         parser_class.new(source).parse.to_hash.with_indifferent_access
-      ensure
+      rescue
         source.close
+        raise
       end
     end
 
