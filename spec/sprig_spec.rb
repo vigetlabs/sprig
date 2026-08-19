@@ -506,4 +506,92 @@ RSpec.describe "Seeding an application" do
       end
     end
   end
+
+  context "with Sprig configured to wrap the planting process in a transaction" do
+    before do
+      Sprig.configure do |c|
+        c.wrap_in_transaction = true
+      end
+    end
+
+    after do
+      Sprig.configure do |c|
+        c.wrap_in_transaction = false
+      end
+    end
+
+    context "with no errors" do
+      around do |example|
+        load_seeds('posts.yml', &example)
+      end
+
+      it "adds all the records to the database" do
+        sprig [Post]
+
+        expect(Post.count).to eq(1)
+        expect(Post.pluck(:title)).to match_array(['Yaml title'])
+      end
+    end
+
+    context "with some errors" do
+      around do |example|
+        load_seeds('posts_with_some_errors.yml', &example)
+      end
+
+      it "adds no records to the database" do
+        sprig [
+          {
+          :class  => Post,
+          :source => open('spec/fixtures/seeds/test/posts_with_some_errors.yml')
+          }
+        ]
+
+        expect(Post.count).to eq(0)
+      end
+    end
+
+    context "with an error followed by a seed that would otherwise succeed" do
+      around do |example|
+        load_seeds("posts_with_some_errors_then_valid.yml", &example)
+      end
+
+      it "still attempts the later seed before rolling everything back" do
+        allow(Sprig.logger).to receive(:info)
+        allow(Sprig.logger).to receive(:error)
+        expect(Sprig.logger).to receive(:info).with(log_info_text("Saved")).twice
+
+        sprig [
+          {
+            class: Post,
+            source: open("spec/fixtures/seeds/test/posts_with_some_errors_then_valid.yml")
+          }
+        ]
+
+        expect(Post.count).to eq(0)
+      end
+    end
+
+    context "with an exception raised while planting (rather than a failed validation)" do
+      around do |example|
+        load_seeds("posts.yml", "posts_find_existing_by_missing_other_id.yml", &example)
+      end
+
+      it "rolls back records that had already been saved, and explains why in the summary" do
+        allow(Sprig.logger).to receive(:error)
+
+        log_should_receive(:error, with: "The seeding transaction was rolled back because 1 seed failed to plant. " \
+          "NO records from this run were actually saved to the database.")
+        log_should_receive(:error, with: "The following 1 seed would have been planted, but were rolled back " \
+          "along with everything else and were NOT saved:")
+        log_should_receive(:error, with: "Post with sprig_id 1 (Saved)")
+
+        sprig [
+          {class: Post, source: open("spec/fixtures/seeds/test/posts.yml")},
+          {class: Post, source: open("spec/fixtures/seeds/test/posts_find_existing_by_missing_other_id.yml")}
+        ]
+
+        expect(Post.count).to eq(0)
+      end
+    end
+  end
 end

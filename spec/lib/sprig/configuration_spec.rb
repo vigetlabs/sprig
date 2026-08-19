@@ -33,4 +33,17 @@ RSpec.describe Sprig::Configuration do
       expect(subject.logger).to eq(logger)
     end
   end
+
+  describe "#wrap_in_transaction" do
+    it "returns true by default" do
+      expect(subject.wrap_in_transaction).to eq(true)
+    end
+
+    it "returns a custom value if provided" do
+      custom_value = false
+      subject.wrap_in_transaction = custom_value
+
+      expect(subject.wrap_in_transaction).to eq(custom_value)
+    end
+  end
 end

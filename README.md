@@ -195,8 +195,20 @@ When Sprig conventions don't suit, just add a configuration block to your seed f
 Sprig.configure do |c|
   c.directory = 'seed_files'
   c.shared_directory = 'shared'
+  c.wrap_in_transaction = true
 end
 ```
+
+#### wrap_in_transaction
+
+Defaults to `true`. Sprig wraps each seeding run in a single transaction, so if any seed fails
+to save, everything planted during that run is rolled back and any remaining seeds are skipped.
+Set it to `false` to restore the previous best-effort behavior, where Sprig logs each failure and
+keeps planting the rest of the seeds regardless.
+
+Supported for both the `:active_record` and `:mongoid` adapters. Mongoid transactions require
+MongoDB to be running as a replica set (a single-node replica set is enough) — a standalone
+`mongod` doesn't support transactions.
 
 ## Populate Seed Files from Database
 

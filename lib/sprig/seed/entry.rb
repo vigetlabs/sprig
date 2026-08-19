@@ -1,6 +1,8 @@
 module Sprig
   module Seed
     class Entry
+      attr_reader :klass
+
       def initialize(klass, attrs, options)
         self.klass = klass
         attrs = attrs.to_hash.with_indifferent_access
@@ -50,13 +52,17 @@ module Sprig
         "There was an error saving #{klass.name} with sprig_id #{sprig_id}."
       end
 
+      def success_summary_text
+        "#{klass.name} with sprig_id #{sprig_id} (#{success_log_text})"
+      end
+
       def record
         @record ||= new_or_existing_record
       end
 
       private
 
-      attr_reader :attributes, :klass, :options, :sprig_id
+      attr_reader :attributes, :options, :sprig_id
 
       def klass=(klass)
         raise ArgumentError, "First argument must be a Class" unless klass.is_a?(Class)
