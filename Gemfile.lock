@@ -105,6 +105,8 @@ GEM
     drb (2.2.3)
     erb (6.0.7)
     erubi (1.13.1)
+    faker (3.8.0)
+      i18n (>= 1.8.11, < 2)
     generator_spec (0.10.0)
       activesupport (>= 3.0.0)
       railties (>= 3.0.0)
@@ -155,6 +157,8 @@ GEM
     parser (3.3.12.0)
       ast (~> 2.4.1)
       racc
+    pg (1.6.3-arm64-darwin)
+    pg (1.6.3-x86_64-linux)
     power_assert (3.1.0)
     pp (0.6.4)
       prettyprint
@@ -292,7 +296,9 @@ PLATFORMS
 DEPENDENCIES
   appraisal
   database_cleaner
+  faker
   generator_spec
+  pg
   pry
   rails (>= 7.2, < 9.0)
   rspec
