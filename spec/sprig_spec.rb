@@ -197,7 +197,7 @@ RSpec.describe "Seeding an application" do
           }
         ]
       }.to raise_error(
-        Sprig::DependencySorter::MissingDependencyError,
+        Sprig::Planter::MissingDependencyError,
         "Undefined reference to 'sprig_record(Comment, 42)'"
       )
     end
@@ -307,8 +307,11 @@ RSpec.describe "Seeding an application" do
           Page
         ]
 
-        expect(Page.all.map(&:title)).to eq(
-          ["First Title", "First Title", "Second Title", "Second Title"]
+        # Insertion order among mutually-independent records isn't a guarantee Sprig
+        # makes (only "dependencies before dependents" is) -- assert on content, not
+        # a specific tie-breaking order.
+        expect(Page.all.map(&:title)).to contain_exactly(
+          "First Title", "First Title", "Second Title", "Second Title"
         )
       end
     end
@@ -328,7 +331,7 @@ RSpec.describe "Seeding an application" do
           },
           Comment
         ]
-      }.to raise_error(Sprig::DependencySorter::CircularDependencyError)
+      }.to raise_error(Sprig::Planter::CircularDependencyError)
     end
   end
 
