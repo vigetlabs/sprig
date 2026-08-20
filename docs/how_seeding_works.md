@@ -7,16 +7,17 @@ in a seed file and rows showing up in your database.
 
 1. You list which classes to seed (`sprig [User, Post, Comment]`).
 2. For each class, Sprig finds the matching data file (`users.yml`, `posts.csv`, etc.) and
-   starts streaming it one row at a time.
-3. Every row becomes a small placeholder (a `Descriptor`) the instant it's read, and is
+   starts streaming it one record at a time.
+3. Every record becomes a small placeholder (a `Descriptor`) the instant it's read, and is
    immediately offered to the planter -- there's no step where every file is fully parsed
    before planting can begin.
-4. The planter checks whether everything that placeholder depends on
-   (anything referenced via `sprig_record(Klass, id)`) has already been saved. If so, it
-   builds the real record right now, evaluates its `<%= ... %>` values, and saves it. If
+4. The planter checks whether everything that placeholder depends on, if anything,
+   (e.g. anything referenced via `sprig_record(Klass, id)`) has already been saved. If so, it
+   builds the real record immediately, evaluates its `<%= ... %>` values, and saves it. If
    not, the placeholder is held until the specific thing it's waiting on shows up.
-5. Saving a record can immediately unblock other placeholders that were only waiting on
-   it, which can immediately unblock others in turn, and so on.
+5. Anytime a record is saved, any other placeholders that were only waiting on
+   it become unblocked, and are also immediately saved; cascading up the chain of blocked
+   records.
 6. Once every file has been streamed and nothing is left waiting, the run is done. If
    something is still stuck waiting at that point, it means a reference pointed at a
    `sprig_id` that doesn't exist anywhere, or a cycle -- Sprig reports which.
@@ -48,19 +49,15 @@ streaming event-handler (`Psych::Parser`/`Oj::ScHandler` callbacks); `Csv` strea
 ### 3. Descriptors: a cheap placeholder for every row
 
 For each row a parser yields, `Sprig::Seed::Factory` builds a `Sprig::Seed::Descriptor`
-and offers it directly to the planter (see step 4) -- there's no intermediate collection
-holding every row from every file at once. A descriptor is intentionally lightweight: it
-just holds the class, the row's raw data, and the options -- nothing has been "built" yet.
-From that raw data it can cheaply answer two questions, computed fresh each time rather
-than cached, since nothing needs to hold onto them once the planter has acted on them:
+and offers it directly to the planter (see step 4). A descriptor is intentionally
+lightweight: it just holds the class, the row's raw data, and the options -- nothing has
+been "built" yet. From that raw data it can cheaply answer two questions:
 
 - **What's my own identity?** (`dependency_id`, based on its class + `sprig_id`)
 - **What do I depend on?** (`dependencies`) -- found by scanning the row's values for
-  `sprig_record(Klass, id)` written _inside_ an ERB tag (`<%= ... %>`). A value that just
-  happens to contain that text without the ERB wrapper doesn't count -- only genuine
-  computed references do.
+  `sprig_record(Klass, id)` written _inside_ an ERB tag (`<%= ... %>`).
 
-Nothing is evaluated at this point. A value like `<%= 1.week.ago %>` or
+NOTE: ERB tags are not evaluated at this point. A value like `<%= 1.week.ago %>` or
 `<%= sprig_record(Post, 1).id %>` is just inspected as text to find dependency
 references; the actual Ruby expression only runs later, once that specific record is
 about to be saved.
@@ -112,7 +109,7 @@ when some other record's `<%= sprig_record(Klass, id) %>` needs to resolve that 
 `sprig_record` returns a small lazy proxy (`Sprig::SprigRecordStore::LazyRecord`) that
 already knows the id -- calling `.id` on it (by far the most common usage, e.g. setting a
 foreign key) is answered immediately, with no database access at all. Calling anything
-*else* on it -- an attribute, an association -- fetches the real record from the database
+_else_ on it -- an attribute, an association -- fetches the real record from the database
 at that point, once, and delegates. This is a separate, simpler lookup from the dependency
 bookkeeping in step 4 -- that bookkeeping decides _when_ it's safe to plant something; the
 record store answers _"what did that record actually end up as, once saved?"_ as cheaply
@@ -171,14 +168,14 @@ to matter.
 
 ## Where things live in the code
 
-| Concept                                     | File                                                                                                                           |
-| -------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------ |
-| Entry point (`sprig`/`sprig_shared`)         | `lib/sprig/helpers.rb`                                                                                                         |
-| Directive (what to seed, with what options)  | `lib/sprig/directive.rb`, `lib/sprig/directive_list.rb`                                                                        |
-| Finding and streaming a data file            | `lib/sprig/source.rb`, `lib/sprig/parser/*.rb`, `lib/sprig/parser/yml/event_handler.rb`, `lib/sprig/parser/json/event_handler.rb` |
-| Turning rows into placeholders               | `lib/sprig/seed/factory.rb`, `lib/sprig/seed/descriptor.rb`                                                                    |
-| Dependency identity                          | `lib/sprig/dependency.rb`                                                                                                      |
-| Optionally spilling waiting rows to disk     | `lib/sprig/raw_row_store.rb`, `lib/sprig/configuration.rb` (`spill_seed_rows_to_disk`)                                          |
-| Building and saving the real record          | `lib/sprig/seed/entry.rb`, `lib/sprig/seed/attribute.rb`, `lib/sprig/seed/attribute_collection.rb`, `lib/sprig/seed/record.rb` |
-| Driving the plant-when-ready scheduler       | `lib/sprig/planter.rb`                                                                                                         |
-| Looking up already-planted records           | `lib/sprig/sprig_record_store.rb`, `lib/sprig/sprig_record_store/lazy_record.rb`                                               |
+| Concept                                     | File                                                                                                                              |
+| ------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------- |
+| Entry point (`sprig`/`sprig_shared`)        | `lib/sprig/helpers.rb`                                                                                                            |
+| Directive (what to seed, with what options) | `lib/sprig/directive.rb`, `lib/sprig/directive_list.rb`                                                                           |
+| Finding and streaming a data file           | `lib/sprig/source.rb`, `lib/sprig/parser/*.rb`, `lib/sprig/parser/yml/event_handler.rb`, `lib/sprig/parser/json/event_handler.rb` |
+| Turning rows into placeholders              | `lib/sprig/seed/factory.rb`, `lib/sprig/seed/descriptor.rb`                                                                       |
+| Dependency identity                         | `lib/sprig/dependency.rb`                                                                                                         |
+| Optionally spilling waiting rows to disk    | `lib/sprig/raw_row_store.rb`, `lib/sprig/configuration.rb` (`spill_seed_rows_to_disk`)                                            |
+| Building and saving the real record         | `lib/sprig/seed/entry.rb`, `lib/sprig/seed/attribute.rb`, `lib/sprig/seed/attribute_collection.rb`, `lib/sprig/seed/record.rb`    |
+| Driving the plant-when-ready scheduler      | `lib/sprig/planter.rb`                                                                                                            |
+| Looking up already-planted records          | `lib/sprig/sprig_record_store.rb`, `lib/sprig/sprig_record_store/lazy_record.rb`                                                  |

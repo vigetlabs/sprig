@@ -38,14 +38,6 @@ module Sprig
         @sprig_id ||= raw_attrs[:sprig_id] || raw_attrs["sprig_id"] || SecureRandom.uuid
       end
 
-      # Option C: called by Planter, and only by Planter, the moment it determines
-      # this descriptor can't plant yet -- not unconditionally at construction time.
-      # A descriptor that's ready the instant it's offered never touches
-      # RawRowStore at all, since there's no wait for it to save memory during; only
-      # descriptors that actually end up sitting in Planter's @waiting_for pay the
-      # disk round-trip, and only once (see RawRowStore#fetch, which deletes its
-      # index entry after returning the row, since a descriptor's raw data is never
-      # needed more than once after this point).
       def spill_to_disk!
         RawRowStore.instance.put(dependency_id, @raw_attrs)
         remove_instance_variable(:@raw_attrs)

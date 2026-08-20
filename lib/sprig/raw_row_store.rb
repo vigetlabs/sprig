@@ -13,7 +13,7 @@ module Sprig
     class RecordNotFoundError < StandardError; end
 
     # Cleans up any previous run's temp store and starts a fresh one. Only
-    # actually allocates a temp file when Option C is enabled -- callers are
+    # actually allocates a temp file when enabled -- callers are
     # expected to gate calls to #reset/#put/#fetch/#cleanup on
     # Sprig.configuration.spill_seed_rows_to_disk themselves.
     def reset
