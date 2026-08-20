@@ -17,6 +17,7 @@ Gem::Specification.new do |s|
   s.files = Dir["lib/**/*", "MIT-LICENSE", "Rakefile", "README.md"]
 
   s.add_dependency "csv", "~> 3.3"
+  s.add_dependency "oj", "~> 3.16"
 
   s.add_development_dependency "appraisal"
   s.add_development_dependency "rails", ">= 7.2", "< 9.0"
