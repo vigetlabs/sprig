@@ -1,6 +1,6 @@
 module Sprig
   class Configuration
-    attr_writer :directory, :shared_directory, :logger, :wrap_in_transaction
+    attr_writer :directory, :shared_directory, :logger, :wrap_in_transaction, :spill_seed_rows_to_disk
 
     def directory
       Rails.root.join(@directory || default_directory, seeds_directory)
@@ -12,6 +12,10 @@ module Sprig
 
     def wrap_in_transaction
       defined?(@wrap_in_transaction) ? @wrap_in_transaction : true
+    end
+
+    def spill_seed_rows_to_disk
+      @spill_seed_rows_to_disk || false
     end
 
     private

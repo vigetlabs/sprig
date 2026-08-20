@@ -38,6 +38,11 @@ module Sprig
         @sprig_id ||= raw_attrs[:sprig_id] || raw_attrs["sprig_id"] || SecureRandom.uuid
       end
 
+      def spill_to_disk!
+        RawRowStore.instance.put(dependency_id, @raw_attrs)
+        remove_instance_variable(:@raw_attrs)
+      end
+
       def in_progress_text
         "Planting #{klass.name} with sprig_id #{sprig_id}"
       end
@@ -52,7 +57,11 @@ module Sprig
 
       private
 
-      attr_reader :raw_attrs, :options
+      attr_reader :options
+
+      def raw_attrs
+        @raw_attrs || RawRowStore.instance.fetch(dependency_id)
+      end
 
       def scan_value(value, &block)
         if value.is_a?(Array)

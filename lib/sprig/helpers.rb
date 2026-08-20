@@ -28,10 +28,15 @@ module Sprig
       # SprigRecordStore is SESSION persistent, not run persistent; explicitly reset it
       # to avoid cross-run stale data
       SprigRecordStore.instance.reset
+      RawRowStore.instance.reset if Sprig.configuration.spill_seed_rows_to_disk
 
       planter = Planter.new(transactional_anchor_class_hint(directive_definitions))
-      planter.sprig do
-        DirectiveList.new(directive_definitions).add_seeds_to_hopper(planter)
+      begin
+        planter.sprig do
+          DirectiveList.new(directive_definitions).add_seeds_to_hopper(planter)
+        end
+      ensure
+        RawRowStore.instance.cleanup if Sprig.configuration.spill_seed_rows_to_disk
       end
     end
 
