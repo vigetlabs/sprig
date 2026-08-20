@@ -1,6 +1,8 @@
 module Sprig
   module Seed
     class Entry
+      class UnknownAttributeError < StandardError; end
+
       attr_reader :klass
 
       def initialize(klass, attrs, options)
@@ -24,7 +26,7 @@ module Sprig
       def before_save
         # TODO: make these filters take chains like rails before_filters
         if options[:delete_existing_by]
-          klass.where(options[:delete_existing_by] => attributes.find_by_name(options[:delete_existing_by]).value).delete_all
+          klass.where(options[:delete_existing_by] => attribute_value_for(options[:delete_existing_by])).delete_all
         end
       end
 
@@ -85,9 +87,23 @@ module Sprig
       def find_existing_params
         Array(options[:find_existing_by]).inject({}) do |hash, attribute_name|
           hash.merge!(
-            {attribute_name => attributes.find_by_name(attribute_name).value}
+            {attribute_name => attribute_value_for(attribute_name)}
           )
         end
+      end
+
+      def attribute_value_for(attribute_name)
+        validate_attribute_defined!(attribute_name)
+
+        attributes.find_by_name(attribute_name).value
+      end
+
+      def validate_attribute_defined!(attribute_name)
+        return if klass.new.respond_to?(attribute_name.to_s)
+
+        raise UnknownAttributeError,
+          "'#{attribute_name}' is not a valid attribute for #{klass.name}. " \
+          "find_existing_by/delete_existing_by must reference an attribute defined on the class."
       end
     end
   end
