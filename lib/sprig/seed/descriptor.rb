@@ -1,12 +1,6 @@
 module Sprig
   module Seed
     class Descriptor
-      # Reuses Attribute's own reference/id-literal patterns (SPRIG_RECORD_REFERENCE,
-      # ID_LITERAL) rather than maintaining a second, independently-drifting copy of
-      # what counts as a valid sprig_record(...) reference -- see Attribute for the
-      # full explanation of what each shape matches. Descriptor never evals anything,
-      # so it only needs Attribute's dependency-detection rules, not its
-      # value-computation logic.
       COMPUTED_VALUE_REGEX = /(<%=?(.*?)%>)/
 
       attr_reader :klass
