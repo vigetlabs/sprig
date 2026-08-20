@@ -381,24 +381,28 @@ RSpec.describe "Seeding an application with shared seeds" do
 
     context "using find_existing_by" do
       context "with a missing attribute" do
+        let!(:existing_record) do
+          Post.create(
+            title: "Existing title",
+            published: true,
+            content: nil
+          )
+        end
+
         around do |example|
           load_shared_seeds("posts_find_existing_by_missing.yml", &example)
         end
 
-        it "logs a missing attribute error" do
-          allow(Sprig.logger).to receive(:error)
+        it "assumes a nil value for the missing attribute" do
+          sprig_shared [
+            {
+              class: Post,
+              source: open("spec/fixtures/seeds/shared/posts_find_existing_by_missing.yml")
+            }
+          ]
 
-          log_should_receive(:error, with: "There was an error saving Post with sprig_id 1.")
-          log_should_receive(:error, with: "Sprig::Seed::AttributeCollection::AttributeNotFoundError: Attribute 'unicorn' is not present.")
-
-          expect {
-            sprig_shared [
-              {
-                class: Post,
-                source: open("spec/fixtures/seeds/shared/posts_find_existing_by_missing.yml")
-              }
-            ]
-          }.to_not raise_error
+          expect(Post.count).to eq(1)
+          expect(Post.first.published).to eq(false)
         end
       end
 

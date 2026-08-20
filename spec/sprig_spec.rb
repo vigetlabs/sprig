@@ -402,9 +402,10 @@ RSpec.describe "Seeding an application" do
       context "with a missing attribute" do
         let!(:existing_record) do
           Post.create(
-            :title     => "Existing title",
-            :published => true,
-            :content   => nil)
+            title: "Existing title",
+            published: true,
+            content: nil
+          )
         end
 
         around do |example|
@@ -419,8 +420,8 @@ RSpec.describe "Seeding an application" do
             }
           ]
 
-          Post.count.should == 1
-          Post.first.published.should == false
+          expect(Post.count).to eq(1)
+          expect(Post.first.published).to eq(false)
         end
       end
 
