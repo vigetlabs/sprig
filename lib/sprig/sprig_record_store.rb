@@ -10,23 +10,15 @@ module Sprig
 
     class RecordNotFoundError < StandardError; end
 
-    # sprig_id is a seed-file-only identifier -- Entry#initialize deletes it from a
-    # record's attributes before it's ever saved, so it never becomes a real column,
-    # and there's no way to look a record back up by sprig_id via the database
-    # directly. What's kept here is only enough to bridge that gap: the record's
-    # real primary key. The record itself is never held in memory for the whole
-    # run -- a live ActiveRecord/Mongoid instance is far larger than the row it
-    # represents (every column becomes its own type-cast/dirty-tracking wrapper
-    # object).
+    # sprig_id is a seed-file-only identifier, never saved to the database, so 
+    # we need to track the mapping between sprig_id and the record's actual id.
     def save(record, sprig_id)
       records_of_klass(record.class)[sprig_id.to_s] = record.id
     end
 
-    # Returns a LazyRecord, not a fetched record -- #get itself never queries the
-    # database. sprig_record(Klass, id) is overwhelmingly used just to read the id
-    # back off (setting a foreign key), and the id is already sitting right here;
-    # LazyRecord answers that directly, and only falls through to a real
-    # klass.find(id) if something beyond the id is actually asked of it.
+    # Since the majority of get calls will be for the id, we return a LazyRecord that
+    # answers id directly without a database call (any other attributes still work but
+    # will trigger a database fetch).
     def get(klass, sprig_id)
       id = records_of_klass(klass)[sprig_id.to_s] || record_not_found(klass, sprig_id)
       LazyRecord.new(klass, id)

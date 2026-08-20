@@ -1,13 +1,9 @@
 module Sprig
   class SprigRecordStore
-    # What #get hands back for a saved sprig_id: the id itself, answered directly
-    # with no database access, since that's all SprigRecordStore ever held onto.
-    # Any other call -- an attribute, an association, anything beyond the id --
-    # falls through to a real klass.find(id), fetched at most once and memoized,
-    # then delegated to. sprig_record(Klass, id) usages that only ever need the id
-    # (by far the common case -- setting a foreign key) never touch the database
-    # at all; usages that need more than the id pay for exactly one real fetch,
-    # same as before.
+    # Given that the overwhelming majority of references to a sprig_record are for
+    # the id, we allow responding to sprig_record.id without a database call; a #get
+    # for any other attribute/method will result in an actual database fetch,
+    # memoized for the lifetime of the LazyRecord instance.
     #
     # Known limitation: this responds to arbitrary methods via delegation, but
     # #is_a?/#kind_of?/#instance_of? report LazyRecord's own class, not the
