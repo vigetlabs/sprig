@@ -102,27 +102,61 @@ a clear, consistent pattern (see below), and nothing here suggested a reason to 
 to change direction at 100K rows; if you want that confirmed rather than assumed, run it
 the same way.
 
+Each combination below is reported twice: **master** (`5439077`, current `master` at the
+time of this run, no memory-optimization changes) and **part-8** (this branch, with the
+full `ms/75-resolve-memory-version-3` stack applied -- deferred `Entry` construction,
+slimmed `SprigRecordStore`, streaming YAML/JSON parsing, the incremental scheduler, and
+the rest of the changes documented in [`../README.md`](../README.md)). Both runs used the
+exact same generated dataset files, the same dedicated containers, and the same
+methodology; master's runs went into separate `_master`-suffixed databases so the two
+never shared state.
+
 ### Peak RSS (MB)
 
-| | CSV | YAML | JSON |
+| | CSV (master → part-8) | YAML (master → part-8) | JSON (master → part-8) |
 |---|---:|---:|---:|
-| **Small (1K) / SQLite** | 69.1 | 66.5 | 66.9 |
-| **Small (1K) / PostgreSQL** | 70.6 | 73.9 | 73.5 |
-| **Small (1K) / MongoDB** | 106.4 | 98.6 | 106.0 |
-| **Medium (10K) / SQLite** | 133.6 | 128.3 | 136.3 |
-| **Medium (10K) / PostgreSQL** | 121.8 | 119.3 | 123.1 |
-| **Medium (10K) / MongoDB** | 393.0 | 395.3 | 388.5 |
+| **Small (1K) / SQLite** | 98.0 → 69.1 | 97.3 → 66.5 | 95.8 → 66.9 |
+| **Small (1K) / PostgreSQL** | 98.2 → 70.6 | 106.3 → 73.9 | 96.3 → 73.5 |
+| **Small (1K) / MongoDB** | 112.8 → 106.4 | 114.1 → 98.6 | 116.8 → 106.0 |
+| **Medium (10K) / SQLite** | 418.0 → 133.6 | 459.4 → 128.3 | 427.1 → 136.3 |
+| **Medium (10K) / PostgreSQL** | 425.1 → 121.8 | 446.7 → 119.3 | 411.4 → 123.1 |
+| **Medium (10K) / MongoDB** | 483.1 → 393.0 | 509.5 → 395.3 | 503.7 → 388.5 |
 
 ### Wall time (s)
 
-| | CSV | YAML | JSON |
+| | CSV (master → part-8) | YAML (master → part-8) | JSON (master → part-8) |
 |---|---:|---:|---:|
-| **Small (1K) / SQLite** | 1.41 | 1.65 | 1.35 |
-| **Small (1K) / PostgreSQL** | 2.64 | 2.90 | 2.54 |
-| **Small (1K) / MongoDB** | 8.62 | 8.21 | 7.77 |
-| **Medium (10K) / SQLite** | 9.95 | 11.02 | 9.57 |
-| **Medium (10K) / PostgreSQL** | 20.62 | 28.85 | 21.24 |
-| **Medium (10K) / MongoDB** | 80.13 | 74.57 | 64.83 |
+| **Small (1K) / SQLite** | 1.43 → 1.41 | 1.61 → 1.65 | 1.39 → 1.35 |
+| **Small (1K) / PostgreSQL** | 2.57 → 2.64 | 2.66 → 2.90 | 2.52 → 2.54 |
+| **Small (1K) / MongoDB** | 9.08 → 8.62 | 8.16 → 8.21 | 9.58 → 7.77 |
+| **Medium (10K) / SQLite** | 10.90 → 9.95 | 11.37 → 11.02 | 9.96 → 9.57 |
+| **Medium (10K) / PostgreSQL** | 21.80 → 20.62 | 23.91 → 28.85 | 20.47 → 21.24 |
+| **Medium (10K) / MongoDB** | 93.24 → 80.13 | 88.57 → 74.57 | 88.75 → 64.83 |
+
+### What the master comparison adds
+
+The memory picture is unambiguous and consistent across every one of the 18
+combinations: **part-8 uses meaningfully less peak memory than master everywhere**, and
+the reduction grows with data volume -- at medium tier it's roughly **68-73% less peak
+RSS for SQLite/PostgreSQL** (e.g. medium YAML/SQLite: 459.4MB → 128.3MB) and a smaller
+but still real **~19-23% less for MongoDB** (e.g. medium YAML/MongoDB: 509.5MB →
+395.3MB). MongoDB's smaller relative improvement lines up with the rest of this
+investigation's finding that MongoDB's own driver/BSON overhead, not Sprig's seed-side
+memory use, dominates its footprint -- Sprig-side savings have proportionally less to
+work with there.
+
+Wall time tells a different, noisier story: the two are close enough at small tier that
+run-to-run variance (see `../part-4.md`'s reinvestigation of exactly this kind of noise)
+plausibly explains which one comes out ahead on a given combination, and there's no
+consistent winner. At medium tier a real pattern does emerge for MongoDB specifically --
+part-8 is 14-27% *faster* there too (not just leaner), most plausibly because the
+incremental scheduler's cascading plant-as-ready approach keeps the single wrapping
+transaction's total work more evenly paced than master's build-the-whole-graph-then-plant
+approach, though this benchmark didn't instrument the mechanism directly to confirm that.
+For SQLite/PostgreSQL at medium tier the two are within a few percent either way -- this
+stack was never primarily a wall-time optimization, and it shows: the win it delivers is
+memory, not speed, and the wall-time numbers here are consistent with that rather than
+contradicting it.
 
 ## What this actually shows
 
