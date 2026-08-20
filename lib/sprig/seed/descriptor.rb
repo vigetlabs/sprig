@@ -11,19 +11,12 @@ module Sprig
         @options = options
       end
 
-      # Computed on demand rather than memoized: DependencySorter reads this at most
-      # twice, immediately after construction, so caching it would just be a
-      # permanently-retained string with no benefit -- the graph structures that
-      # actually need to persist (id_dictionary, dependency_hash) already hold their
-      # own copies once they've read it.
+      # Computed on demand rather than memoized to limit memory use
       def dependency_id
         Dependency.for(klass, sprig_id).id
       end
 
-      # Same reasoning as dependency_id: DependencySorter reads this exactly once,
-      # right after construction, to build its graph -- so recomputing from raw_attrs
-      # here instead of caching an array of Dependency objects means this descriptor
-      # never needs to retain them at all.
+      # Computed on demand rather than memoized to limit memory use
       def dependencies
         deps = []
 

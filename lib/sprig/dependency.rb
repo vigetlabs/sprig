@@ -23,11 +23,8 @@ module Sprig
       @sprig_id = sprig_id
     end
 
-    # Deterministic, not cached: two separate Dependency.for(klass, sprig_id) calls with
-    # the same arguments always produce the same id, so tsort's graph can link a
-    # reference to the node it points at without any global registry keeping every
-    # ever-seen Dependency alive for the whole run. The space is a safe separator --
-    # neither a Ruby constant name nor a realistic sprig_id contains one.
+    # Deterministic IDs eliminate the need for caching. Using a space (the first space, if multiple
+    # exist) is a safe delimiter -- Ruby class names cannot contain spaces.
     def id
       "#{klass.name} #{sprig_id}"
     end
