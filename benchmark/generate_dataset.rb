@@ -1,9 +1,5 @@
 # Convenience wrapper: generates all five seed files for one volume in a single
-# invocation, with a consistent naming scheme, by shelling out to each dedicated
-# generate_*.rb script. Those stay separate, single-purpose files (each independently
-# readable/runnable, matching this directory's existing convention) rather than being
-# folded into one generator -- this wrapper exists purely to avoid re-deriving the
-# right arguments by hand for every volume this benchmark suite measures.
+# invocation.
 #
 # Usage: ruby generate_dataset.rb <output-dir> <n> [tag_count] [rows_per_project]
 require "fileutils"
