@@ -3,10 +3,11 @@ module Sprig
     class Entry
       attr_reader :klass
 
-      def initialize(klass, attrs, options)
+      def initialize(klass, attrs, options, sprig_id = nil)
         self.klass = klass
         attrs = attrs.to_hash.with_indifferent_access
-        self.sprig_id = attrs.delete(:sprig_id) || SecureRandom.uuid
+        extracted_sprig_id = attrs.delete(:sprig_id)
+        self.sprig_id = sprig_id || extracted_sprig_id || SecureRandom.uuid
         @attributes = AttributeCollection.new(attrs)
         @options = options
       end
