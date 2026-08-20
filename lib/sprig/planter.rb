@@ -9,9 +9,7 @@ module Sprig
     class CircularDependencyError < StandardError; end
 
     # `transactional_anchor_class` is an optional hint used only by the Mongoid
-    # wrapping path (see #transactional_anchor_class below) -- ActiveRecord doesn't
-    # need one. Sprig::Helpers#plant_records derives it from the first directive
-    # definition, before any parsing happens.
+    # wrapping path (see #transactional_anchor_class below) to open a DB transaction
     def initialize(transactional_anchor_class = nil)
       @planted = {}                                # dependency_id => true
       @waiting_for = Hash.new { |h, k| h[k] = [] }  # unmet dependency_id => [descriptor]
@@ -22,8 +20,6 @@ module Sprig
     # Offers a descriptor for planting. If everything it depends on has already
     # been planted, it -- and anything that was only waiting on it -- is planted
     # immediately; otherwise it's held until its remaining dependencies resolve.
-    # This is what lets Factory#add_seeds_to_hopper push descriptors straight into
-    # a Planter as they're parsed instead of collecting them into an array first.
     def <<(descriptor)
       unmet = unmet_dependency_ids(descriptor)
       if unmet.empty?
@@ -71,7 +67,7 @@ module Sprig
     # Iterative, not recursive: a long chain (self-referencing hierarchies are
     # exactly what this gem is often used to seed) can cascade-resolve thousands of
     # waiters at once when the blocking record finally arrives -- a recursive
-    # version of this blew Ruby's stack at ~11,000 deep during prototyping.
+    # version of this would blow Ruby's stack at ~11,000 deep during prototyping.
     def plant_and_cascade(first)
       queue = [first]
       until queue.empty?
@@ -80,9 +76,8 @@ module Sprig
 
         # Marked "planted" (attempted) regardless of whether the save itself
         # succeeded -- this is what lets a descriptor whose dependency failed to
-        # save still be attempted and independently fail/skip on its own, exactly
-        # like today, instead of being stuck forever as if the dependency graph
-        # itself were broken.
+        # save still be attempted and independently fail/skip on its own instead of
+        # being stuck forever as if the dependency graph itself were broken.
         @planted[descriptor.dependency_id] = true
 
         woken = @waiting_for.delete(descriptor.dependency_id) || []
@@ -111,11 +106,11 @@ module Sprig
       notifier.exception(entry || descriptor, e)
     end
 
-    # Anything still waiting once every descriptor has been offered means a
+    # Anything still waiting once every descriptor has been offered shows a
     # structural problem: either a genuine reference to a sprig_id that appears
     # nowhere in the data, or a cycle (directly, or a chain stuck behind one
     # elsewhere). A missing reference is reported in preference to a cycle when
-    # both are present, matching the specificity of the diagnostic that's possible.
+    # both are present.
     def raise_if_anything_left_unresolved
       return if @pending_count.empty?
 
@@ -193,10 +188,7 @@ module Sprig
     # ActiveRecord::Base works as a generic anchor regardless of what's being
     # seeded. Mongoid sessions are scoped to a specific model's client, so a real
     # seeded class has to be used instead of the `Mongoid::Document` module --
-    # supplied via the constructor hint (see #initialize), since unlike the old
-    # whole-graph design, Planter no longer has a complete list of what's being
-    # seeded available up front to read a class off of; the hint is derived from
-    # the first directive definition instead, before any parsing happens.
+    # supplied via the constructor hint (see #initialize).
     def transactional_anchor_class
       @transactional_anchor_class ||= case Sprig.adapter
       when :active_record

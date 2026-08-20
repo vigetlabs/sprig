@@ -36,9 +36,7 @@ module Sprig
     end
 
     # The class of the first directive being seeded, used only as a Mongoid
-    # transaction anchor (see Planter#transactional_anchor_class) -- cheap to
-    # compute from the directive definitions themselves, before any file is
-    # opened or parsed, unlike reading a class off of a to-be-parsed record.
+    # transaction anchor (see Planter#transactional_anchor_class)
     def transactional_anchor_class_hint(directive_definitions)
       first_definition = Array(directive_definitions).first
       first_definition && Directive.new(first_definition).klass
