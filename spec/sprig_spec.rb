@@ -322,6 +322,28 @@ RSpec.describe "Seeding an application" do
     end
   end
 
+  context "with a duplicate sprig_id and Sprig configured to spill blocked rows to disk" do
+    around do |example|
+      load_seeds("posts.yml", "comments_with_duplicate_sprig_id.yml", &example)
+    end
+
+    before do
+      Sprig.configure { |c| c.spill_seed_rows_to_disk = true }
+    end
+
+    it "raises a clear DuplicateRecordError instead of silently corrupting or double-planting the rows" do
+      expect {
+        sprig [
+          {
+            class: Comment,
+            source: open("spec/fixtures/seeds/test/comments_with_duplicate_sprig_id.yml")
+          },
+          Post
+        ]
+      }.to raise_error(Sprig::Planter::DuplicateRecordError)
+    end
+  end
+
   context "with a YAML file using the legacy :symbol root-key convention" do
     around do |example|
       load_seeds("posts.yml", &example)
