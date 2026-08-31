@@ -10,10 +10,21 @@ module Sprig
 
     class RecordNotFoundError < StandardError; end
 
-    # sprig_id is a seed-file-only identifier, never saved to the database, so 
+    # sprig_id is a seed-file-only identifier, never saved to the database, so
     # we need to track the mapping between sprig_id and the record's actual id.
+    #
+    # When pruning is enabled (see #preload_referenced_ids), a sprig_id nothing
+    # else's sprig_record(...) will ever ask for has no key here at all -- the
+    # record is still planted and saved to the database normally, this store just
+    # never holds onto it. A key that *was* preloaded (nil, until this overwrites
+    # it) is what makes a sprig_id "needed" -- there's no separate structure
+    # tracking that, so nothing is ever stored twice.
     def save(record, sprig_id)
-      records_of_klass(record.class)[sprig_id.to_s] = record.id
+      sprig_id = sprig_id.to_s
+      klass_records = records_of_klass(record.class)
+      return if pruning? && !klass_records.key?(sprig_id)
+
+      klass_records[sprig_id] = record.id
     end
 
     # Since the majority of get calls will be for the id, we return a LazyRecord that
@@ -24,11 +35,31 @@ module Sprig
       LazyRecord.new(klass, id)
     end
 
+    # Opts this run into pruning: pre-registers every dependency id (a
+    # Dependency#id string, e.g. "Post 1") gathered by ReferenceScanner scanning
+    # every source file for sprig_record(...) calls before planting starts, each
+    # as a key with a nil placeholder value. #save then only overwrites a key
+    # that's already present -- anything not preloaded here never gets a key at
+    # all, so it costs nothing beyond the instant it's looked at. Not calling this
+    # (the default) keeps every planted record's id, as before.
+    def preload_referenced_ids(dependency_ids)
+      @pruning = true
+      dependency_ids.each do |dependency_id|
+        klass_name, sprig_id = dependency_id.split(" ", 2)
+        (records[klass_name.tableize] ||= {})[sprig_id] = nil
+      end
+    end
+
     def reset
       @records = {}
+      @pruning = false
     end
 
     private
+
+    def pruning?
+      @pruning
+    end
 
     def records_of_klass(klass)
       records[klass.name.tableize] ||= {}

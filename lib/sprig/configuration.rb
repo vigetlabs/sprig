@@ -1,6 +1,7 @@
 module Sprig
   class Configuration
-    attr_writer :directory, :shared_directory, :logger, :wrap_in_transaction, :spill_seed_rows_to_disk
+    attr_writer :directory, :shared_directory, :logger, :wrap_in_transaction, :spill_seed_rows_to_disk,
+      :prune_unreferenced_records
 
     def directory
       Rails.root.join(@directory || default_directory, seeds_directory)
@@ -16,6 +17,10 @@ module Sprig
 
     def spill_seed_rows_to_disk
       @spill_seed_rows_to_disk || false
+    end
+
+    def prune_unreferenced_records
+      @prune_unreferenced_records || false
     end
 
     private
