@@ -42,5 +42,14 @@ RSpec.describe Sprig::DependencySorter do
         "Referenced 'sprig_record' does not have a correlating record."
       )
     end
+
+    it "works against a real Sprig::Seed::Descriptor, not just an interface-compatible double" do
+      parent = Sprig::Seed::Descriptor.new(Post, {"sprig_id" => "1", "title" => "Parent"}, {})
+      child = Sprig::Seed::Descriptor.new(Post, {"sprig_id" => "2", "content" => "<%= sprig_record(Post, 1) %>"}, {})
+
+      sorted = described_class.new([child, parent]).sorted_items
+
+      expect(sorted).to eq([parent, child])
+    end
   end
 end

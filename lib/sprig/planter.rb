@@ -37,16 +37,17 @@ module Sprig
 
     def plant(seed)
       notifier.in_progress(seed)
-      seed.before_save
+      entry = seed.to_entry
+      entry.before_save
 
-      if seed.save_record
-        seed.save_to_store
-        notifier.success(seed)
+      if entry.save_record
+        entry.save_to_store
+        notifier.success(entry)
       else
-        notifier.error(seed)
+        notifier.error(entry)
       end
     rescue => e
-      notifier.exception(seed, e)
+      notifier.exception(entry || seed, e)
     end
 
     def transactional_wrapping_requested_and_supported?

@@ -19,7 +19,7 @@ module Sprig
 
       def add_seeds_to_hopper(hopper)
         datasource.records.each do |record_data|
-          hopper << Entry.new(klass, record_data, options)
+          hopper << Descriptor.new(klass, record_data, options)
         end
       end
 
