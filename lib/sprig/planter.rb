@@ -25,6 +25,7 @@ module Sprig
       if unmet.empty?
         plant_and_cascade(descriptor)
       else
+        descriptor.spill_to_disk! if Sprig.configuration.spill_seed_rows_to_disk
         @pending_count[descriptor] = unmet.size
         unmet.each { |id| @waiting_for[id] << descriptor }
       end

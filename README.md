@@ -8,6 +8,9 @@ Provides support for common files types: _csv_, _yaml_, and _json_. Extensible f
 
 Learn more about Sprig and view documentation at [http://vigetlabs.github.io/sprig/](http://vigetlabs.github.io/sprig/).
 
+Curious how Sprig actually turns your seed files into database records? See
+[docs/how_seeding_works.md](docs/how_seeding_works.md).
+
 ## Installation
 
 Add into your Gemfile
