@@ -136,6 +136,33 @@ RSpec.describe "Seeding an application" do
     end
   end
 
+  context "with a custom source that has no #rewind method at all" do
+    around do |example|
+      load_seeds("posts.json", &example)
+    end
+
+    it "still seeds correctly, falling back to buffering the whole file" do
+      read_only_io = Class.new do
+        def initialize(io)
+          @io = io
+        end
+
+        def read(*args)
+          @io.read(*args)
+        end
+
+        def close
+          @io.close
+        end
+      end.new(File.open("spec/fixtures/seeds/test/posts.json"))
+
+      sprig [{class: Post, source: read_only_io, parser: Sprig::Parser::Json}]
+
+      expect(Post.count).to eq(1)
+      expect(Post.pluck(:title)).to eq(["Json title"])
+    end
+  end
+
   context "with a custom source that cannot be parsed by native parsers" do
     around do |example|
       load_seeds("posts.md", &example)
@@ -274,6 +301,61 @@ RSpec.describe "Seeding an application" do
 
       expect(Post.count).to eq(1)
       expect(Post.pluck(:photo)).to eq(["cat.png"])
+    end
+  end
+
+  context "with a YAML anchor referenced by an alias in a later record" do
+    around do |example|
+      load_seeds("posts_with_yaml_anchors.yml", &example)
+    end
+
+    it "resolves the alias correctly, rather than raising Psych::AnchorNotDefined" do
+      sprig [
+        {
+          class: Post,
+          source: open("spec/fixtures/seeds/test/posts_with_yaml_anchors.yml")
+        }
+      ]
+
+      expect(Post.count).to eq(2)
+      expect(Post.pluck(:title)).to eq(["Anchored Title", "Anchored Title"])
+    end
+  end
+
+  context "with a YAML file using the legacy :symbol root-key convention" do
+    around do |example|
+      load_seeds("posts.yml", &example)
+    end
+
+    it "still recognizes the records key" do
+      data = "options: {}\n:records:\n  - sprig_id: 1\n    title: Symbol Key Title\n"
+
+      sprig [{class: Post, source: StringIO.new(data), parser: Sprig::Parser::Yml}]
+
+      expect(Post.count).to eq(1)
+      expect(Post.pluck(:title)).to eq(["Symbol Key Title"])
+    end
+  end
+
+  context "with a YAML file using a merge key (<<:) at the document root" do
+    around do |example|
+      load_seeds("posts.yml", &example)
+    end
+
+    it "raises a clear, actionable error instead of silently seeding nothing" do
+      data = "<<:\n  records:\n    - sprig_id: 1\n"
+
+      expect {
+        sprig [{class: Post, source: StringIO.new(data), parser: Sprig::Parser::Yml}]
+      }.to raise_error(Sprig::Parser::Yml::EventHandler::UnsupportedMergeKeyError)
+    end
+
+    it "also rejects the common alias form (<<: *anchor), not just an inline mapping" do
+      data = "defaults: &defaults\n  records: [{sprig_id: 1}]\n<<: *defaults\n"
+
+      expect {
+        sprig [{class: Post, source: StringIO.new(data), parser: Sprig::Parser::Yml}]
+      }.to raise_error(Sprig::Parser::Yml::EventHandler::UnsupportedMergeKeyError)
     end
   end
 

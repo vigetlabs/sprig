@@ -6,15 +6,15 @@ RSpec.describe Sprig::Source do
       source = File.open("spec/fixtures/seeds/test/posts.yml")
       subject = Sprig::Source.new("posts", source: source, parser: Sprig::Parser::Yml)
 
-      expect(subject.records).to be_an(Array)
+      expect(subject.records).to be_an(Enumerable)
       expect(subject.records.first["title"]).to eq("Yaml title")
     end
 
-    it "returns an empty array when the parsed data has no records" do
+    it "returns an empty enumerable when the parsed data has no records" do
       source = StringIO.new("options:\n  delete_existing_by: title\n")
       subject = Sprig::Source.new("posts", source: source, parser: Sprig::Parser::Yml)
 
-      expect(subject.records).to eq([])
+      expect(subject.records.to_a).to eq([])
     end
   end
 
@@ -35,10 +35,44 @@ RSpec.describe Sprig::Source do
     end
   end
 
+  describe "source IO lifecycle" do
+    it "does not close the source until records is actually iterated" do
+      source = File.open("spec/fixtures/seeds/test/posts.yml")
+      subject = Sprig::Source.new("posts", source: source, parser: Sprig::Parser::Yml)
+
+      records = subject.records
+      expect(source).not_to be_closed
+
+      records.to_a
+      expect(source).to be_closed
+    end
+
+    it "closes the source if parsing itself raises" do
+      source = File.open("spec/fixtures/seeds/test/posts.yml")
+      allow(Sprig::Parser::Yml).to receive(:new).and_raise(RuntimeError, "boom")
+      subject = Sprig::Source.new("posts", source: source, parser: Sprig::Parser::Yml)
+
+      expect {
+        subject.options
+      }.to raise_error(RuntimeError, "boom")
+      expect(source).to be_closed
+    end
+
+    it "closes the source even if the consumer raises mid-iteration" do
+      source = File.open("spec/fixtures/seeds/test/posts_with_habtm.yml")
+      subject = Sprig::Source.new("posts", source: source, parser: Sprig::Parser::Yml)
+
+      expect {
+        subject.records.each { |_row| raise "boom" }
+      }.to raise_error("boom")
+      expect(source).to be_closed
+    end
+  end
+
   describe "with a custom source" do
     it "raises an ArgumentError if the source does not act like an IO" do
       expect {
-        Sprig::Source.new("posts", source: "not an io").records
+        Sprig::Source.new("posts", source: "not an io").records.to_a
       }.to raise_error(ArgumentError, "Data sources must act like an IO.")
     end
 
@@ -47,7 +81,7 @@ RSpec.describe Sprig::Source do
       source = StringIO.new("records: []")
 
       expect {
-        Sprig::Source.new("posts", source: source, parser: not_a_parser).records
+        Sprig::Source.new("posts", source: source, parser: not_a_parser).records.to_a
       }.to raise_error(ArgumentError, "Parsers must define #parse.")
     end
   end
