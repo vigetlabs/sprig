@@ -1,23 +1,23 @@
 require "spec_helper"
 
 RSpec.describe Sprig::Seed::Descriptor do
-  describe "#dependency_id" do
-    it "matches Dependency.for(klass, sprig_id).id for an explicit sprig_id" do
+  describe "#as_dependency" do
+    it "matches Dependency.for(klass, sprig_id) for an explicit sprig_id" do
       descriptor = described_class.new(Post, {"sprig_id" => "1", "title" => "Hello"}, {})
 
-      expect(descriptor.dependency_id).to eq(Sprig::Dependency.for(Post, "1").id)
+      expect(descriptor.as_dependency).to eq(Sprig::Dependency.for(Post, "1"))
     end
 
     it "is stable across repeated calls, despite no longer being memoized" do
       descriptor = described_class.new(Post, {"sprig_id" => "1", "title" => "Hello"}, {})
 
-      expect(descriptor.dependency_id).to eq(descriptor.dependency_id)
+      expect(descriptor.as_dependency).to eq(descriptor.as_dependency)
     end
 
     it "does not raise when sprig_id is absent from the row" do
       descriptor = described_class.new(Post, {"title" => "Hello"}, {})
 
-      expect { descriptor.dependency_id }.not_to raise_error
+      expect { descriptor.as_dependency }.not_to raise_error
     end
   end
 
@@ -101,23 +101,23 @@ RSpec.describe Sprig::Seed::Descriptor do
       expect(descriptor.to_entry).to be_a(Sprig::Seed::Entry)
     end
 
-    it "produces an Entry with the same dependency_id when sprig_id is explicit" do
+    it "produces an Entry with the same as_dependency when sprig_id is explicit" do
       descriptor = described_class.new(Post, {"sprig_id" => "1", "title" => "Hello"}, {})
 
-      expect(descriptor.to_entry.dependency_id).to eq(descriptor.dependency_id)
+      expect(descriptor.to_entry.as_dependency).to eq(descriptor.as_dependency)
     end
 
-    it "produces an Entry with the same dependency_id when sprig_id is auto-generated" do
+    it "produces an Entry with the same as_dependency when sprig_id is auto-generated" do
       descriptor = described_class.new(Post, {"title" => "Hello"}, {})
 
-      expect(descriptor.to_entry.dependency_id).to eq(descriptor.dependency_id)
+      expect(descriptor.to_entry.as_dependency).to eq(descriptor.as_dependency)
     end
 
     it "does not mutate raw_attrs, so plain attribute values still reach the resulting Entry correctly" do
       descriptor = described_class.new(Post, {"sprig_id" => "1", "title" => "Hello", "content" => "World"}, {})
 
-      # Force dependency_id/dependencies/sprig_id to memoize before materializing the Entry.
-      descriptor.dependency_id
+      # Force as_dependency/dependencies/sprig_id to memoize before materializing the Entry.
+      descriptor.as_dependency
       descriptor.dependencies
 
       entry = descriptor.to_entry
@@ -128,19 +128,19 @@ RSpec.describe Sprig::Seed::Descriptor do
     end
   end
 
-  describe "dependency_id / dependencies (not stored as ivars)" do
-    it "does not retain dependency_id or dependencies as instance state" do
+  describe "as_dependency / dependencies (not stored as ivars)" do
+    it "does not retain as_dependency or dependencies as instance state" do
       descriptor = described_class.new(Post, {"sprig_id" => "1", "user_id" => "<%= sprig_record(Comment, 5) %>"}, {})
 
-      descriptor.dependency_id
+      descriptor.as_dependency
       descriptor.dependencies
 
-      expect(descriptor.instance_variables).not_to include(:@dependency_id, :@dependencies)
+      expect(descriptor.instance_variables).not_to include(:@as_dependency, :@dependencies)
     end
   end
 
   describe "memory characteristics" do
-    it "never materializes Attribute/AttributeCollection objects when computing dependency_id/dependencies" do
+    it "never materializes Attribute/AttributeCollection objects when computing as_dependency/dependencies" do
       GC.start
       attribute_count_before = ObjectSpace.each_object(Sprig::Seed::Attribute).count
       collection_count_before = ObjectSpace.each_object(Sprig::Seed::AttributeCollection).count
@@ -153,7 +153,7 @@ RSpec.describe Sprig::Seed::Descriptor do
         }, {})
       end
       descriptors.each do |descriptor|
-        descriptor.dependency_id
+        descriptor.as_dependency
         descriptor.dependencies
       end
 

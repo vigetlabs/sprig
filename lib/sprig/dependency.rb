@@ -5,6 +5,13 @@ module Sprig
         new(to_klass(klass), sprig_id.to_s)
       end
 
+      # The inverse of #klass_and_sprig_id: splits "Klass sprig_id" back into
+      # its two parts. Kept next to the encoder so the format's one delimiter
+      # (the first space) only needs to be known in this one place.
+      def split(klass_and_sprig_id)
+        klass_and_sprig_id.partition(" ").values_at(0, 2)
+      end
+
       private
 
       def to_klass(klass)
@@ -24,8 +31,10 @@ module Sprig
     end
 
     # Deterministic IDs eliminate the need for caching. Using a space (the first space, if multiple
-    # exist) is a safe delimiter -- Ruby class names cannot contain spaces.
-    def id
+    # exist) is a safe delimiter -- Ruby class names cannot contain spaces. Named explicitly (rather
+    # than plain #id) so it's never mistaken for a record's own database id -- a sprig_id is only
+    # unique within its class, so this pairs it with the class name to get something globally unique.
+    def klass_and_sprig_id
       "#{klass.name} #{sprig_id}"
     end
 
@@ -34,12 +43,12 @@ module Sprig
     end
 
     def ==(other)
-      other.is_a?(Dependency) && id == other.id
+      other.is_a?(Dependency) && klass_and_sprig_id == other.klass_and_sprig_id
     end
     alias_method :eql?, :==
 
     def hash
-      id.hash
+      klass_and_sprig_id.hash
     end
 
     private

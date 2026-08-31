@@ -17,21 +17,21 @@ RSpec.describe Sprig::Dependency do
     end
   end
 
-  describe "#id" do
+  describe "#klass_and_sprig_id" do
     it "is deterministic: two separate .for calls with the same arguments produce the same id" do
-      expect(described_class.for(Post, "1").id).to eq(described_class.for(Post, "1").id)
+      expect(described_class.for(Post, "1").klass_and_sprig_id).to eq(described_class.for(Post, "1").klass_and_sprig_id)
     end
 
     it "differs for different sprig_ids" do
-      expect(described_class.for(Post, "1").id).not_to eq(described_class.for(Post, "2").id)
+      expect(described_class.for(Post, "1").klass_and_sprig_id).not_to eq(described_class.for(Post, "2").klass_and_sprig_id)
     end
 
     it "differs for different classes" do
-      expect(described_class.for(Post, "1").id).not_to eq(described_class.for(Comment, "1").id)
+      expect(described_class.for(Post, "1").klass_and_sprig_id).not_to eq(described_class.for(Comment, "1").klass_and_sprig_id)
     end
 
     it "normalizes a non-string sprig_id the same way as its string form" do
-      expect(described_class.for(Post, 1).id).to eq(described_class.for(Post, "1").id)
+      expect(described_class.for(Post, 1).klass_and_sprig_id).to eq(described_class.for(Post, "1").klass_and_sprig_id)
     end
   end
 

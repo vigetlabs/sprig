@@ -20,7 +20,7 @@ RSpec.describe Sprig::Seed::Factory do
 
       factory.add_seeds_to_hopper(hopper)
 
-      expect(hopper.first.dependency_id).to eq(Sprig::Dependency.for(Post, "1").id)
+      expect(hopper.first.as_dependency).to eq(Sprig::Dependency.for(Post, "1"))
     end
 
     it "carries the datasource's merged options through so the materialized Entry respects them" do
