@@ -3,24 +3,26 @@
 This is a plain-English walkthrough of what actually happens between calling `sprig(...)`
 in a seed file and rows showing up in your database.
 
+NOTE on Vocab: Sprig takes data _seeds_ and _plants_ them into your database.
+
 ## The short version
 
 1. You list which classes to seed (`sprig [User, Post, Comment]`).
 2. For each class, Sprig finds the matching data file (`users.yml`, `posts.csv`, etc.) and
    starts streaming it one record at a time.
 3. Every record becomes a small placeholder (a `Descriptor`) the instant it's read, and is
-   immediately offered to the planter -- there's no step where every file is fully parsed
-   before planting can begin.
+   immediately offered to the planter.
 4. The planter checks whether everything that placeholder depends on, if anything,
    (e.g. anything referenced via `sprig_record(Klass, id)`) has already been saved. If so, it
    builds the real record immediately, evaluates its `<%= ... %>` values, and saves it. If
-   not, the placeholder is held until the specific thing it's waiting on shows up.
+   not, the placeholder is held (in memory or, optionally, on disk) until the specific thing
+   it's waiting on shows up.
 5. Anytime a record is saved, any other placeholders that were only waiting on
-   it become unblocked, and are also immediately saved; cascading up the chain of blocked
+   that record become unblocked, and are also immediately saved; cascading up the chain of blocked
    records.
 6. Once every file has been streamed and nothing is left waiting, the run is done. If
    something is still stuck waiting at that point, it means a reference pointed at a
-   `sprig_id` that doesn't exist anywhere, or a cycle -- Sprig reports which.
+   `sprig_id` that doesn't exist anywhere, or there is a circular dependency -- Sprig reports which.
 
 The rest of this doc goes through those steps in more detail, then explains what keeps
 memory use low on large seed data sets.
@@ -168,7 +170,7 @@ anything will ever ask for. `SprigRecordStore` then only retains a planted recor
 it's on that list -- everything else is planted and saved to the database exactly as before,
 it just never occupies a slot in the store afterward. This is a real win only once a seed
 data set is both large and has a meaningful fraction of rows nothing ever references back
-(see `benchmark/part-8.md`) -- the prescan itself has a real, mostly fixed cost, so it's opt-in
+-- the prescan itself has a real, mostly fixed cost, so it's opt-in
 rather than a default.
 
 **Spilling waiting rows to disk is available, but opt-in.** For a large, badly-ordered
