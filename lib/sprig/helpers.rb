@@ -25,9 +25,8 @@ module Sprig
     private
 
     def plant_records(directive_definitions)
-      # The DependencyCollection and SprigRecordStore are SESSION persistent, not run persistent;
-      # explicitly reset them both to avoid cross-run stale data
-      DependencyCollection.instance.reset
+      # SprigRecordStore is SESSION persistent, not run persistent; explicitly reset it
+      # to avoid cross-run stale data
       SprigRecordStore.instance.reset
 
       hopper = []

@@ -1,13 +1,8 @@
 module Sprig
   class Dependency
-    attr_reader :id
-
     class << self
       def for(klass, sprig_id)
-        klass = to_klass(klass)
-        sprig_id = sprig_id.to_s
-
-        DependencyCollection.instance.get(klass, sprig_id) || new(klass, sprig_id)
+        new(to_klass(klass), sprig_id.to_s)
       end
 
       private
@@ -26,13 +21,25 @@ module Sprig
     def initialize(klass, sprig_id)
       @klass = klass
       @sprig_id = sprig_id
-      @id = SecureRandom.uuid
+    end
 
-      DependencyCollection.instance.set(klass, sprig_id, self)
+    # Deterministic IDs eliminate the need for caching. Using a space (the first space, if multiple
+    # exist) is a safe delimiter -- Ruby class names cannot contain spaces.
+    def id
+      "#{klass.name} #{sprig_id}"
     end
 
     def sprig_record_reference
       "sprig_record(#{klass}, #{sprig_id})"
+    end
+
+    def ==(other)
+      other.is_a?(Dependency) && id == other.id
+    end
+    alias_method :eql?, :==
+
+    def hash
+      id.hash
     end
 
     private

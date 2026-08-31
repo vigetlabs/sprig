@@ -11,18 +11,22 @@ module Sprig
         @options = options
       end
 
+      # Computed on demand rather than memoized to limit memory use
       def dependency_id
-        @dependency_id ||= Dependency.for(klass, sprig_id).id
+        Dependency.for(klass, sprig_id).id
       end
 
+      # Computed on demand rather than memoized to limit memory use
       def dependencies
-        @dependencies ||= [].tap do |deps|
-          raw_attrs.each_pair do |key, value|
-            next if key.to_s == "sprig_id"
+        deps = []
 
-            scan_value(value) { |dep_klass, dep_sprig_id| deps << Dependency.for(dep_klass, dep_sprig_id) }
-          end
-        end.uniq
+        raw_attrs.each_pair do |key, value|
+          next if key.to_s == "sprig_id"
+
+          scan_value(value) { |dep_klass, dep_sprig_id| deps << Dependency.for(dep_klass, dep_sprig_id) }
+        end
+
+        deps.uniq
       end
 
       def sprig_id
