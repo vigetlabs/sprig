@@ -12,6 +12,7 @@ module Sprig
   autoload :Logging, "sprig/logging"
   autoload :SprigRecordStore, "sprig/sprig_record_store"
   autoload :RawRowStore, "sprig/raw_row_store"
+  autoload :ReferenceScanner, "sprig/reference_scanner"
   autoload :Data, "sprig/data"
   autoload :Seed, "sprig/seed"
 

@@ -20,6 +20,14 @@ module Sprig
         }
       end
 
+      # See Base#parse_records_only / Yml#parse_records_only: skips the
+      # options-capturing pass entirely, for callers (ReferenceScanner's
+      # prescan) that only ever look at records:.
+      def parse_records_only
+        input = Base.rewindable?(data_io) ? data_io : data_io.read
+        Enumerator.new { |yielder| stream_records(input) { |row| yielder << row } }
+      end
+
       private
 
       def capture_options(input)

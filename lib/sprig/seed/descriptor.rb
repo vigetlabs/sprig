@@ -7,7 +7,7 @@ module Sprig
 
       def initialize(klass, raw_attrs, options)
         @klass = klass
-        @raw_attrs = raw_attrs
+        @raw_attrs = raw_attrs.to_hash.with_indifferent_access
         @options = options
       end
 
@@ -30,7 +30,7 @@ module Sprig
         deps = []
 
         raw_attrs.each_pair do |key, value|
-          next if key.to_s == "sprig_id"
+          next if key == "sprig_id"
 
           scan_value(value) { |dep_klass, dep_sprig_id| deps << Dependency.for(dep_klass, dep_sprig_id) }
         end
@@ -39,7 +39,7 @@ module Sprig
       end
 
       def sprig_id
-        @sprig_id ||= raw_attrs[:sprig_id] || raw_attrs["sprig_id"] || SecureRandom.uuid
+        @sprig_id ||= raw_attrs[:sprig_id] || SecureRandom.uuid
       end
 
       def spill_to_disk!

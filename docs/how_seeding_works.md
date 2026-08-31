@@ -158,6 +158,19 @@ e.g. to set a foreign key) never queries the database in the first place -- only
 that actually needs an attribute or association off the referenced record pays for a real
 fetch, and even then, at most once per reference.
 
+**Optionally, a planted record's id isn't even retained unless something else needs it.**
+By default `SprigRecordStore` still keeps every planted record's id for the whole run, since
+it has no way to know whether a not-yet-parsed record somewhere else will reference it later.
+`Sprig.configuration.prune_unreferenced_records` (off by default) closes that gap: before
+planting starts, `Sprig::ReferenceScanner` streams every source file once, regex-matching for
+`sprig_record(Klass, id)` text directly rather than parsing structure, to find every id
+anything will ever ask for. `SprigRecordStore` then only retains a planted record's id if
+it's on that list -- everything else is planted and saved to the database exactly as before,
+it just never occupies a slot in the store afterward. This is a real win only once a seed
+data set is both large and has a meaningful fraction of rows nothing ever references back
+(see `benchmark/part-8.md`) -- the prescan itself has a real, mostly fixed cost, so it's opt-in
+rather than a default.
+
 **Spilling waiting rows to disk is available, but opt-in.** For a large, badly-ordered
 seed run where a lot of descriptors end up waiting a long time,
 `Sprig.configuration.spill_seed_rows_to_disk = true` moves their raw row data out of
@@ -179,3 +192,4 @@ to matter.
 | Building and saving the real record         | `lib/sprig/seed/entry.rb`, `lib/sprig/seed/attribute.rb`, `lib/sprig/seed/attribute_collection.rb`, `lib/sprig/seed/record.rb`    |
 | Driving the plant-when-ready scheduler      | `lib/sprig/planter.rb`                                                                                                            |
 | Looking up already-planted records          | `lib/sprig/sprig_record_store.rb`, `lib/sprig/sprig_record_store/lazy_record.rb`                                                  |
+| Optionally pruning unreferenced record ids  | `lib/sprig/reference_scanner.rb`, `lib/sprig/configuration.rb` (`prune_unreferenced_records`)                                     |

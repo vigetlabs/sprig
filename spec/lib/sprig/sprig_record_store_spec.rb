@@ -86,6 +86,56 @@ RSpec.describe Sprig::SprigRecordStore do
     end
   end
 
+  describe "#preload_referenced_ids" do
+    it "keeps an id that was preloaded" do
+      post = Post.create!(title: "Hello")
+      subject.preload_referenced_ids(Set["Post 1"])
+
+      subject.save(post, "1")
+
+      expect(subject.get(Post, "1")).to eq(post)
+    end
+
+    it "discards an id that was not preloaded, without raising" do
+      post = Post.create!(title: "Hello")
+      subject.preload_referenced_ids(Set["Post 999"])
+
+      expect { subject.save(post, "1") }.not_to raise_error
+
+      stored = subject.instance_variable_get(:@records)["posts"]
+      expect(stored).not_to have_key("1")
+    end
+
+    it "never stores a preloaded id's placeholder and its real value separately -- the same key just gets overwritten" do
+      post = Post.create!(title: "Hello")
+      subject.preload_referenced_ids(Set["Post 1"])
+
+      stored = subject.instance_variable_get(:@records)["posts"]
+      expect(stored).to eq({"1" => nil})
+
+      subject.save(post, "1")
+
+      expect(stored).to eq({"1" => post.id})
+    end
+
+    it "accepts any Enumerable of dependency id strings, not just a Set" do
+      post = Post.create!(title: "Hello")
+      subject.preload_referenced_ids(["Post 1"])
+
+      subject.save(post, "1")
+
+      expect(subject.get(Post, "1")).to eq(post)
+    end
+
+    it "does not affect saves made before it's called (pruning is off by default)" do
+      post = Post.create!(title: "Hello")
+
+      subject.save(post, "1")
+
+      expect(subject.get(Post, "1")).to eq(post)
+    end
+  end
+
   describe "#reset" do
     it "clears previously saved records" do
       post = Post.create!(title: "Hello")
@@ -96,6 +146,16 @@ RSpec.describe Sprig::SprigRecordStore do
       expect {
         subject.get(Post, "1")
       }.to raise_error(Sprig::SprigRecordStore::RecordNotFoundError)
+    end
+
+    it "turns pruning back off, so a later run without preloading keeps everything again" do
+      subject.preload_referenced_ids(Set["Post 999"])
+
+      subject.reset
+
+      post = Post.create!(title: "Hello")
+      subject.save(post, "1")
+      expect(subject.get(Post, "1")).to eq(post)
     end
   end
 end

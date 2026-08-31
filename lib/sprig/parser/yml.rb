@@ -36,6 +36,15 @@ module Sprig
         }
       end
 
+      # See Base#parse_records_only: skips the options-capturing pass entirely
+      # (no anchor-sharing concern here, since there's only one pass to share
+      # a visitor across) -- used by ReferenceScanner's prescan, which only
+      # ever looks at records:.
+      def parse_records_only
+        input = Base.rewindable?(data_io) ? data_io : data_io.read
+        Enumerator.new { |yielder| stream_records(input, Psych::Visitors::ToRuby.create) { |row| yielder << row } }
+      end
+
       private
 
       def capture_options(input, ruby_visitor)

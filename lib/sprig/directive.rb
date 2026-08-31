@@ -21,7 +21,14 @@ module Sprig
     end
 
     def datasource
-      @datasource ||= Source.new(klass.to_s.tableize.tr("/", "_"), options)
+      @datasource ||= Source.new(table_name, options)
+    end
+
+    # Public so ReferenceScanner can resolve the same underlying file #datasource
+    # will stream from, without going through Source (which hands the IO straight
+    # to a parser rather than exposing it for a raw-text prescan).
+    def table_name
+      @table_name ||= klass.to_s.tableize.tr("/", "_")
     end
 
     private

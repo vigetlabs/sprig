@@ -30,8 +30,13 @@ module Sprig
       SprigRecordStore.instance.reset
       RawRowStore.instance.reset if Sprig.configuration.spill_seed_rows_to_disk
 
-      planter = Planter.new(transactional_anchor_class_hint(directive_definitions))
       begin
+        if Sprig.configuration.prune_unreferenced_records
+          needed_ids = ReferenceScanner.scan(directive_definitions)
+          SprigRecordStore.instance.preload_referenced_ids(needed_ids) if needed_ids
+        end
+
+        planter = Planter.new(transactional_anchor_class_hint(directive_definitions))
         planter.sprig do
           DirectiveList.new(directive_definitions).add_seeds_to_hopper(planter)
         end

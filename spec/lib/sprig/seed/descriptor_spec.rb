@@ -94,6 +94,27 @@ RSpec.describe Sprig::Seed::Descriptor do
     end
   end
 
+  describe "custom parser rows that are to_hash-convertible but not a real Hash" do
+    let(:to_hash_only_row) do
+      Class.new do
+        def initialize(data)
+          @data = data
+        end
+
+        def to_hash
+          @data
+        end
+      end.new({"sprig_id" => "1", "user_id" => "<%= sprig_record(Comment, 5) %>"})
+    end
+
+    it "accepts the row and normalizes it via #to_hash, matching Entry's own leniency" do
+      descriptor = described_class.new(Post, to_hash_only_row, {})
+
+      expect(descriptor.sprig_id).to eq("1")
+      expect(descriptor.dependencies).to eq([Sprig::Dependency.for(Comment, "5")])
+    end
+  end
+
   describe "#to_entry" do
     it "returns a Sprig::Seed::Entry" do
       descriptor = described_class.new(Post, {"sprig_id" => "1", "title" => "Hello", "content" => "World"}, {})

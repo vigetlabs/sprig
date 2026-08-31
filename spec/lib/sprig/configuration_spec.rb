@@ -58,4 +58,16 @@ RSpec.describe Sprig::Configuration do
       expect(subject.spill_seed_rows_to_disk).to eq(true)
     end
   end
+
+  describe "#prune_unreferenced_records" do
+    it "is false by default" do
+      expect(subject.prune_unreferenced_records).to eq(false)
+    end
+
+    it "returns a custom value" do
+      subject.prune_unreferenced_records = true
+
+      expect(subject.prune_unreferenced_records).to eq(true)
+    end
+  end
 end
