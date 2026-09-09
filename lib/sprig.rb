@@ -1,10 +1,7 @@
 module Sprig
   autoload :Configuration, "sprig/configuration"
   autoload :Planter, "sprig/planter"
-  autoload :TsortableHash, "sprig/tsortable_hash"
   autoload :Dependency, "sprig/dependency"
-  autoload :DependencyCollection, "sprig/dependency_collection"
-  autoload :DependencySorter, "sprig/dependency_sorter"
   autoload :Directive, "sprig/directive"
   autoload :DirectiveList, "sprig/directive_list"
   autoload :Source, "sprig/source"
@@ -14,6 +11,8 @@ module Sprig
   autoload :ProcessNotifier, "sprig/process_notifier"
   autoload :Logging, "sprig/logging"
   autoload :SprigRecordStore, "sprig/sprig_record_store"
+  autoload :RawRowStore, "sprig/raw_row_store"
+  autoload :ReferenceScanner, "sprig/reference_scanner"
   autoload :Data, "sprig/data"
   autoload :Seed, "sprig/seed"
 

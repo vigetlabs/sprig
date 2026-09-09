@@ -25,14 +25,31 @@ module Sprig
     private
 
     def plant_records(directive_definitions)
-      # The DependencyCollection and SprigRecordStore are SESSION persistent, not run persistent;
-      # explicitly reset them both to avoid cross-run stale data
-      DependencyCollection.instance.reset
+      # SprigRecordStore is SESSION persistent, not run persistent; explicitly reset it
+      # to avoid cross-run stale data
       SprigRecordStore.instance.reset
+      RawRowStore.instance.reset if Sprig.configuration.spill_seed_rows_to_disk
 
-      hopper = []
-      DirectiveList.new(directive_definitions).add_seeds_to_hopper(hopper)
-      Planter.new(hopper).sprig
+      if Sprig.configuration.prune_unreferenced_records
+        needed_ids = ReferenceScanner.scan(directive_definitions)
+        SprigRecordStore.instance.preload_referenced_ids(needed_ids) if needed_ids
+      end
+
+      planter = Planter.new(transactional_anchor_class_hint(directive_definitions))
+      begin
+        planter.sprig do
+          DirectiveList.new(directive_definitions).add_seeds_to_hopper(planter)
+        end
+      ensure
+        RawRowStore.instance.cleanup if Sprig.configuration.spill_seed_rows_to_disk
+      end
+    end
+
+    # The class of the first directive being seeded, used only as a Mongoid
+    # transaction anchor (see Planter#transactional_anchor_class)
+    def transactional_anchor_class_hint(directive_definitions)
+      first_definition = Array(directive_definitions).first
+      first_definition && Directive.new(first_definition).klass
     end
   end
 end

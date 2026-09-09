@@ -46,4 +46,28 @@ RSpec.describe Sprig::Configuration do
       expect(subject.wrap_in_transaction).to eq(custom_value)
     end
   end
+
+  describe "#spill_seed_rows_to_disk" do
+    it "is false by default" do
+      expect(subject.spill_seed_rows_to_disk).to eq(false)
+    end
+
+    it "returns a custom value" do
+      subject.spill_seed_rows_to_disk = true
+
+      expect(subject.spill_seed_rows_to_disk).to eq(true)
+    end
+  end
+
+  describe "#prune_unreferenced_records" do
+    it "is false by default" do
+      expect(subject.prune_unreferenced_records).to eq(false)
+    end
+
+    it "returns a custom value" do
+      subject.prune_unreferenced_records = true
+
+      expect(subject.prune_unreferenced_records).to eq(true)
+    end
+  end
 end

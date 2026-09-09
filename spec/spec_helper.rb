@@ -36,7 +36,7 @@ RSpec.configure do |c|
     Sprig.reset_configuration
     Sprig.shared_seeding = false
     Sprig::SprigRecordStore.instance.reset
-    Sprig::DependencyCollection.instance.reset
+    Sprig::RawRowStore.instance.cleanup
   end
 end
 
