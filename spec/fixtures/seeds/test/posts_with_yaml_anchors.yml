@@ -1,0 +1,7 @@
+records:
+  - sprig_id: 1
+    title: &shared_title "Anchored Title"
+    content: "First content"
+  - sprig_id: 2
+    title: *shared_title
+    content: "Second content"

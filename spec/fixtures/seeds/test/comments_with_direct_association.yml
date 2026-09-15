@@ -1,0 +1,4 @@
+records:
+  - sprig_id: 1
+    post: "<%= sprig_record(Post, 1) %>"
+    body: "Direct association body"

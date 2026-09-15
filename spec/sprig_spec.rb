@@ -136,6 +136,33 @@ RSpec.describe "Seeding an application" do
     end
   end
 
+  context "with a custom source that has no #rewind method at all" do
+    around do |example|
+      load_seeds("posts.json", &example)
+    end
+
+    it "still seeds correctly, falling back to buffering the whole file" do
+      read_only_io = Class.new do
+        def initialize(io)
+          @io = io
+        end
+
+        def read(*args)
+          @io.read(*args)
+        end
+
+        def close
+          @io.close
+        end
+      end.new(File.open("spec/fixtures/seeds/test/posts.json"))
+
+      sprig [{class: Post, source: read_only_io, parser: Sprig::Parser::Json}]
+
+      expect(Post.count).to eq(1)
+      expect(Post.pluck(:title)).to eq(["Json title"])
+    end
+  end
+
   context "with a custom source that cannot be parsed by native parsers" do
     around do |example|
       load_seeds("posts.md", &example)
@@ -197,7 +224,7 @@ RSpec.describe "Seeding an application" do
           }
         ]
       }.to raise_error(
-        Sprig::DependencySorter::MissingDependencyError,
+        Sprig::Planter::MissingDependencyError,
         "Undefined reference to 'sprig_record(Comment, 42)'"
       )
     end
@@ -277,6 +304,102 @@ RSpec.describe "Seeding an application" do
     end
   end
 
+  context "with a sprig_record(...) result assigned directly to a belongs_to association" do
+    around do |example|
+      load_seeds("posts.yml", "comments_with_direct_association.yml", &example)
+    end
+
+    it "seeds the db, rather than raising ActiveRecord::AssociationTypeMismatch" do
+      sprig [
+        Post,
+        {
+          class: Comment,
+          source: open("spec/fixtures/seeds/test/comments_with_direct_association.yml")
+        }
+      ]
+
+      expect(Comment.count).to eq(1)
+      expect(Comment.first.post).to eq(Post.first)
+    end
+  end
+
+  context "with a YAML anchor referenced by an alias in a later record" do
+    around do |example|
+      load_seeds("posts_with_yaml_anchors.yml", &example)
+    end
+
+    it "resolves the alias correctly, rather than raising Psych::AnchorNotDefined" do
+      sprig [
+        {
+          class: Post,
+          source: open("spec/fixtures/seeds/test/posts_with_yaml_anchors.yml")
+        }
+      ]
+
+      expect(Post.count).to eq(2)
+      expect(Post.pluck(:title)).to eq(["Anchored Title", "Anchored Title"])
+    end
+  end
+
+  context "with a duplicate sprig_id and Sprig configured to spill blocked rows to disk" do
+    around do |example|
+      load_seeds("posts.yml", "comments_with_duplicate_sprig_id.yml", &example)
+    end
+
+    before do
+      Sprig.configure { |c| c.spill_seed_rows_to_disk = true }
+    end
+
+    it "raises a clear DuplicateRecordError instead of silently corrupting or double-planting the rows" do
+      expect {
+        sprig [
+          {
+            class: Comment,
+            source: open("spec/fixtures/seeds/test/comments_with_duplicate_sprig_id.yml")
+          },
+          Post
+        ]
+      }.to raise_error(Sprig::Planter::DuplicateRecordError)
+    end
+  end
+
+  context "with a YAML file using the legacy :symbol root-key convention" do
+    around do |example|
+      load_seeds("posts.yml", &example)
+    end
+
+    it "still recognizes the records key" do
+      data = "options: {}\n:records:\n  - sprig_id: 1\n    title: Symbol Key Title\n"
+
+      sprig [{class: Post, source: StringIO.new(data), parser: Sprig::Parser::Yml}]
+
+      expect(Post.count).to eq(1)
+      expect(Post.pluck(:title)).to eq(["Symbol Key Title"])
+    end
+  end
+
+  context "with a YAML file using a merge key (<<:) at the document root" do
+    around do |example|
+      load_seeds("posts.yml", &example)
+    end
+
+    it "raises a clear, actionable error instead of silently seeding nothing" do
+      data = "<<:\n  records:\n    - sprig_id: 1\n"
+
+      expect {
+        sprig [{class: Post, source: StringIO.new(data), parser: Sprig::Parser::Yml}]
+      }.to raise_error(Sprig::Parser::Yml::EventHandler::UnsupportedMergeKeyError)
+    end
+
+    it "also rejects the common alias form (<<: *anchor), not just an inline mapping" do
+      data = "defaults: &defaults\n  records: [{sprig_id: 1}]\n<<: *defaults\n"
+
+      expect {
+        sprig [{class: Post, source: StringIO.new(data), parser: Sprig::Parser::Yml}]
+      }.to raise_error(Sprig::Parser::Yml::EventHandler::UnsupportedMergeKeyError)
+    end
+  end
+
   context "with has_and_belongs_to_many relationships" do
     around do |example|
       load_seeds("posts_with_habtm.yml", "tags.yml", &example)
@@ -307,8 +430,11 @@ RSpec.describe "Seeding an application" do
           Page
         ]
 
-        expect(Page.all.map(&:title)).to eq(
-          ["First Title", "First Title", "Second Title", "Second Title"]
+        # Insertion order among mutually-independent records isn't a guarantee Sprig
+        # makes (only "dependencies before dependents" is) -- assert on content, not
+        # a specific tie-breaking order.
+        expect(Page.all.map(&:title)).to contain_exactly(
+          "First Title", "First Title", "Second Title", "Second Title"
         )
       end
     end
@@ -328,7 +454,7 @@ RSpec.describe "Seeding an application" do
           },
           Comment
         ]
-      }.to raise_error(Sprig::DependencySorter::CircularDependencyError)
+      }.to raise_error(Sprig::Planter::CircularDependencyError)
     end
   end
 
@@ -507,6 +633,102 @@ RSpec.describe "Seeding an application" do
     end
   end
 
+  context "with Sprig configured to prune unreferenced records" do
+    before do
+      Sprig.configure { |c| c.prune_unreferenced_records = true }
+    end
+
+    context "with a relationship to another class" do
+      around { |example| load_seeds("posts.yml", "comments.yml", &example) }
+
+      it "still seeds the db and resolves the reference correctly" do
+        sprig [Post, Comment]
+
+        expect(Post.count).to eq(1)
+        expect(Comment.first.post).to eq(Post.first)
+      end
+
+      it "keeps the referenced record's id, but not the referencing one's" do
+        sprig [Post, Comment]
+
+        records = Sprig::SprigRecordStore.instance.instance_variable_get(:@records)
+        expect(records["posts"]).to eq({"1" => Post.first.id})
+        expect(records["comments"]).to be_nil.or be_empty
+      end
+    end
+
+    context "with a custom, rewindable :source: on one of the directives" do
+      around { |example| load_seeds("posts.yml", "comments.yml", &example) }
+
+      it "still seeds correctly -- the source is left readable after being prescanned" do
+        sprig [
+          Post,
+          {class: Comment, source: open("spec/fixtures/seeds/test/comments.yml")}
+        ]
+
+        expect(Post.count).to eq(1)
+        expect(Comment.first.post).to eq(Post.first)
+      end
+    end
+
+    context "with a custom :source: that cannot be safely read twice" do
+      around { |example| load_seeds("posts.yml", "comments.yml", &example) }
+
+      it "falls back to keeping everything for the whole run, rather than risk a missing reference" do
+        source = open("spec/fixtures/seeds/test/comments.yml")
+        allow(source).to receive(:respond_to?).and_call_original
+        allow(source).to receive(:respond_to?).with(:rewind).and_return(false)
+
+        sprig [Post, {class: Comment, source: source}]
+
+        expect(Post.count).to eq(1)
+        expect(Comment.first.post).to eq(Post.first)
+      end
+    end
+
+    context "with a custom :source: whose #rewind genuinely raises (not merely unadvertised)" do
+      around { |example| load_seeds("posts.yml", "comments.yml", &example) }
+
+      it "falls back to keeping everything for the whole run, without the raise itself escaping" do
+        source = open("spec/fixtures/seeds/test/comments.yml")
+        allow(source).to receive(:rewind).and_raise(IOError, "not seekable")
+
+        sprig [Post, {class: Comment, source: source}]
+
+        expect(Post.count).to eq(1)
+        expect(Comment.first.post).to eq(Post.first)
+      end
+    end
+
+    context "with a JSON seed file referencing a quoted, non-numeric sprig_id" do
+      around { |example| load_seeds("posts_string_sprig_id.json", "comments_referencing_string_sprig_id.json", &example) }
+
+      it "still seeds the db and resolves the reference correctly" do
+        sprig [
+          {class: Post, source: open("spec/fixtures/seeds/test/posts_string_sprig_id.json"), parser: Sprig::Parser::Json},
+          {class: Comment, source: open("spec/fixtures/seeds/test/comments_referencing_string_sprig_id.json"), parser: Sprig::Parser::Json}
+        ]
+
+        expect(Post.count).to eq(1)
+        expect(Comment.first.post).to eq(Post.first)
+      end
+    end
+
+    context "with a CSV seed file referencing a quoted, non-numeric sprig_id" do
+      around { |example| load_seeds("posts_string_sprig_id.csv", "comments_referencing_string_sprig_id.csv", &example) }
+
+      it "still seeds the db and resolves the reference correctly" do
+        sprig [
+          {class: Post, source: open("spec/fixtures/seeds/test/posts_string_sprig_id.csv"), parser: Sprig::Parser::Csv},
+          {class: Comment, source: open("spec/fixtures/seeds/test/comments_referencing_string_sprig_id.csv"), parser: Sprig::Parser::Csv}
+        ]
+
+        expect(Post.count).to eq(1)
+        expect(Comment.first.post).to eq(Post.first)
+      end
+    end
+  end
+
   context "with Sprig configured to wrap the planting process in a transaction" do
     before do
       Sprig.configure do |c|
@@ -522,27 +744,27 @@ RSpec.describe "Seeding an application" do
 
     context "with no errors" do
       around do |example|
-        load_seeds('posts.yml', &example)
+        load_seeds("posts.yml", &example)
       end
 
       it "adds all the records to the database" do
         sprig [Post]
 
         expect(Post.count).to eq(1)
-        expect(Post.pluck(:title)).to match_array(['Yaml title'])
+        expect(Post.pluck(:title)).to match_array(["Yaml title"])
       end
     end
 
     context "with some errors" do
       around do |example|
-        load_seeds('posts_with_some_errors.yml', &example)
+        load_seeds("posts_with_some_errors.yml", &example)
       end
 
       it "adds no records to the database" do
         sprig [
           {
-          :class  => Post,
-          :source => open('spec/fixtures/seeds/test/posts_with_some_errors.yml')
+            class: Post,
+            source: open("spec/fixtures/seeds/test/posts_with_some_errors.yml")
           }
         ]
 

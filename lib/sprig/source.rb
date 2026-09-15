@@ -1,12 +1,40 @@
 module Sprig
   class Source
+    # Shared with ReferenceScanner's prescan, so a directive's explicit :parser:
+    # option and the auto-detected-by-extension fallback are resolved exactly
+    # the same way regardless of which one is doing the resolving.
+    def self.parser_class_for(io, options)
+      parser_class = options.fetch(:parser) { ParserDeterminer.new(io).parser }
+
+      unless parser_class.method_defined?(:parse)
+        raise ArgumentError, "Parsers must define #parse."
+      end
+
+      parser_class
+    end
+
+    # Shared with ReferenceScanner's prescan, so a custom parser's result is
+    # recognized the same way (indifferent to string vs. symbol keys)
+    # regardless of which one is doing the recognizing.
+    def self.normalize_parsed(raw_parsed)
+      raw_parsed.to_hash.with_indifferent_access
+    end
+
     def initialize(table_name, args = {})
       @table_name = table_name
       @args = args
     end
 
+    # The source IO deliberately stays open past this method returning -- closing it
+    # happens once the records enumerator below is actually exhausted, since some
+    # parsers (Yml, Json) defer part of their own parsing until #records is iterated,
+    # and can't do that off an already-closed IO.
     def records
-      data[:records] || []
+      @records ||= Enumerator.new do |yielder|
+        (data[:records] || []).each { |row| yielder << row }
+      ensure
+        source.close
+      end
     end
 
     def options
@@ -19,9 +47,10 @@ module Sprig
 
     def data
       @data ||= begin
-        parser_class.new(source).parse.to_hash.with_indifferent_access
-      ensure
+        self.class.normalize_parsed(parser_class.new(source).parse)
+      rescue
         source.close
+        raise
       end
     end
 
@@ -38,23 +67,11 @@ module Sprig
     end
 
     def parser_class
-      @parser_class ||= begin
-        parser_class = args.fetch(:parser) { default_parser_class }
-
-        unless parser_class.method_defined?(:parse)
-          raise ArgumentError, "Parsers must define #parse."
-        end
-
-        parser_class
-      end
+      @parser_class ||= self.class.parser_class_for(source, args)
     end
 
     def default_source
       File.open(SourceDeterminer.new(table_name).file)
-    end
-
-    def default_parser_class
-      ParserDeterminer.new(source).parser
     end
 
     class SourceDeterminer

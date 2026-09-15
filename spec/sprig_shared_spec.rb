@@ -211,7 +211,7 @@ RSpec.describe "Seeding an application with shared seeds" do
           }
         ]
       }.to raise_error(
-        Sprig::DependencySorter::MissingDependencyError,
+        Sprig::Planter::MissingDependencyError,
         "Undefined reference to 'sprig_record(Comment, 42)'"
       )
     end
@@ -309,7 +309,7 @@ RSpec.describe "Seeding an application with shared seeds" do
           },
           Comment
         ]
-      }.to raise_error(Sprig::DependencySorter::CircularDependencyError)
+      }.to raise_error(Sprig::Planter::CircularDependencyError)
     end
   end
 

@@ -1,0 +1,2 @@
+sprig_id,post_id,body
+1,"<%= sprig_record(Post, ""cooldev"").id %>",References a string sprig_id via CSV
